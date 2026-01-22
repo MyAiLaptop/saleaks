@@ -40,7 +40,15 @@ services:
       # App URL (set to your domain)
       - key: NEXT_PUBLIC_APP_URL
         sync: false
+      # Database connection (auto-filled by Render)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: saleaks-db
+          property: connectionString
 
-# Database: Use external PostgreSQL (Neon.tech free tier recommended)
-# Set DATABASE_URL manually in Render dashboard
-# Example: postgresql://user:pass@host/dbname?sslmode=require
+databases:
+  - name: saleaks-db
+    plan: starter # Paid plan
+    region: frankfurt
+    databaseName: saleaks
+    user: saleaks
