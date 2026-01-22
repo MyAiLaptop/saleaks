@@ -37,6 +37,9 @@ interface Media {
   originalName: string
   mimeType: string
   path: string
+  watermarkedPath?: string | null
+  price?: number | null
+  forSale?: boolean
 }
 
 interface Comment {
@@ -381,7 +384,7 @@ export default function LivePostPage() {
                           <PurchaseButton
                             mediaId={media.id}
                             mediaType="live"
-                            price={media.price}
+                            price={media.price ?? undefined}
                             className="text-xs px-2 py-1"
                           />
                         )}
