@@ -63,6 +63,9 @@ interface FileData {
   mimeType: string
   size: number
   path: string
+  watermarkedPath?: string | null
+  price?: number | null
+  forSale?: boolean
 }
 
 interface Message {
