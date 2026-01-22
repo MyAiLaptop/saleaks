@@ -44,6 +44,9 @@ interface Media {
   originalName: string
   mimeType: string
   path: string
+  watermarkedPath?: string | null
+  price?: number | null
+  forSale?: boolean
 }
 
 interface LivePost {
