@@ -1,0 +1,270 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   SA LEAKS BRAND TOKENS
+   ======================================== */
+
+:root {
+  /* Core brand colors */
+  --brand-green: #007749;
+  --brand-gold: #FFB81C;
+  --brand-red: #DE3831;
+  --brand-blue: #002395;
+  --brand-orange: #F35B1F;
+
+  /* UI tokens - Dark mode as default for SA Leaks */
+  --bg: #0F131A;
+  --bg-card: #1A1F29;
+  --bg-elevated: #2A3141;
+  --text: #F7F8FA;
+  --text-muted: #B3BECE;
+  --text-subtle: #7E8AA0;
+  --border: #2A3141;
+  --border-subtle: #3D475C;
+
+  /* Interactive states */
+  --hover-bg: rgba(0, 119, 73, 0.15);
+  --active-bg: rgba(0, 119, 73, 0.25);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-brand: 0 4px 14px 0 rgba(0, 119, 73, 0.15);
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ========================================
+   HEADER FIXED POSITIONING
+   Ensures header stays fixed on scroll
+   ======================================== */
+
+header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  background-color: rgba(0, 0, 0, 0.95) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* ========================================
+   CUSTOM SCROLLBAR (SA Green)
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--brand-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #005535;
+}
+
+/* ========================================
+   FOCUS STYLES (Accessibility)
+   ======================================== */
+
+:focus-visible {
+  outline: 2px solid var(--brand-green);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   CUSTOM UTILITIES
+   ======================================== */
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Brand gradient backgrounds */
+  .bg-brand-gradient {
+    background: linear-gradient(135deg, #007749 0%, #003620 100%);
+  }
+
+  .bg-gold-gradient {
+    background: linear-gradient(135deg, #FFB81C 0%, #CFA460 100%);
+  }
+
+  .bg-dramatic {
+    background: linear-gradient(180deg, #1E1E19 0%, #2A3141 100%);
+  }
+
+  /* Brand text gradient */
+  .text-brand-gradient {
+    background: linear-gradient(135deg, #007749 0%, #34D399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Gold accent glow */
+  .glow-gold {
+    box-shadow: 0 0 20px rgba(255, 184, 28, 0.4);
+  }
+
+  /* Green accent glow */
+  .glow-green {
+    box-shadow: 0 0 20px rgba(0, 119, 73, 0.4);
+  }
+}
+
+/* ========================================
+   PWA ANIMATIONS
+   ======================================== */
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+/* ========================================
+   COMPONENT STYLES
+   ======================================== */
+
+/* Brand button hover effect */
+.btn-brand {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-brand::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.btn-brand:hover::after {
+  opacity: 1;
+}
+
+/* Card hover lift effect */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+  /* Hide navigation, footer, and interactive elements */
+  header,
+  footer,
+  nav,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Reset background colors for printing */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Make main content full width */
+  .max-w-4xl,
+  .max-w-7xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Remove shadows and borders for cleaner print */
+  .shadow-lg,
+  .shadow-xl {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Force dark mode styles to light for printing */
+  .dark\:bg-gray-800,
+  .dark\:bg-gray-900,
+  .dark\:bg-ink-800 {
+    background: white !important;
+  }
+
+  .dark\:text-white,
+  .dark\:text-gray-100,
+  .dark\:text-gray-200,
+  .dark\:text-gray-300 {
+    color: black !important;
+  }
+
+  .dark\:text-gray-400 {
+    color: #6b7280 !important;
+  }
+
+  /* Add page break handling */
+  article {
+    page-break-inside: avoid;
+  }
+
+  /* Add SA Leaks branding for print */
+  .print-header {
+    display: block !important;
+    text-align: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--brand-green);
+  }
+
+  /* Show URL for links in print */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+}

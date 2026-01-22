@@ -1,0 +1,571 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // Use PostgreSQL for production (Render), SQLite for local development
+  // Set DATABASE_URL in .env:
+  // Local: DATABASE_URL="file:./dev.db"
+  // Production: DATABASE_URL="postgresql://user:pass@host:5432/dbname"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Categories for organizing leaks
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?  // Lucide icon name
+  posts       Post[]
+  createdAt   DateTime @default(now())
+}
+
+// Main post/leak model - NO user identification stored
+model Post {
+  id            String    @id @default(cuid())
+  // Unique public ID for sharing (not exposing internal ID)
+  publicId      String    @unique
+
+  title         String
+  content       String    // Main content/description
+
+  // Category relationship
+  categoryId    String
+  category      Category  @relation(fields: [categoryId], references: [id])
+
+  // Location info (optional, user-provided)
+  province      String?
+  city          String?
+  organization  String?   // Company/Government dept involved
+
+  // Status and moderation (PUBLISHED, HIDDEN, REMOVED)
+  status        String     @default("PUBLISHED")
+  featured      Boolean    @default(false)
+  viewCount     Int        @default(0)
+
+  // Credibility voting
+  upvotes       Int        @default(0)
+  downvotes     Int        @default(0)
+  votes         Vote[]
+
+  // Secure contact - encrypted identifier for messaging
+  // This is a random token, NOT linked to any identity
+  contactToken  String?   @unique
+
+  // Revenue sharing option
+  // If true, submitter wants 50/50 split and provided contact for payment
+  // If false/null, submitter stays fully anonymous, SA Leaks keeps all revenue
+  revenueShareEnabled   Boolean  @default(false)
+  // Encrypted contact details for revenue sharing (email/phone)
+  // Only decrypted if revenue is generated
+  revenueShareContact   String?
+  // Revenue share percentage (default 50%)
+  revenueSharePercent   Int      @default(50)
+  // Status: NONE, PENDING, PAID
+  revenueShareStatus    String   @default("NONE")
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  files         File[]
+  messages      Message[]
+  coverageLinks CoverageLink[]
+  updates       PostUpdate[]
+  liveChats     LiveChat[]
+
+  // IMPORTANT: We do NOT store:
+  // - IP addresses
+  // - User agents
+  // - Any identifying information
+  // - Cookies or session data
+}
+
+// Files/evidence attached to posts
+model File {
+  id           String   @id @default(cuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  filename     String   // Sanitized filename
+  originalName String   // Original name (sanitized)
+  mimeType     String
+  size         Int      // File size in bytes
+  path         String   // Storage path (original, unwatermarked) - local or R2 key
+  watermarkedPath String? // Path to watermarked version for public display
+
+  // R2 cloud storage keys (if using R2)
+  r2OriginalKey    String?  // R2 key for original file
+  r2WatermarkedKey String?  // R2 key for watermarked file
+  storageType      String   @default("local") // "local" or "r2"
+
+  // Purchase pricing (in cents ZAR, null = free/not for sale)
+  price        Int?     // e.g., 5000 = R50.00
+  forSale      Boolean  @default(true) // Can be purchased watermark-free
+
+  // Security: metadata stripped on upload
+  metadataStripped Boolean @default(true)
+
+  createdAt    DateTime @default(now())
+}
+
+// Public messaging between journalists and whistleblowers
+// Messages are public but both parties remain anonymous
+model Message {
+  id           String   @id @default(cuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Message direction
+  isFromWhistleblower Boolean
+
+  // Message type: FACT, OPINION, LEAD, QUESTION
+  messageType  String   @default("OPINION")
+
+  // Message content (public - both parties anonymous)
+  content      String
+
+  // Read status
+  read         Boolean  @default(false)
+
+  createdAt    DateTime @default(now())
+}
+
+// Simple admin log for accountability (no user data)
+model AdminLog {
+  id        String   @id @default(cuid())
+  action    String   // e.g., "HIDE_POST", "REMOVE_POST", "FEATURE_POST"
+  targetId  String   // Post ID affected
+  reason    String?  // Reason for action
+  createdAt DateTime @default(now())
+}
+
+// Anonymous votes - tracked by fingerprint hash to prevent duplicates
+// No user data stored, just a hash of browser characteristics
+model Vote {
+  id           String   @id @default(cuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Browser fingerprint hash (not personally identifiable)
+  fingerprint  String
+
+  // Vote type: 1 for upvote, -1 for downvote
+  value        Int
+
+  createdAt    DateTime @default(now())
+
+  // Prevent duplicate votes from same fingerprint on same post
+  @@unique([postId, fingerprint])
+}
+
+// News coverage links - track when a leak gets media coverage
+model CoverageLink {
+  id           String   @id @default(cuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  url          String   // Link to news article
+  title        String   // Article title
+  outlet       String?  // News outlet name
+  publishedAt  DateTime? // When the article was published
+
+  // Moderation status: PENDING, APPROVED, REJECTED
+  status       String   @default("PENDING")
+
+  createdAt    DateTime @default(now())
+}
+
+// Timeline updates - allow whistleblowers to add updates to their leaks
+model PostUpdate {
+  id           String   @id @default(cuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Update type: UPDATE, CORRECTION, DEVELOPMENT, RESOLVED
+  updateType   String   @default("UPDATE")
+
+  // Update content
+  title        String
+  content      String
+
+  // Optional file attachments for this update
+  hasAttachment Boolean @default(false)
+
+  createdAt    DateTime @default(now())
+}
+
+// Anonymous email subscriptions for alerts
+// Email is hashed for privacy, unsubscribe token for management
+model Subscription {
+  id              String   @id @default(cuid())
+
+  // Hashed email for privacy (SHA-256)
+  emailHash       String   @unique
+
+  // Encrypted email for sending (can be decrypted with server key)
+  encryptedEmail  String
+
+  // Subscription preferences
+  categoryId      String?  // null = all categories
+  province        String?  // null = all provinces
+
+  // Frequency: INSTANT, DAILY, WEEKLY
+  frequency       String   @default("DAILY")
+
+  // Status
+  verified        Boolean  @default(false)
+  verifyToken     String   @unique
+  unsubscribeToken String  @unique
+
+  // Track last notification sent
+  lastNotified    DateTime?
+
+  createdAt       DateTime @default(now())
+}
+
+// Journalist verification system
+model Journalist {
+  id              String   @id @default(cuid())
+
+  // Hashed email for privacy
+  emailHash       String   @unique
+  encryptedEmail  String
+
+  // Verification info
+  outlet          String   // News organization
+  role            String?  // e.g., "Reporter", "Editor"
+
+  // Verification status: PENDING, VERIFIED, REJECTED
+  status          String   @default("PENDING")
+
+  // Unique access token for verified journalists
+  accessToken     String?  @unique
+
+  // Contact preferences
+  allowDirectContact Boolean @default(true)
+
+  createdAt       DateTime @default(now())
+  verifiedAt      DateTime?
+
+  // Relations
+  privateMessages PrivateMessage[]
+}
+
+// Private encrypted messages between journalists and whistleblowers
+// Premium feature - messages are end-to-end encrypted
+model PrivateMessage {
+  id              String   @id @default(cuid())
+  postId          String
+
+  // Sender identification (one will be null)
+  journalistId    String?
+  journalist      Journalist? @relation(fields: [journalistId], references: [id])
+
+  // If from whistleblower, no direct relation
+  isFromWhistleblower Boolean @default(false)
+
+  // Encrypted message content (AES-256)
+  encryptedContent String
+
+  // Message metadata
+  read            Boolean  @default(false)
+  readAt          DateTime?
+
+  createdAt       DateTime @default(now())
+
+  @@index([postId])
+}
+
+// Premium subscriptions for journalists
+model PremiumSubscription {
+  id              String   @id @default(cuid())
+  journalistId    String   @unique
+
+  // Plan type: BASIC, PRO, ENTERPRISE
+  plan            String   @default("BASIC")
+
+  // Status: ACTIVE, CANCELLED, EXPIRED
+  status          String   @default("ACTIVE")
+
+  // Billing
+  stripeCustomerId String?
+  stripeSubId     String?
+
+  // Dates
+  startDate       DateTime @default(now())
+  endDate         DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Live chat messages for real-time discussions on leaks
+// Anonymous chat room style - like gaming chat
+model LiveChat {
+  id           String   @id @default(cuid())
+  postId       String
+  post         Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Anonymous display name (randomly generated, not stored)
+  displayName  String   // e.g., "Anon-7x3k", "Citizen-9f2m"
+
+  // Session token to identify same user in conversation (not personally identifiable)
+  sessionToken String
+
+  // Message content
+  content      String
+
+  // Message type for styling: CHAT, WHISTLEBLOWER, JOURNALIST, SYSTEM
+  messageType  String   @default("CHAT")
+
+  // Reactions count (optional engagement feature)
+  reactions    Int      @default(0)
+
+  createdAt    DateTime @default(now())
+
+  @@index([postId, createdAt])
+}
+
+// Live Billboard - Citizen journalism news feed
+// Anyone can post breaking news, events, images, videos
+model LiveBillboard {
+  id           String   @id @default(cuid())
+  publicId     String   @unique
+
+  // Content
+  content      String   // Main text content
+
+  // Category: BREAKING, TRAFFIC, CRIME, PROTEST, LOADSHEDDING, WEATHER, COMMUNITY, OTHER
+  category     String   @default("OTHER")
+
+  // Location
+  province     String?
+  city         String?
+
+  // Anonymous poster identity (random name per session)
+  displayName  String   // e.g., "Reporter-x7k2", "Witness-m3f9"
+  sessionToken String   // To identify same poster for edits
+
+  // Engagement
+  upvotes      Int      @default(0)
+  downvotes    Int      @default(0)
+  viewCount    Int      @default(0)
+  commentCount Int      @default(0)
+
+  // Trending score (calculated: upvotes - downvotes + recency boost)
+  trendingScore Float   @default(0)
+
+  // Status: LIVE, ENDED, REMOVED
+  status       String   @default("LIVE")
+
+  // Is this happening right now?
+  isHappeningNow Boolean @default(true)
+
+  // Revenue sharing option
+  // If true, submitter wants 50/50 split and provided contact for payment
+  revenueShareEnabled   Boolean  @default(false)
+  revenueShareContact   String?  // Encrypted contact details
+  revenueSharePercent   Int      @default(50)
+  revenueShareStatus    String   @default("NONE") // NONE, PENDING, PAID
+
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  media        LiveBillboardMedia[]
+  votes        LiveBillboardVote[]
+  comments     LiveBillboardComment[]
+
+  @@index([category, createdAt])
+  @@index([province, createdAt])
+  @@index([trendingScore])
+  @@index([status, isHappeningNow])
+}
+
+// Media attachments for live billboard posts
+model LiveBillboardMedia {
+  id           String   @id @default(cuid())
+  postId       String
+  post         LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // File info
+  filename     String
+  originalName String
+  mimeType     String   // image/*, video/*
+  size         Int
+  path         String   // Original path (unwatermarked, for purchases)
+  watermarkedPath String? // Path to watermarked version for public display
+
+  // R2 cloud storage keys (if using R2)
+  r2OriginalKey    String?  // R2 key for original file
+  r2WatermarkedKey String?  // R2 key for watermarked file
+  storageType      String   @default("local") // "local" or "r2"
+
+  // Optional thumbnail for videos
+  thumbnailPath String?
+
+  // Purchase pricing (in cents ZAR, null = use default pricing)
+  price        Int?     // e.g., 5000 = R50.00, null = use default
+  forSale      Boolean  @default(true) // Can be purchased watermark-free
+
+  // Order for display
+  order        Int      @default(0)
+
+  createdAt    DateTime @default(now())
+
+  @@index([postId])
+}
+
+// Votes on live billboard posts
+model LiveBillboardVote {
+  id           String   @id @default(cuid())
+  postId       String
+  post         LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  fingerprint  String
+  value        Int      // 1 or -1
+
+  createdAt    DateTime @default(now())
+
+  @@unique([postId, fingerprint])
+}
+
+// Comments on live billboard posts
+model LiveBillboardComment {
+  id           String   @id @default(cuid())
+  postId       String
+  post         LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  displayName  String
+  sessionToken String
+  content      String
+
+  // Nested replies
+  parentId     String?
+
+  createdAt    DateTime @default(now())
+
+  @@index([postId, createdAt])
+}
+
+// Push notification subscriptions
+model PushSubscription {
+  id           String   @id @default(cuid())
+
+  // Web Push subscription data
+  endpoint     String   @unique
+  p256dh       String   // Public key
+  auth         String   // Auth secret
+
+  // Privacy-respecting identifier (not linked to any user account)
+  fingerprint  String
+
+  // Notification preferences
+  breakingNews Boolean  @default(true)
+  liveEvents   Boolean  @default(true)
+  categories   String?  // JSON array of category IDs, null = all
+
+  // Province filter (optional)
+  province     String?
+
+  // Status: ACTIVE, EXPIRED, UNSUBSCRIBED
+  status       String   @default("ACTIVE")
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([fingerprint])
+  @@index([status])
+}
+
+// Media purchases for watermark-free downloads
+// Journalists can purchase individual media files or bundles
+model MediaPurchase {
+  id            String   @id @default(cuid())
+
+  // Buyer info (email for delivery, no account needed)
+  email         String
+
+  // What was purchased
+  fileId        String?  // For regular post files
+  liveMediaId   String?  // For live billboard media
+
+  // Purchase details
+  amount        Int      // Amount in cents (ZAR)
+  currency      String   @default("ZAR")
+
+  // Payment provider data (PayFast)
+  paymentId       String?  // PayFast pf_payment_id
+  paymentProvider String   @default("payfast")
+
+  // Download token (single-use or limited)
+  downloadToken String   @unique
+  downloadsUsed Int      @default(0)
+  maxDownloads  Int      @default(3) // Allow 3 downloads
+
+  // Revenue sharing: 50% to original submitter
+  submitterShare Int     // Amount in cents for submitter
+  platformShare  Int     // Amount in cents for platform
+
+  // Status: PENDING, COMPLETED, REFUNDED, EXPIRED
+  status        String   @default("PENDING")
+
+  expiresAt     DateTime // Purchase expires after some time
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([downloadToken])
+  @@index([status])
+}
+
+// Scheduled social media publishing (YouTube, TikTok)
+// Videos are published to social media 2 days after upload to SA Leaks
+model ScheduledPublish {
+  id            String   @id @default(cuid())
+
+  // Source media reference
+  fileId        String?  // For regular post files
+  liveMediaId   String?  // For live billboard media
+
+  // Media info (cached for publishing)
+  title         String   // Generated from post content
+  description   String   // Post content + attribution
+  r2Key         String   // R2 storage key for original file
+  mimeType      String
+  duration      Int?     // Video duration in seconds
+
+  // Scheduling
+  scheduledFor  DateTime // When to publish (upload time + 2 days)
+
+  // Platform status: PENDING, PROCESSING, PUBLISHED, FAILED, CANCELLED
+  youtubeStatus   String   @default("PENDING")
+  youtubeVideoId  String?  // YouTube video ID after publish
+  youtubeUrl      String?  // Full YouTube URL
+  youtubeError    String?  // Error message if failed
+
+  tiktokStatus    String   @default("PENDING")
+  tiktokVideoId   String?  // TikTok video ID after publish
+  tiktokUrl       String?  // Full TikTok URL
+  tiktokError     String?  // Error message if failed
+
+  // Revenue tracking
+  youtubeViews    Int      @default(0)
+  youtubeRevenue  Float    @default(0) // Estimated revenue in ZAR
+  tiktokViews     Int      @default(0)
+  tiktokRevenue   Float    @default(0)
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  publishedAt   DateTime? // When actually published
+  updatedAt     DateTime @updatedAt
+
+  @@index([scheduledFor])
+  @@index([youtubeStatus])
+  @@index([tiktokStatus])
+}

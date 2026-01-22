@@ -1,0 +1,48 @@
+# Render Blueprint - SA Leaks Deployment
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Main web service
+  - type: web
+    name: saleaks
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    region: frankfurt # Closest to South Africa
+    plan: free # Start free, upgrade when needed
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # Set manually in Render dashboard
+      - key: ENCRYPTION_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Cloudflare R2
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        value: saleaks-media
+      - key: R2_PUBLIC_URL
+        sync: false
+      # PayFast
+      - key: PAYFAST_MERCHANT_ID
+        sync: false
+      - key: PAYFAST_MERCHANT_KEY
+        sync: false
+      - key: PAYFAST_PASSPHRASE
+        sync: false
+      # App URL (set to your domain)
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+
+databases:
+  # PostgreSQL database for production
+  - name: saleaks-db
+    plan: free # 256MB, good for starting
+    region: frankfurt
