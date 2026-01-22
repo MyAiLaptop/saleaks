@@ -497,7 +497,7 @@ export default function LeakPage() {
                           <PurchaseButton
                             mediaId={file.id}
                             mediaType="file"
-                            price={file.price}
+                            price={file.price ?? undefined}
                           />
                         )}
                       </div>
