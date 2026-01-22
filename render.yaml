@@ -41,8 +41,6 @@ services:
       - key: NEXT_PUBLIC_APP_URL
         sync: false
 
-databases:
-  # PostgreSQL database for production
-  - name: saleaks-db
-    plan: free # 256MB, good for starting
-    region: frankfurt
+# Database: Use external PostgreSQL (Neon.tech free tier recommended)
+# Set DATABASE_URL manually in Render dashboard
+# Example: postgresql://user:pass@host/dbname?sslmode=require
