@@ -21,7 +21,11 @@ import {
   Star,
   CheckCircle,
   Camera,
-  MapPin
+  MapPin,
+  DollarSign,
+  Video,
+  Smartphone,
+  BadgeCheck
 } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
 import { Flag } from '@/components/Flag'
@@ -119,44 +123,88 @@ export default function CountryHomePage() {
               <Flag countryCode={config.code} size="xl" />
               <span className="text-gray-400">{config.name}</span>
             </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-6">
+              <DollarSign className="h-4 w-4 text-green-400" />
+              <span className="text-green-400 font-medium text-sm">Get Paid for Your Content</span>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Expose Corruption.<br />
-              <span className="text-accent-gold">Stay Anonymous.</span>
+              Capture the Moment.<br />
+              <span className="text-accent-gold">Get Rewarded.</span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-              {config.name}&apos;s secure platform for whistleblowers and citizen journalists to report
-              corruption, fraud, and breaking news — without revealing your identity.
+            <p className="text-lg md:text-xl text-gray-200 mb-4 max-w-2xl mx-auto">
+              {config.name}&apos;s platform for citizen journalists. Share breaking news, traffic updates,
+              and live events — and earn money when your content gets views.
+            </p>
+            <p className="text-sm text-gray-400 mb-8 flex items-center justify-center gap-2">
+              <BadgeCheck className="h-4 w-4 text-primary-400" />
+              100% authentic content — camera-only capture, no AI-generated fakes
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href={`/${country}/live`}
-                className="inline-flex items-center justify-center px-8 py-4 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-colors shadow-lg"
+                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold rounded-lg hover:from-red-600 hover:to-orange-600 transition-colors shadow-lg shadow-red-500/25"
               >
                 <Radio className="h-5 w-5 mr-2 animate-pulse" />
-                Live Billboard
-              </Link>
-              <Link
-                href={`/${country}/submit`}
-                className="inline-flex items-center justify-center px-8 py-4 bg-accent-gold text-gray-900 font-semibold rounded-lg hover:bg-yellow-400 transition-colors shadow-lg"
-              >
-                <AlertTriangle className="h-5 w-5 mr-2" />
-                Submit a Leak
+                Go Live Now
               </Link>
               <Link
                 href={`/${country}/browse`}
                 className="inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors border border-white/30"
               >
-                Browse Leaks
-                <ArrowRight className="h-5 w-5 ml-2" />
+                <Eye className="h-5 w-5 mr-2" />
+                Watch Live Feed
+              </Link>
+              <Link
+                href={`/${country}/submit`}
+                className="inline-flex items-center justify-center px-8 py-4 bg-primary-500/80 text-white font-semibold rounded-lg hover:bg-primary-500 transition-colors border border-primary-400/30"
+              >
+                <Shield className="h-5 w-5 mr-2" />
+                Anonymous Tips
               </Link>
             </div>
           </div>
         </section>
 
-      {/* Live Billboard Preview */}
+      {/* Get Paid Section */}
       <section className="py-12 -mt-8 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-ink-900 via-ink-800 to-ink-900 rounded-2xl shadow-2xl overflow-hidden border border-ink-700">
+          <div className="bg-gradient-to-r from-green-900/50 to-emerald-900/50 rounded-2xl p-6 md:p-8 border border-green-500/30 mb-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <DollarSign className="h-8 w-8 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl md:text-2xl font-bold text-white mb-1">
+                    Earn Money for Your Content
+                  </h2>
+                  <p className="text-gray-300">
+                    Upload videos and photos of breaking news. Get paid when your content goes viral.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-center px-4">
+                  <div className="text-2xl font-bold text-green-400">70%</div>
+                  <div className="text-xs text-gray-400">Revenue Share</div>
+                </div>
+                <Link
+                  href={`/${country}/live`}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg"
+                >
+                  <Camera className="h-5 w-5" />
+                  Start Earning
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Billboard Preview */}
+      <section className="py-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-br from-ink-900 via-ink-800 to-ink-900 rounded-2xl shadow-2xl overflow-hidden border border-red-500/30">
             <div className="p-6 md:p-8">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -181,7 +229,7 @@ export default function CountryHomePage() {
               </div>
 
               <p className="text-gray-400 mb-6">
-                Breaking news and live updates from citizen reporters across {config.name}
+                Breaking news and live updates from citizen reporters across {config.name}. Camera-captured, 100% authentic.
               </p>
 
               {livePosts.length > 0 ? (
@@ -293,10 +341,10 @@ export default function CountryHomePage() {
             <div className="bg-black/40 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/10">
               <div className="text-center mb-8">
                 <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                  Platform Impact
+                  Platform Activity
                 </h2>
                 <p className="text-gray-300">
-                  Exposing corruption across {config.name}
+                  Citizen journalism making an impact across {config.name}
                 </p>
               </div>
 
@@ -366,75 +414,110 @@ export default function CountryHomePage() {
         </section>
       )}
 
-      {/* Two Types of Reporting */}
+      {/* Why Citizen Journalism */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Two Ways to Report
+              Why Become a Citizen Journalist?
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              Choose the right format for your story
+              Your phone is your press pass. Capture what&apos;s happening around you.
             </p>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-green-500/30 text-center">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Get Paid</h3>
+              <p className="text-gray-300 text-sm">
+                Earn money when your content gets views. 70% revenue share on premium content.
+              </p>
+            </div>
+
+            <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/30 text-center">
+              <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Video className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Go Viral</h3>
+              <p className="text-gray-300 text-sm">
+                Your breaking news reaches thousands instantly. Build your reputation as a trusted reporter.
+              </p>
+            </div>
+
+            <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-primary-500/30 text-center">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <BadgeCheck className="h-7 w-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">100% Authentic</h3>
+              <p className="text-gray-300 text-sm">
+                Camera-only capture means no AI fakes. Your content is verified real and trusted.
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Live Billboard */}
-            <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-red-500/30">
+            {/* Live Billboard - Primary */}
+            <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 backdrop-blur-sm rounded-2xl p-8 border border-red-500/40 relative overflow-hidden">
+              <div className="absolute top-4 right-4 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
+                EARN MONEY
+              </div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center">
                   <Radio className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white">Live Billboard</h3>
-                  <span className="text-xs text-red-400 font-medium">REAL-TIME UPDATES</span>
+                  <span className="text-xs text-red-400 font-medium">CITIZEN JOURNALISM</span>
                 </div>
               </div>
               <p className="text-gray-300 mb-6">
-                Report breaking news as it happens. Perfect for traffic updates, protests, crime scenes,
-                weather events, and community alerts.
+                Report breaking news as it happens. Traffic jams, protests, accidents, weather events,
+                community alerts — capture it all and get paid for views.
               </p>
               <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2 text-sm text-gray-200">
+                  <CheckCircle className="h-4 w-4 text-green-400" />
+                  Earn 70% revenue share
+                </li>
+                <li className="flex items-center gap-2 text-sm text-gray-200">
+                  <CheckCircle className="h-4 w-4 text-red-400" />
+                  Camera-only — 100% authentic
+                </li>
                 <li className="flex items-center gap-2 text-sm text-gray-200">
                   <CheckCircle className="h-4 w-4 text-red-400" />
                   Instant publication
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-200">
                   <CheckCircle className="h-4 w-4 text-red-400" />
-                  Upload photos &amp; videos
-                </li>
-                <li className="flex items-center gap-2 text-sm text-gray-200">
-                  <CheckCircle className="h-4 w-4 text-red-400" />
-                  Community voting &amp; comments
-                </li>
-                <li className="flex items-center gap-2 text-sm text-gray-200">
-                  <CheckCircle className="h-4 w-4 text-red-400" />
-                  Mark events as &quot;Happening Now&quot;
+                  Build your reporter profile
                 </li>
               </ul>
               <Link
                 href={`/${country}/live`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl hover:from-red-600 hover:to-orange-600 transition-colors font-semibold shadow-lg shadow-red-500/25"
               >
-                <Radio className="h-4 w-4" />
-                Go Live Now
+                <Camera className="h-5 w-5" />
+                Start Reporting
               </Link>
             </div>
 
-            {/* Anonymous Leaks */}
+            {/* Anonymous Leaks - Secondary */}
             <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-primary-500/30">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center">
                   <Shield className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Anonymous Leaks</h3>
-                  <span className="text-xs text-primary-400 font-medium">DEEP INVESTIGATIONS</span>
+                  <h3 className="text-xl font-bold text-white">Anonymous Whistleblowing</h3>
+                  <span className="text-xs text-primary-400 font-medium">EXPOSE CORRUPTION</span>
                 </div>
               </div>
               <p className="text-gray-300 mb-6">
-                Submit detailed reports on corruption, fraud, and misconduct. Upload documents and
-                evidence. Communicate securely with journalists through encrypted messaging.
+                Have evidence of corruption, fraud, or misconduct? Submit detailed reports anonymously.
+                Upload documents and communicate securely with journalists.
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-200">
@@ -447,11 +530,11 @@ export default function CountryHomePage() {
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-200">
                   <CheckCircle className="h-4 w-4 text-primary-400" />
-                  Encrypted messaging with journalists
+                  Encrypted messaging
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-200">
                   <CheckCircle className="h-4 w-4 text-primary-400" />
-                  Metadata automatically stripped
+                  Metadata stripped automatically
                 </li>
               </ul>
               <Link
@@ -459,22 +542,22 @@ export default function CountryHomePage() {
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium"
               >
                 <AlertTriangle className="h-4 w-4" />
-                Submit a Leak
+                Submit Anonymously
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Security Features */}
+      {/* Authenticity & Security Features */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Your Safety is Our Priority
+              Authentic Content. Your Privacy Protected.
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              We have built this platform with your protection in mind. Here&apos;s how we keep you safe.
+              Camera-only capture ensures 100% real content. No AI fakes, no filters, no manipulation.
             </p>
           </div>
 
@@ -524,13 +607,13 @@ export default function CountryHomePage() {
       {/* How It Works */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/10">
+          <div className="bg-gradient-to-br from-red-900/20 to-orange-900/20 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-red-500/30">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                How It Works
+                Start Earning in 60 Seconds
               </h2>
               <p className="text-lg text-gray-300">
-                Submitting a leak is simple and takes just a few minutes.
+                See something newsworthy? Capture it and start earning.
               </p>
             </div>
 
@@ -538,28 +621,32 @@ export default function CountryHomePage() {
               {[
                 {
                   step: '1',
-                  title: 'Choose Category',
-                  description: 'Select the type of corruption or misconduct you want to report.',
+                  title: 'Open Camera',
+                  description: 'Tap "Go Live" and point your phone at the action.',
+                  icon: Smartphone,
                 },
                 {
                   step: '2',
-                  title: 'Write Your Report',
-                  description: 'Describe what happened, who was involved, and provide any details.',
+                  title: 'Capture',
+                  description: 'Take photos or record video directly from your device camera.',
+                  icon: Camera,
                 },
                 {
                   step: '3',
-                  title: 'Attach Evidence',
-                  description: 'Upload documents, images, or videos to support your claims.',
+                  title: 'Add Details',
+                  description: 'Describe what\'s happening and tag your location.',
+                  icon: MapPin,
                 },
                 {
                   step: '4',
-                  title: 'Submit Anonymously',
-                  description: 'Your leak is published instantly. Save your token for messages.',
+                  title: 'Get Paid',
+                  description: 'Earn money as your content gets views and engagement.',
+                  icon: DollarSign,
                 },
               ].map((item) => (
                 <div key={item.step} className="text-center">
-                  <div className="w-16 h-16 bg-primary-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                    {item.step}
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-500/25">
+                    <item.icon className="h-7 w-7" />
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-2">
                     {item.title}
@@ -569,6 +656,16 @@ export default function CountryHomePage() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            <div className="text-center mt-12">
+              <Link
+                href={`/${country}/live`}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold rounded-xl hover:from-red-600 hover:to-orange-600 transition-all shadow-lg shadow-red-500/25 text-lg"
+              >
+                <Radio className="h-5 w-5 animate-pulse" />
+                Go Live Now
+              </Link>
             </div>
           </div>
         </div>
@@ -697,7 +794,7 @@ export default function CountryHomePage() {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/10">
+          <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-red-500/30">
             <Image
               src="/icons/globecon.png"
               alt="Leakpoint"
@@ -705,27 +802,43 @@ export default function CountryHomePage() {
               height={120}
               className="mx-auto mb-6 rounded-2xl"
             />
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-              Ready to Make a Difference?
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              Your Phone. Your Story. Your Earnings.
             </h2>
-            <p className="text-xl text-gray-300 mb-8">
-              Your voice matters. Help expose wrongdoing and hold the powerful accountable.
-              Together, we can build a more transparent {config.name}.
+            <p className="text-xl text-gray-300 mb-4">
+              Join thousands of citizen journalists across {config.name}.
+              Capture breaking news and get paid for your authentic content.
             </p>
+            <div className="flex items-center justify-center gap-4 mb-8 text-sm">
+              <span className="flex items-center gap-1 text-green-400">
+                <DollarSign className="h-4 w-4" />
+                70% Revenue Share
+              </span>
+              <span className="text-gray-500">•</span>
+              <span className="flex items-center gap-1 text-red-400">
+                <BadgeCheck className="h-4 w-4" />
+                100% Authentic
+              </span>
+              <span className="text-gray-500">•</span>
+              <span className="flex items-center gap-1 text-primary-400">
+                <Zap className="h-4 w-4" />
+                Instant Publish
+              </span>
+            </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href={`/${country}/live`}
-                className="inline-flex items-center justify-center px-8 py-4 bg-red-500/80 text-white font-semibold rounded-lg hover:bg-red-500 transition-colors text-lg border border-red-400/30"
+                className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white font-semibold rounded-lg hover:from-red-600 hover:to-orange-600 transition-colors text-lg shadow-lg shadow-red-500/25"
               >
-                <Radio className="h-6 w-6 mr-2" />
-                Report Live News
+                <Camera className="h-6 w-6 mr-2" />
+                Start Earning Now
               </Link>
               <Link
                 href={`/${country}/submit`}
-                className="inline-flex items-center justify-center px-8 py-4 bg-primary-500/80 text-white font-semibold rounded-lg hover:bg-primary-500 transition-colors text-lg border border-primary-400/30"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors text-lg border border-white/30"
               >
-                <AlertTriangle className="h-6 w-6 mr-2" />
-                Submit a Leak
+                <Shield className="h-6 w-6 mr-2" />
+                Anonymous Tips
               </Link>
             </div>
           </div>
