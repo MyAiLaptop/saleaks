@@ -321,6 +321,53 @@ export default function LivePostPage() {
 
           {/* Main Post */}
           <article className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden mb-6 border border-white/10">
+            {/* Media - Full width at top like Facebook */}
+            {post.media && post.media.length > 0 && (
+              <div className="bg-black">
+                {post.media.map((media) => (
+                  <div
+                    key={media.id}
+                    className="relative"
+                  >
+                    {media.mimeType.startsWith('image/') ? (
+                      <img
+                        src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                        alt={media.originalName}
+                        className="w-full max-h-[70vh] object-contain"
+                      />
+                    ) : media.mimeType.startsWith('video/') ? (
+                      <video
+                        src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                        controls
+                        playsInline
+                        className="w-full max-h-[70vh]"
+                      />
+                    ) : null}
+                    {/* Download/Purchase options overlay */}
+                    <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                      <a
+                        href={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                        download={media.originalName}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-black/70 text-white text-sm rounded-lg hover:bg-black/90 transition-colors backdrop-blur-sm"
+                        title="Download with watermark (free)"
+                      >
+                        <Download className="h-4 w-4" />
+                        Free Download
+                      </a>
+                      {media.forSale !== false && (
+                        <PurchaseButton
+                          mediaId={media.id}
+                          mediaType="live"
+                          price={media.price ?? undefined}
+                          className="px-3 py-1.5 text-sm"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="p-6">
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
@@ -367,49 +414,6 @@ export default function LivePostPage() {
                   {post.content}
                 </p>
               </div>
-
-              {/* Media */}
-              {post.media && post.media.length > 0 && (
-                <div className="mb-6 space-y-3">
-                  {post.media.map((media) => (
-                    <div key={media.id} className="relative bg-white/10 rounded-lg overflow-hidden">
-                      {media.mimeType.startsWith('image/') ? (
-                        <img
-                          src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                          alt={media.originalName}
-                          className="w-full max-h-[500px] object-contain"
-                        />
-                      ) : media.mimeType.startsWith('video/') ? (
-                        <video
-                          src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                          controls
-                          className="w-full max-h-[500px]"
-                        />
-                      ) : null}
-                      {/* Download/Purchase options */}
-                      <div className="absolute bottom-2 right-2 flex items-center gap-2">
-                        <a
-                          href={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                          download={media.originalName}
-                          className="flex items-center gap-1 px-2 py-1 bg-black/60 text-white text-xs rounded hover:bg-black/80 transition-colors"
-                          title="Download with watermark (free)"
-                        >
-                          <Download className="h-3 w-3" />
-                          Free
-                        </a>
-                        {media.forSale !== false && (
-                          <PurchaseButton
-                            mediaId={media.id}
-                            mediaType="live"
-                            price={media.price ?? undefined}
-                            className="text-xs px-2 py-1"
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
 
               {/* Actions */}
               <div className="flex items-center justify-between pt-4 border-t border-white/10">

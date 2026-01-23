@@ -993,6 +993,37 @@ export default function LiveBillboardPage() {
                     key={post.id}
                     className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-white/10 hover:border-white/20 transition-all"
                   >
+                    {/* Media - Full width, no padding, shown first like Facebook */}
+                    {post.media && post.media.length > 0 && (
+                      <div className={`${post.media.length === 1 ? '' : 'grid grid-cols-2 gap-0.5'}`}>
+                        {post.media.map((media) => (
+                          <div
+                            key={media.id}
+                            className={`relative bg-black ${
+                              post.media.length === 1
+                                ? 'aspect-[4/5] sm:aspect-[4/3]' // Taller on mobile like Facebook
+                                : 'aspect-square'
+                            }`}
+                          >
+                            {media.mimeType.startsWith('image/') ? (
+                              <img
+                                src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                alt={media.originalName}
+                                className="w-full h-full object-contain"
+                              />
+                            ) : media.mimeType.startsWith('video/') ? (
+                              <video
+                                src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                controls
+                                playsInline
+                                className="w-full h-full object-contain"
+                              />
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div className="p-4">
                       {/* Header */}
                       <div className="flex items-start justify-between mb-3">
@@ -1052,29 +1083,6 @@ export default function LiveBillboardPage() {
                       <p className="text-gray-200 whitespace-pre-wrap mb-3">
                         {post.content}
                       </p>
-
-                      {/* Media */}
-                      {post.media && post.media.length > 0 && (
-                        <div className={`grid gap-2 mb-3 ${post.media.length === 1 ? '' : 'grid-cols-2'}`}>
-                          {post.media.map((media) => (
-                            <div key={media.id} className="relative aspect-video bg-white/10 rounded-lg overflow-hidden">
-                              {media.mimeType.startsWith('image/') ? (
-                                <img
-                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                                  alt={media.originalName}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : media.mimeType.startsWith('video/') ? (
-                                <video
-                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                                  controls
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : null}
-                            </div>
-                          ))}
-                        </div>
-                      )}
 
                       {/* Actions */}
                       <div className="flex items-center justify-between pt-3 border-t border-white/10">
