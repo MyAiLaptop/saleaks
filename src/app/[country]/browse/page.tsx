@@ -158,7 +158,7 @@ export default function CountryBrowsePage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://media.saleaks.co.za/background.png')" }}
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-8">

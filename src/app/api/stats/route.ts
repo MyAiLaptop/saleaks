@@ -1,9 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 // GET /api/stats - Get platform statistics
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams
+    const country = searchParams.get('country') || 'sa' // Filter by country
+
     const [
       totalLeaks,
       totalMessages,
@@ -13,49 +16,57 @@ export async function GET() {
       provinceStats,
       recentLeaksCount,
     ] = await Promise.all([
-      // Total published leaks
-      prisma.post.count({ where: { status: 'PUBLISHED' } }),
+      // Total published leaks for this country
+      prisma.post.count({ where: { status: 'PUBLISHED', country } }),
 
-      // Total messages exchanged
-      prisma.message.count(),
+      // Total messages exchanged (for posts in this country)
+      prisma.message.count({
+        where: { post: { country } }
+      }),
 
-      // Total views across all posts
+      // Total views across all posts in this country
       prisma.post.aggregate({
-        where: { status: 'PUBLISHED' },
+        where: { status: 'PUBLISHED', country },
         _sum: { viewCount: true },
       }),
 
-      // Leaks with evidence files
+      // Leaks with evidence files in this country
       prisma.post.count({
         where: {
           status: 'PUBLISHED',
+          country,
           files: { some: {} },
         },
       }),
 
-      // Leaks per category
+      // Leaks per category for this country
       prisma.category.findMany({
         select: {
           name: true,
           slug: true,
-          _count: { select: { posts: true } },
+          _count: {
+            select: {
+              posts: { where: { status: 'PUBLISHED', country } }
+            }
+          },
         },
         orderBy: { posts: { _count: 'desc' } },
       }),
 
-      // Leaks per province
+      // Leaks per province for this country
       prisma.post.groupBy({
         by: ['province'],
-        where: { status: 'PUBLISHED', province: { not: null } },
+        where: { status: 'PUBLISHED', country, province: { not: null } },
         _count: { province: true },
         orderBy: { _count: { province: 'desc' } },
         take: 10,
       }),
 
-      // Leaks in the last 30 days
+      // Leaks in the last 30 days for this country
       prisma.post.count({
         where: {
           status: 'PUBLISHED',
+          country,
           createdAt: {
             gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
           },

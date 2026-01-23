@@ -99,7 +99,7 @@ export default function SubscribePage() {
     return (
       <div
         className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('https://media.saleaks.co.za/background.png')" }}
+        style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png')" }}
       >
         <div className="bg-black/60 min-h-screen flex items-center justify-center">
           <div className="max-w-md mx-auto px-4 py-16 text-center">
@@ -134,7 +134,7 @@ export default function SubscribePage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://media.saleaks.co.za/background.png')" }}
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-2xl mx-auto px-4 py-12">

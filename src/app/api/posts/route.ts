@@ -8,6 +8,7 @@ import type { PostFilters, ApiResponse, PaginatedResponse, PostWithRelations } f
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
+    const country = searchParams.get('country') || 'sa' // Filter by country
     const filters: PostFilters = {
       categorySlug: searchParams.get('category') || undefined,
       province: searchParams.get('province') || undefined,
@@ -19,6 +20,7 @@ export async function GET(request: NextRequest) {
 
     const where: any = {
       status: 'PUBLISHED',
+      country, // Filter by country - SA sees SA posts, NG sees NG posts
     }
 
     if (filters.categorySlug) {
@@ -100,11 +102,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get country from request body (default to 'sa')
+    const country = body.country || 'sa'
+
     // Sanitize all inputs
     const sanitizedData = {
       title: sanitizeInput(body.title).substring(0, 500),
       content: sanitizeContent(body.content).substring(0, 50000),
       categoryId: body.categoryId,
+      country, // Store the country code
       province: body.province ? sanitizeLocation(body.province) : null,
       city: body.city ? sanitizeLocation(body.city) : null,
       organization: body.organization ? sanitizeInput(body.organization).substring(0, 200) : null,
@@ -139,6 +145,7 @@ export async function POST(request: NextRequest) {
         title: sanitizedData.title,
         content: sanitizedData.content,
         categoryId: sanitizedData.categoryId,
+        country: sanitizedData.country, // Store country for filtering
         province: sanitizedData.province,
         city: sanitizedData.city,
         organization: sanitizedData.organization,

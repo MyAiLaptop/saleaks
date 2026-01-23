@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
+    const country = searchParams.get('country') || 'sa' // Filter by country
     const query = searchParams.get('q') || ''
     const category = searchParams.get('category') || ''
     const province = searchParams.get('province') || ''
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const where: Record<string, unknown> = {
       status: 'PUBLISHED',
+      country, // Filter by country - SA sees SA posts, NG sees NG posts
     }
 
     // Text search across title, content, and organization
@@ -117,6 +119,7 @@ export async function GET(request: NextRequest) {
       by: ['province'],
       where: {
         status: 'PUBLISHED',
+        country, // Only show provinces for this country
         province: { not: null },
       },
       _count: { province: true },
