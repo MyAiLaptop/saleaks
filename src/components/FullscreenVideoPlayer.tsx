@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { X, Volume2, VolumeX, Play, Pause, Send, Heart, ThumbsUp, Flame, Laugh, Angry } from 'lucide-react'
+import { X, Volume2, VolumeX, Play, Pause, Send, Heart, ThumbsUp, Flame, Laugh, Angry, Download } from 'lucide-react'
 
 interface Comment {
   id?: string
@@ -203,6 +203,25 @@ export function FullscreenVideoPlayer({
     setEmojiReactions(prev => [...prev, reaction])
   }
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(src)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `saleaks-video-${postId}.mp4`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Download failed:', error)
+      // Fallback: open in new tab
+      window.open(src, '_blank')
+    }
+  }
+
   return (
     <div
       ref={containerRef}
@@ -259,20 +278,35 @@ export function FullscreenVideoPlayer({
         </button>
       )}
 
-      {/* Volume control */}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation()
-          toggleMute()
-        }}
-        className={`absolute top-4 right-4 p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-all z-10 ${
-          showControls ? 'opacity-100' : 'opacity-0'
-        }`}
-        title={isMuted ? 'Unmute' : 'Mute'}
-      >
-        {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
-      </button>
+      {/* Top right controls */}
+      <div className={`absolute top-4 right-4 flex items-center gap-2 z-10 ${
+        showControls ? 'opacity-100' : 'opacity-0'
+      } transition-all`}>
+        {/* Download button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            handleDownload()
+          }}
+          className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+          title="Download video"
+        >
+          <Download className="h-6 w-6" />
+        </button>
+        {/* Volume control */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleMute()
+          }}
+          className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+          title={isMuted ? 'Unmute' : 'Mute'}
+        >
+          {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+        </button>
+      </div>
 
       {/* Floating comments overlay */}
       <div className="absolute left-4 right-24 bottom-32 top-20 overflow-hidden pointer-events-none">

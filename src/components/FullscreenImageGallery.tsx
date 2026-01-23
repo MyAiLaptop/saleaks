@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download } from 'lucide-react'
 
 interface GalleryImage {
   id: string
@@ -131,6 +131,25 @@ export function FullscreenImageGallery({
     setIsZoomed(!isZoomed)
   }
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(currentImage.src)
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = currentImage.alt || `saleaks-image-${currentIndex + 1}.jpg`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Download failed:', error)
+      // Fallback: open in new tab
+      window.open(currentImage.src, '_blank')
+    }
+  }
+
   // Calculate transform based on swipe
   const getTransform = () => {
     if (isClosing) {
@@ -171,14 +190,24 @@ export function FullscreenImageGallery({
           {currentIndex + 1} / {images.length}
         </div>
 
-        <button
-          type="button"
-          onClick={toggleZoom}
-          className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
-          title={isZoomed ? 'Zoom out' : 'Zoom in'}
-        >
-          {isZoomed ? <ZoomOut className="h-6 w-6" /> : <ZoomIn className="h-6 w-6" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+            title="Download image"
+          >
+            <Download className="h-6 w-6" />
+          </button>
+          <button
+            type="button"
+            onClick={toggleZoom}
+            className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+            title={isZoomed ? 'Zoom out' : 'Zoom in'}
+          >
+            {isZoomed ? <ZoomOut className="h-6 w-6" /> : <ZoomIn className="h-6 w-6" />}
+          </button>
+        </div>
       </div>
 
       {/* Main image area */}

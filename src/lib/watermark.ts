@@ -12,28 +12,32 @@ const WATERMARK_COLOR = 'rgba(255, 255, 255, 0.9)'
  * Creates an SVG watermark overlay for images
  */
 function createWatermarkSvg(width: number, height: number, text: string = WATERMARK_TEXT): Buffer {
-  // Calculate font size based on image dimensions (roughly 5% of the smaller dimension for better visibility)
-  const fontSize = Math.max(24, Math.min(width, height) * 0.05)
-  const padding = fontSize * 0.8
-  const cornerFontSize = Math.max(32, Math.min(width, height) * 0.06)
+  // Calculate font size based on image dimensions - LARGE watermarks (15% of smaller dimension)
+  const fontSize = Math.max(48, Math.min(width, height) * 0.15)
+  const padding = fontSize * 0.5
+  const cornerFontSize = Math.max(64, Math.min(width, height) * 0.18)
 
-  // Create diagonal repeated pattern watermark with larger, more visible text
+  // Create diagonal repeated pattern watermark with LARGE, very visible text
   const svgText = `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="watermarkPattern" x="0" y="0" width="${fontSize * 10}" height="${fontSize * 5}" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
-          <text x="0" y="${fontSize}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="${WATERMARK_COLOR}" opacity="${WATERMARK_OPACITY}">
+        <pattern id="watermarkPattern" x="0" y="0" width="${fontSize * 8}" height="${fontSize * 4}" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
+          <text x="0" y="${fontSize}" font-family="Arial Black, Arial, sans-serif" font-size="${fontSize}" font-weight="900" fill="${WATERMARK_COLOR}" opacity="${WATERMARK_OPACITY}">
             ${text}
           </text>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#watermarkPattern)" />
-      <!-- Large corner watermark for clear visibility -->
-      <text x="${width - padding}" y="${height - padding}" font-family="Arial, sans-serif" font-size="${cornerFontSize}" font-weight="bold" fill="white" text-anchor="end" opacity="0.85" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+      <!-- LARGE corner watermark for clear visibility -->
+      <text x="${width - padding}" y="${height - padding}" font-family="Arial Black, Arial, sans-serif" font-size="${cornerFontSize}" font-weight="900" fill="white" text-anchor="end" opacity="0.9" style="text-shadow: 4px 4px 8px rgba(0,0,0,0.9);">
         ${text}
       </text>
       <!-- Secondary watermark in top-left corner -->
-      <text x="${padding}" y="${cornerFontSize + padding}" font-family="Arial, sans-serif" font-size="${cornerFontSize * 0.7}" font-weight="bold" fill="white" opacity="0.7" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+      <text x="${padding}" y="${cornerFontSize + padding}" font-family="Arial Black, Arial, sans-serif" font-size="${cornerFontSize * 0.8}" font-weight="900" fill="white" opacity="0.8" style="text-shadow: 4px 4px 8px rgba(0,0,0,0.9);">
+        ${text}
+      </text>
+      <!-- Center watermark -->
+      <text x="${width / 2}" y="${height / 2}" font-family="Arial Black, Arial, sans-serif" font-size="${cornerFontSize * 1.5}" font-weight="900" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.5" style="text-shadow: 4px 4px 8px rgba(0,0,0,0.8);">
         ${text}
       </text>
     </svg>
@@ -46,16 +50,17 @@ function createWatermarkSvg(width: number, height: number, text: string = WATERM
  * Creates a centered watermark for thumbnails/smaller images
  */
 function createCenteredWatermarkSvg(width: number, height: number, text: string = WATERMARK_TEXT): Buffer {
-  const fontSize = Math.max(20, Math.min(width, height) * 0.12)
+  // LARGE centered watermark - 35% of smaller dimension
+  const fontSize = Math.max(40, Math.min(width, height) * 0.35)
 
   const svgText = `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
       <!-- Shadow layer for contrast -->
-      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="middle" opacity="0.5" transform="translate(3, 3)">
+      <text x="50%" y="50%" font-family="Arial Black, Arial, sans-serif" font-size="${fontSize}" font-weight="900" fill="black" text-anchor="middle" dominant-baseline="middle" opacity="0.6" transform="translate(4, 4)">
         ${text}
       </text>
       <!-- Main text -->
-      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">
+      <text x="50%" y="50%" font-family="Arial Black, Arial, sans-serif" font-size="${fontSize}" font-weight="900" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.9">
         ${text}
       </text>
     </svg>
@@ -183,32 +188,32 @@ export function getVideoWatermarkArgs(
   const text = options?.text || WATERMARK_TEXT
   const position = options?.position || 'bottomright'
 
-  // FFmpeg drawtext filter for watermark - using larger font sizes for visibility
+  // FFmpeg drawtext filter for watermark - using LARGE font sizes (10x bigger)
   let positionFilter: string
   switch (position) {
     case 'topright':
-      positionFilter = 'x=w-tw-30:y=30'
+      positionFilter = 'x=w-tw-50:y=50'
       break
     case 'center':
       positionFilter = 'x=(w-tw)/2:y=(h-th)/2'
       break
     case 'tiled':
-      // For tiled, we use multiple drawtext filters with larger fonts
+      // For tiled, we use multiple drawtext filters with LARGE fonts
       return [
         '-i', inputPath,
-        '-vf', `drawtext=text='${text}':fontcolor=white@0.7:fontsize=36:x=30:y=30:shadowcolor=black@0.5:shadowx=2:shadowy=2,drawtext=text='${text}':fontcolor=white@0.85:fontsize=48:x=w-tw-30:y=h-th-30:shadowcolor=black@0.6:shadowx=3:shadowy=3,drawtext=text='${text}':fontcolor=white@0.35:fontsize=64:x=(w-tw)/2:y=(h-th)/2`,
+        '-vf', `drawtext=text='${text}':fontcolor=white@0.8:fontsize=h/10:x=50:y=50:shadowcolor=black@0.7:shadowx=4:shadowy=4,drawtext=text='${text}':fontcolor=white@0.9:fontsize=h/8:x=w-tw-50:y=h-th-50:shadowcolor=black@0.8:shadowx=5:shadowy=5,drawtext=text='${text}':fontcolor=white@0.5:fontsize=h/5:x=(w-tw)/2:y=(h-th)/2`,
         '-codec:a', 'copy',
         '-y',
         outputPath
       ]
     case 'bottomright':
     default:
-      positionFilter = 'x=w-tw-30:y=h-th-30'
+      positionFilter = 'x=w-tw-50:y=h-th-50'
   }
 
   return [
     '-i', inputPath,
-    '-vf', `drawtext=text='${text}':fontcolor=white@0.85:fontsize=48:${positionFilter}:shadowcolor=black@0.6:shadowx=3:shadowy=3`,
+    '-vf', `drawtext=text='${text}':fontcolor=white@0.9:fontsize=h/8:${positionFilter}:shadowcolor=black@0.8:shadowx=5:shadowy=5`,
     '-codec:a', 'copy',
     '-y',
     outputPath
@@ -227,19 +232,19 @@ export async function applyVideoWatermark(
   const { spawn } = await import('child_process')
 
   return new Promise((resolve, reject) => {
-    // FFmpeg command with multiple large, visible watermarks
-    // - Large watermark bottom-right (main, very visible)
-    // - Medium watermark top-left
-    // - Semi-transparent watermark in center
+    // FFmpeg command with LARGE, very visible watermarks
+    // - Very large watermark bottom-right (main)
+    // - Large watermark top-left
+    // - Semi-transparent HUGE watermark in center
     const args = [
       '-i', inputPath,
       '-vf', [
-        // Large bottom-right watermark (main)
-        `drawtext=text='${text}':fontcolor=white@0.85:fontsize=48:x=w-tw-30:y=h-th-30:shadowcolor=black@0.6:shadowx=3:shadowy=3`,
-        // Medium top-left watermark
-        `drawtext=text='${text}':fontcolor=white@0.7:fontsize=36:x=30:y=40:shadowcolor=black@0.5:shadowx=2:shadowy=2`,
-        // Semi-transparent center watermark (diagonal)
-        `drawtext=text='${text}':fontcolor=white@0.35:fontsize=72:x=(w-tw)/2:y=(h-th)/2:shadowcolor=black@0.2:shadowx=2:shadowy=2`
+        // VERY LARGE bottom-right watermark (main) - 10x bigger
+        `drawtext=text='${text}':fontcolor=white@0.9:fontsize=h/8:x=w-tw-50:y=h-th-50:shadowcolor=black@0.8:shadowx=5:shadowy=5`,
+        // LARGE top-left watermark
+        `drawtext=text='${text}':fontcolor=white@0.8:fontsize=h/10:x=50:y=80:shadowcolor=black@0.7:shadowx=4:shadowy=4`,
+        // Semi-transparent HUGE center watermark
+        `drawtext=text='${text}':fontcolor=white@0.5:fontsize=h/5:x=(w-tw)/2:y=(h-th)/2:shadowcolor=black@0.3:shadowx=4:shadowy=4`
       ].join(','),
       '-codec:a', 'copy',
       '-y',
