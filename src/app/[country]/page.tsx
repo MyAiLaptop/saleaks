@@ -101,10 +101,13 @@ export default function CountryHomePage() {
     )
   }
 
+  // Use country-specific background or default
+  const backgroundUrl = config.backgroundImage || 'https://media.saleaks.co.za/background.png'
+
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://media.saleaks.co.za/background.png')" }}
+      style={{ backgroundImage: `url('${backgroundUrl}')` }}
     >
       {/* Dark overlay for readability */}
       <div className="bg-black/60 min-h-screen">
