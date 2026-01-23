@@ -53,6 +53,8 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+# Copy production server that serves static files from public folder
+COPY --from=builder /app/production-server.js ./production-server.js
 
 # Create directories for temporary files (video processing)
 RUN mkdir -p /app/tmp && chown nextjs:nodejs /app/tmp
@@ -69,4 +71,4 @@ COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Run database migrations and start the server
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js db push && node server.js"]
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js db push && node production-server.js"]
