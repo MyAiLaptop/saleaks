@@ -252,7 +252,7 @@ export default function LivePostPage() {
     return (
       <div
         className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/uploads/background.png')" }}
+        style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
       >
         <div className="bg-black/60 min-h-screen flex items-center justify-center">
           <Loader2 className="h-8 w-8 text-primary-500 animate-spin" />
@@ -265,7 +265,7 @@ export default function LivePostPage() {
     return (
       <div
         className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/uploads/background.png')" }}
+        style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
       >
         <div className="bg-black/60 min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -289,7 +289,7 @@ export default function LivePostPage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/uploads/background.png')" }}
+      style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-3xl mx-auto px-4 py-6">

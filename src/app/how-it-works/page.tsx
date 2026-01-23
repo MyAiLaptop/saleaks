@@ -15,7 +15,7 @@ export default function HowItWorksPage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/uploads/background.png')" }}
+      style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 py-12">

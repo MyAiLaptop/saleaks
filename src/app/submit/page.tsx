@@ -133,7 +133,7 @@ export default function SubmitPage() {
     return (
       <div
         className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/uploads/background.png')" }}
+        style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
       >
         <div className="bg-black/60 min-h-screen">
           <div className="max-w-2xl mx-auto px-4 py-16">
@@ -224,7 +224,7 @@ export default function SubmitPage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/uploads/background.png')" }}
+      style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-3xl mx-auto px-4 py-12">

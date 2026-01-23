@@ -102,7 +102,7 @@ export default function HomePage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/uploads/background.png')" }}
+      style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
     >
       {/* Dark overlay for readability */}
       <div className="bg-black/60 min-h-screen">
