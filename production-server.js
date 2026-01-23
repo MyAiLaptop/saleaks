@@ -1,15 +1,10 @@
 const { createServer } = require('http')
 const { parse } = require('url')
-const next = require('next')
-const fs = require('fs')
 const path = require('path')
+const fs = require('fs')
 
-const dev = false
 const hostname = process.env.HOSTNAME || '0.0.0.0'
 const port = parseInt(process.env.PORT || '3000', 10)
-
-const app = next({ dev, hostname, port })
-const handle = app.getRequestHandler()
 
 // MIME types for static files
 const mimeTypes = {
@@ -33,49 +28,63 @@ const mimeTypes = {
   '.pdf': 'application/pdf',
 }
 
-// Serve static files from public directory
-function serveStatic(req, res, filePath) {
-  const ext = path.extname(filePath).toLowerCase()
-  const contentType = mimeTypes[ext] || 'application/octet-stream'
+// Try to serve static file, returns true if served
+function tryServeStatic(req, res, pathname) {
+  const publicPath = path.join(__dirname, 'public', pathname)
 
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      return false
+  try {
+    if (fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
+      const ext = path.extname(publicPath).toLowerCase()
+      const contentType = mimeTypes[ext] || 'application/octet-stream'
+      const data = fs.readFileSync(publicPath)
+
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=31536000, immutable'
+      })
+      res.end(data)
+      return true
     }
-    res.writeHead(200, {
-      'Content-Type': contentType,
-      'Cache-Control': 'public, max-age=31536000, immutable'
-    })
-    res.end(data)
-    return true
-  })
-  return true
+  } catch (e) {
+    // File not found or error, let Next.js handle it
+  }
+  return false
 }
 
-app.prepare().then(() => {
-  createServer(async (req, res) => {
-    try {
-      const parsedUrl = parse(req.url, true)
-      const { pathname } = parsedUrl
+// Import the standalone Next.js handler
+const NextServer = require('next/dist/server/next-server').default
+const nextConfig = require('./.next/required-server-files.json').config
 
-      // Check if request is for a static file in /public
-      // Static files are served from paths like /uploads/*, /images/*, etc.
-      if (pathname && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
-        const publicPath = path.join(__dirname, 'public', pathname)
+const nextServer = new NextServer({
+  hostname,
+  port,
+  dir: __dirname,
+  dev: false,
+  customServer: true,
+  conf: nextConfig,
+})
 
-        // Check if file exists in public folder
-        if (fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
-          return serveStatic(req, res, publicPath)
-        }
+const handler = nextServer.getRequestHandler()
+
+createServer(async (req, res) => {
+  try {
+    const parsedUrl = parse(req.url, true)
+    const { pathname } = parsedUrl
+
+    // Try to serve static files from public folder first
+    if (pathname && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+      if (tryServeStatic(req, res, pathname)) {
+        return
       }
-
-      // Let Next.js handle everything else
-      await handle(req, res, parsedUrl)
-    } catch (err) {
-      res.statusCode = 500
-      res.end('Internal server error')
     }
-  }).listen(port, hostname, () => {
-    console.log(`> Ready on http://${hostname}:${port}`)
-  })
+
+    // Let Next.js handle everything else
+    await handler(req, res, parsedUrl)
+  } catch (err) {
+    console.error('Error:', err)
+    res.statusCode = 500
+    res.end('Internal server error')
+  }
+}).listen(port, hostname, () => {
+  console.log(`> Ready on http://${hostname}:${port}`)
 })
