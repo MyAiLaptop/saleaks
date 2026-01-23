@@ -12,15 +12,21 @@ export const maxDuration = 300
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB for videos
 const MAX_FILES = 4
-const ALLOWED_TYPES = [
-  'image/jpeg',
-  'image/png',
-  'image/gif',
-  'image/webp',
-  'video/mp4',
-  'video/webm',
-  'video/quicktime',
-]
+// Base MIME types (without codec info)
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-matroska']
+
+// Helper to check if file type is allowed (handles codec suffixes like video/webm;codecs=vp9)
+function isAllowedType(mimeType: string): boolean {
+  // Get base type without codec info (e.g., "video/webm;codecs=vp9" -> "video/webm")
+  const baseType = mimeType.split(';')[0].toLowerCase()
+  return ALLOWED_IMAGE_TYPES.includes(baseType) || ALLOWED_VIDEO_TYPES.includes(baseType)
+}
+
+// Get clean base MIME type for storage
+function getBaseMimeType(mimeType: string): string {
+  return mimeType.split(';')[0].toLowerCase()
+}
 
 // 2 days delay for social media publishing
 const SOCIAL_PUBLISH_DELAY_MS = 2 * 24 * 60 * 60 * 1000
@@ -87,11 +93,15 @@ export async function POST(
 
       console.log(`[Media Upload] Processing file ${i + 1}/${files.length}: ${file.name} (${file.type}, ${(file.size / 1024 / 1024).toFixed(2)}MB)`)
 
-      // Validate file type
-      if (!ALLOWED_TYPES.includes(file.type)) {
+      // Validate file type (handles codec suffixes like video/webm;codecs=vp9)
+      if (!isAllowedType(file.type)) {
         console.log(`[Media Upload] Skipping file - invalid type: ${file.type}`)
         continue
       }
+
+      // Get clean base MIME type for storage and processing
+      const baseMimeType = getBaseMimeType(file.type)
+      console.log(`[Media Upload] Base MIME type: ${baseMimeType}`)
 
       // Validate file size
       if (file.size > MAX_FILE_SIZE) {
@@ -127,7 +137,7 @@ export async function POST(
           postType: 'live',
           postId: post.id,
           folder: 'originals',
-          mimeType: file.type,
+          mimeType: baseMimeType, // Use clean MIME type without codec info
         })
         console.log(`[Media Upload] Original uploaded to R2 in ${Date.now() - uploadStartTime}ms: ${originalResult.key}`)
         r2OriginalKey = originalResult.key
@@ -145,7 +155,7 @@ export async function POST(
               postType: 'live',
               postId: post.id,
               folder: 'watermarked',
-              mimeType: file.type,
+              mimeType: baseMimeType, // Use clean MIME type without codec info
             })
             r2WatermarkedKey = wmResult.key
             watermarkedPath = wmResult.url
@@ -188,7 +198,7 @@ export async function POST(
                 postType: 'live',
                 postId: post.id,
                 folder: 'watermarked',
-                mimeType: file.type,
+                mimeType: baseMimeType, // Use clean MIME type without codec info
               })
               console.log(`[Media Upload] Watermarked video uploaded in ${Date.now() - wmUploadStartTime}ms: ${wmResult.key}`)
               r2WatermarkedKey = wmResult.key
@@ -253,7 +263,7 @@ export async function POST(
           postId: post.id,
           filename,
           originalName: file.name.substring(0, 255),
-          mimeType: file.type,
+          mimeType: baseMimeType, // Use clean MIME type without codec info
           size: file.size,
           path: mediaPath,
           watermarkedPath: watermarkedPath || mediaPath, // Ensure watermarkedPath is always set
@@ -265,7 +275,7 @@ export async function POST(
       })
 
       // Schedule video for social media publishing (2 days later)
-      if (isVideo(file.type) && r2OriginalKey) {
+      if (isVideo(baseMimeType) && r2OriginalKey) {
         try {
           await prisma.scheduledPublish.create({
             data: {
@@ -273,7 +283,7 @@ export async function POST(
               title: `SA Leaks: ${post.category} - ${post.content.substring(0, 50)}...`,
               description: `${post.content}\n\nOriginal footage from SA Leaks - South Africa's citizen journalism platform.\n\n#SALeaks #SouthAfrica #${post.category}`,
               r2Key: r2OriginalKey,
-              mimeType: file.type,
+              mimeType: baseMimeType, // Use clean MIME type without codec info
               scheduledFor: new Date(Date.now() + SOCIAL_PUBLISH_DELAY_MS),
             },
           })
