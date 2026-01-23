@@ -23,7 +23,6 @@ export interface CountryConfig {
   provinces?: string[] // states/provinces/regions
   timezone: string
   enabled: boolean
-  backgroundImage?: string // URL to country-specific background image
 }
 
 export const countries: Record<string, CountryConfig> = {
@@ -61,7 +60,6 @@ export const countries: Record<string, CountryConfig> = {
     ],
     timezone: 'Africa/Johannesburg',
     enabled: true,
-    backgroundImage: 'https://media.saleaks.co.za/background.png',
   },
   ng: {
     code: 'NG',
@@ -96,7 +94,6 @@ export const countries: Record<string, CountryConfig> = {
     ],
     timezone: 'Africa/Lagos',
     enabled: true,
-    backgroundImage: 'https://media.saleaks.co.za/backgroundnigeria.png',
   },
   ke: {
     code: 'KE',

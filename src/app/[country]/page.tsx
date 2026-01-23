@@ -101,8 +101,8 @@ export default function CountryHomePage() {
     )
   }
 
-  // Use country-specific background or default
-  const backgroundUrl = config.backgroundImage || 'https://media.saleaks.co.za/background.png'
+  // Global background for all countries
+  const backgroundUrl = 'https://media.saleaks.co.za/global_back_ground.png'
 
   return (
     <div
