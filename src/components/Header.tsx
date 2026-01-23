@@ -32,7 +32,7 @@ export function Header() {
           {/* Logo */}
           <Link href={`/${country}`} className="flex items-center gap-2">
             <Image
-              src="/icons/icon-512x512.png"
+              src="/icons/globecon.png"
               alt="Leakpoint"
               width={56}
               height={56}

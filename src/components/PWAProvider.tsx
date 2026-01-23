@@ -152,7 +152,7 @@ export function PWAProvider() {
           <div className="max-w-4xl mx-auto flex items-center gap-4">
             <div className="flex-shrink-0">
               <Image
-                src="/icons/icon-512x512.png"
+                src="/icons/globecon.png"
                 alt="SA Leaks"
                 width={56}
                 height={56}
@@ -195,7 +195,7 @@ export function PWAProvider() {
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
               <Image
-                src="/icons/icon-512x512.png"
+                src="/icons/globecon.png"
                 alt="SA Leaks"
                 width={56}
                 height={56}

@@ -698,7 +698,7 @@ export default function CountryHomePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-black/50 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-white/10">
             <Image
-              src="/icons/icon-512x512.png"
+              src="/icons/globecon.png"
               alt="Leakpoint"
               width={120}
               height={120}
