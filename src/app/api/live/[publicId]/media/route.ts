@@ -7,6 +7,9 @@ import { nanoid } from 'nanoid'
 import { applyImageWatermark, applyVideoWatermark, isImage, isVideo, isFFmpegAvailable } from '@/lib/watermark'
 import { uploadToR2, isR2Configured } from '@/lib/r2-storage'
 
+// Allow up to 5 minutes for video processing (watermarking + upload)
+export const maxDuration = 300
+
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB for videos
 const MAX_FILES = 4
 const ALLOWED_TYPES = [
