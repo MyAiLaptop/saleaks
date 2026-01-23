@@ -17,6 +17,26 @@ const mimeTypes: Record<string, string> = {
   '.pdf': 'application/pdf',
 }
 
+// Try multiple possible locations for the public folder
+// This handles both development and Docker standalone mode
+function findPublicFile(filePath: string): string | null {
+  const possiblePaths = [
+    // Development / normal mode
+    path.join(process.cwd(), 'public', filePath),
+    // Docker standalone - absolute path
+    path.join('/app', 'public', filePath),
+    // Docker standalone - relative to server
+    path.join('/app/public', filePath),
+  ]
+
+  for (const p of possiblePaths) {
+    if (existsSync(p)) {
+      return p
+    }
+  }
+  return null
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -29,11 +49,12 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid path' }, { status: 400 })
   }
 
-  // Build the full file path
-  const fullPath = path.join(process.cwd(), 'public', filePath)
+  // Find the file
+  const fullPath = findPublicFile(filePath)
 
-  // Check if file exists
-  if (!existsSync(fullPath)) {
+  if (!fullPath) {
+    console.error(`Static file not found: ${filePath}`)
+    console.error(`CWD: ${process.cwd()}`)
     return NextResponse.json({ error: 'File not found' }, { status: 404 })
   }
 
@@ -49,6 +70,7 @@ export async function GET(
       },
     })
   } catch (error) {
+    console.error(`Error reading file: ${fullPath}`, error)
     return NextResponse.json({ error: 'Failed to read file' }, { status: 500 })
   }
 }
