@@ -41,6 +41,10 @@ prisma/migrations
 # Uploads - NEVER commit user uploads
 public/uploads/*
 !public/uploads/.gitkeep
+# But DO commit site assets (background, banners)
+!public/uploads/background.png
+!public/uploads/home_page_banner.png
+!public/uploads/live_billboard.png
 
 # IDE
 .idea
