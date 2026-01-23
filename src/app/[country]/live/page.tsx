@@ -34,9 +34,9 @@ import {
   DollarSign,
   Lock,
   VideoIcon,
-  Flag,
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
+import { Flag } from '@/components/Flag'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenVideoPlayer } from '@/components/FullscreenVideoPlayer'
 import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
@@ -582,7 +582,7 @@ export default function CountryLiveBillboardPage() {
               <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2">
                 <Radio className="h-7 w-7 text-red-500 animate-pulse" />
                 Live Billboard
-                <span className="text-xl">{config.flag}</span>
+                <Flag countryCode={config.code} size="md" />
               </h1>
               <p className="text-gray-300 mt-1">
                 Real-time news from citizens across {config.name}
@@ -1317,7 +1317,7 @@ export default function CountryLiveBillboardPage() {
                             className="text-sm text-gray-400 hover:text-red-400 transition-colors flex items-center gap-1"
                             title="Report this post"
                           >
-                            <Flag className="h-4 w-4" />
+                            <AlertTriangle className="h-4 w-4" />
                           </button>
 
                           {/* Share button */}
@@ -1508,7 +1508,7 @@ export default function CountryLiveBillboardPage() {
               <>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                    <Flag className="h-5 w-5 text-red-400" />
+                    <AlertTriangle className="h-5 w-5 text-red-400" />
                     Report Content
                   </h3>
                   <button
@@ -1599,7 +1599,7 @@ export default function CountryLiveBillboardPage() {
                       </>
                     ) : (
                       <>
-                        <Flag className="h-4 w-4" />
+                        <AlertTriangle className="h-4 w-4" />
                         Submit Report
                       </>
                     )}

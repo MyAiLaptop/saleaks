@@ -19,6 +19,7 @@
     "@aws-sdk/client-s3": "^3.972.0",
     "@aws-sdk/s3-request-presigner": "^3.972.0",
     "@prisma/client": "^5.10.0",
+    "country-flag-icons": "^1.6.8",
     "crypto-js": "^4.2.0",
     "exif-parser": "^0.1.12",
     "lucide-react": "^0.344.0",

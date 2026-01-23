@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Globe, ArrowRight, Shield, Radio, AlertTriangle } from 'lucide-react'
 import { countries, getEnabledCountries, DEFAULT_COUNTRY } from '@/lib/countries'
+import { Flag } from '@/components/Flag'
 
 export default function GlobalLandingPage() {
   const router = useRouter()
@@ -123,7 +124,7 @@ export default function GlobalLandingPage() {
                     onClick={() => handleCountrySelect(code)}
                     className="flex items-center gap-4 p-4 bg-ink-800 hover:bg-ink-700 rounded-xl border border-ink-600 hover:border-primary-500 transition-all group"
                   >
-                    <span className="text-4xl">{config.flag}</span>
+                    <Flag countryCode={config.code} size="lg" />
                     <div className="text-left flex-1">
                       <div className="text-white font-semibold group-hover:text-primary-400 transition-colors">
                         {config.name}
@@ -150,7 +151,7 @@ export default function GlobalLandingPage() {
                           key={code}
                           className="flex items-center gap-2 px-3 py-2 bg-ink-800/50 rounded-lg text-gray-500 text-sm"
                         >
-                          <span>{config.flag}</span>
+                          <Flag countryCode={config.code} size="sm" />
                           <span>{config.name}</span>
                         </div>
                       ))}
@@ -199,7 +200,7 @@ export default function GlobalLandingPage() {
                 href={`/${DEFAULT_COUNTRY}`}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-xl hover:bg-primary-600 transition-colors font-medium"
               >
-                <span className="text-xl">{countries[DEFAULT_COUNTRY].flag}</span>
+                <Flag countryCode={countries[DEFAULT_COUNTRY].code} size="md" />
                 {countries[DEFAULT_COUNTRY].name}
                 <ArrowRight className="h-4 w-4" />
               </Link>

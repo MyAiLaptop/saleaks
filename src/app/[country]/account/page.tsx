@@ -6,6 +6,7 @@ import { SubmitterDashboard } from '@/components/SubmitterDashboard'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useCountry } from '@/lib/country-context'
+import { Flag } from '@/components/Flag'
 
 export default function CountryAccountPage() {
   const { country, config } = useCountry()
@@ -46,7 +47,7 @@ export default function CountryAccountPage() {
       <header className="border-b border-ink-800">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href={`/${country}`} className="text-xl font-bold text-white flex items-center gap-2">
-            <span className="text-xl">{config.flag}</span>
+            <Flag countryCode={config.code} size="md" />
             Leak<span className="text-primary-400">point</span>
           </Link>
           <Link href={`/${country}/live`} className="text-gray-400 hover:text-white transition-colors">

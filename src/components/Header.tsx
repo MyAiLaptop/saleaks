@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio, User, Globe } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
+import { Flag } from '@/components/Flag'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -24,7 +25,9 @@ export function Header() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-[100] bg-black/95 backdrop-blur-md shadow-lg border-b border-white/10 isolate"
+      className={`fixed top-0 left-0 right-0 z-[100] shadow-lg border-b border-white/10 isolate ${
+        isMenuOpen ? 'bg-black' : 'bg-black/95 backdrop-blur-md'
+      }`}
       suppressHydrationWarning
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,7 +42,7 @@ export function Header() {
               className="rounded-lg"
               priority
             />
-            <span className="text-xl">{config.flag}</span>
+            <Flag countryCode={config.code} size="md" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -108,7 +111,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mounted && isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/10">
+          <div className="md:hidden py-4 border-t border-white/10 bg-black">
             <nav className="flex flex-col space-y-4">
               <Link
                 href={`/${country}/live`}

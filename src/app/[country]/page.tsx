@@ -24,6 +24,7 @@ import {
   MapPin
 } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
+import { Flag } from '@/components/Flag'
 
 interface Stats {
   totalLeaks: number
@@ -115,7 +116,7 @@ export default function CountryHomePage() {
         <section className="py-16 md:py-24">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <span className="text-4xl">{config.flag}</span>
+              <Flag countryCode={config.code} size="xl" />
               <span className="text-gray-400">{config.name}</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
