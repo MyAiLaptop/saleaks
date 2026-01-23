@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio } from 'lucide-react'
+import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio, User } from 'lucide-react'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -70,6 +70,13 @@ export function Header() {
               <Bell className="h-4 w-4" />
               <span>Alerts</span>
             </Link>
+            <Link
+              href="/account"
+              className="flex items-center space-x-1 text-gray-300 hover:text-primary-400 transition-colors"
+            >
+              <User className="h-4 w-4" />
+              <span>Account</span>
+            </Link>
           </nav>
 
           {/* Mobile menu button */}
@@ -126,6 +133,14 @@ export function Header() {
               >
                 <Bell className="h-5 w-5" />
                 <span>Get Alerts</span>
+              </Link>
+              <Link
+                href="/account"
+                className="flex items-center space-x-2 text-gray-300 hover:text-primary-400"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <User className="h-5 w-5" />
+                <span>My Account</span>
               </Link>
             </nav>
           </div>
