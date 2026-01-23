@@ -35,6 +35,7 @@ import {
   DollarSign,
   Lock,
   VideoIcon,
+  Flag,
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
@@ -156,6 +157,13 @@ export default function LiveBillboardPage() {
   const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set())
   const [newComments, setNewComments] = useState<Record<string, string>>({})
   const [postingComment, setPostingComment] = useState<Set<string>>(new Set())
+
+  // Report content state
+  const [reportModal, setReportModal] = useState<{ postId: string | null; isOpen: boolean }>({ postId: null, isOpen: false })
+  const [reportReason, setReportReason] = useState<string>('')
+  const [reportDescription, setReportDescription] = useState<string>('')
+  const [submittingReport, setSubmittingReport] = useState(false)
+  const [reportSuccess, setReportSuccess] = useState(false)
 
   // Fetch posts
   const fetchPosts = useCallback(async (isRefresh = false, isPoll = false) => {
@@ -498,6 +506,45 @@ export default function LiveBillboardPage() {
         next.delete(publicId)
         return next
       })
+    }
+  }
+
+  // Submit report
+  const handleSubmitReport = async () => {
+    if (!reportModal.postId || !reportReason || submittingReport) return
+
+    setSubmittingReport(true)
+    try {
+      // Generate a simple fingerprint for duplicate report prevention
+      const fingerprint = btoa(navigator.userAgent + screen.width + screen.height).slice(0, 32)
+
+      const res = await fetch(`/api/live/${reportModal.postId}/report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reason: reportReason,
+          description: reportDescription || undefined,
+          fingerprint,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        setReportSuccess(true)
+        setTimeout(() => {
+          setReportModal({ postId: null, isOpen: false })
+          setReportReason('')
+          setReportDescription('')
+          setReportSuccess(false)
+        }, 2000)
+      } else {
+        setError(data.error || 'Failed to submit report')
+      }
+    } catch {
+      setError('Failed to submit report')
+    } finally {
+      setSubmittingReport(false)
     }
   }
 
@@ -1075,9 +1122,13 @@ export default function LiveBillboardPage() {
                 return (
                   <article
                     key={post.id}
-                    className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-white/10 hover:border-white/20 transition-all"
+                    className={`bg-black/40 backdrop-blur-sm shadow-lg overflow-hidden border-white/10 hover:border-white/20 transition-all ${
+                      post.media && post.media.length > 0
+                        ? '-mx-4 sm:mx-0 sm:rounded-xl border-y sm:border' // Full width on mobile, rounded on desktop
+                        : 'rounded-xl border'
+                    }`}
                   >
-                    {/* Media - Full width, no padding, shown first like Facebook */}
+                    {/* Media - Full width edge-to-edge like Facebook */}
                     {post.media && post.media.length > 0 && (
                       <div className={`${post.media.length === 1 ? '' : 'grid grid-cols-2 gap-0.5'}`}>
                         {post.media.map((media) => (
@@ -1085,7 +1136,7 @@ export default function LiveBillboardPage() {
                             key={media.id}
                             className={`relative bg-black ${
                               post.media.length === 1
-                                ? 'aspect-[4/5] sm:aspect-[4/3]' // Taller on mobile like Facebook
+                                ? 'aspect-[4/5] sm:aspect-[16/9]' // Taller on mobile, wider on desktop
                                 : 'aspect-square'
                             }`}
                           >
@@ -1093,7 +1144,7 @@ export default function LiveBillboardPage() {
                               <img
                                 src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                                 alt={media.originalName}
-                                className="w-full h-full object-contain"
+                                className="w-full h-full object-cover"
                                 loading="lazy"
                               />
                             ) : media.mimeType.startsWith('video/') ? (
@@ -1228,17 +1279,29 @@ export default function LiveBillboardPage() {
                           </span>
                         </div>
 
-                        {/* Share button */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${window.location.origin}/live/${post.publicId}`)
-                          }}
-                          className="text-sm text-gray-400 hover:text-primary-400 transition-colors"
-                          title="Copy link"
-                        >
-                          Share
-                        </button>
+                        <div className="flex items-center gap-3">
+                          {/* Report button */}
+                          <button
+                            type="button"
+                            onClick={() => setReportModal({ postId: post.publicId, isOpen: true })}
+                            className="text-sm text-gray-400 hover:text-red-400 transition-colors flex items-center gap-1"
+                            title="Report this post"
+                          >
+                            <Flag className="h-4 w-4" />
+                          </button>
+
+                          {/* Share button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/live/${post.publicId}`)
+                            }}
+                            className="text-sm text-gray-400 hover:text-primary-400 transition-colors"
+                            title="Copy link"
+                          >
+                            Share
+                          </button>
+                        </div>
                       </div>
 
                       {/* Inline Comments Section (Facebook-style) */}
@@ -1399,6 +1462,125 @@ export default function LiveBillboardPage() {
           onCancel={() => setShowVideoRecorder(false)}
           maxDuration={300}
         />
+      )}
+
+      {/* Report Modal */}
+      {reportModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-ink-800 rounded-2xl p-6 max-w-md w-full border border-white/10">
+            {reportSuccess ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="h-8 w-8 text-green-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Report Submitted</h3>
+                <p className="text-gray-400">Thank you for helping keep our community safe.</p>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <Flag className="h-5 w-5 text-red-400" />
+                    Report Content
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReportModal({ postId: null, isOpen: false })
+                      setReportReason('')
+                      setReportDescription('')
+                    }}
+                    className="text-gray-400 hover:text-white transition-colors"
+                    title="Close"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+
+                <p className="text-gray-400 text-sm mb-4">
+                  Help us understand what&apos;s wrong with this post. Your report is anonymous.
+                </p>
+
+                <div className="space-y-3 mb-6">
+                  {[
+                    { id: 'NSFW', label: 'Sexual or adult content', icon: '🔞' },
+                    { id: 'VIOLENCE', label: 'Violence or graphic content', icon: '⚠️' },
+                    { id: 'SPAM', label: 'Spam or promotional', icon: '📢' },
+                    { id: 'FAKE', label: 'Fake news or AI-generated', icon: '🤖' },
+                    { id: 'HARASSMENT', label: 'Harassment or bullying', icon: '😠' },
+                    { id: 'OTHER', label: 'Other violation', icon: '❓' },
+                  ].map((reason) => (
+                    <label
+                      key={reason.id}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+                        reportReason === reason.id
+                          ? 'bg-red-500/20 ring-2 ring-red-500'
+                          : 'bg-white/5 hover:bg-white/10'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="reportReason"
+                        value={reason.id}
+                        checked={reportReason === reason.id}
+                        onChange={(e) => setReportReason(e.target.value)}
+                        className="hidden"
+                      />
+                      <span className="text-lg">{reason.icon}</span>
+                      <span className="text-gray-200">{reason.label}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Additional details (optional)
+                  </label>
+                  <textarea
+                    value={reportDescription}
+                    onChange={(e) => setReportDescription(e.target.value)}
+                    placeholder="Provide more context about this report..."
+                    rows={3}
+                    maxLength={500}
+                    className="w-full px-3 py-2 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-500 text-sm resize-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReportModal({ postId: null, isOpen: false })
+                      setReportReason('')
+                      setReportDescription('')
+                    }}
+                    className="flex-1 py-3 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmitReport}
+                    disabled={!reportReason || submittingReport}
+                    className="flex-1 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                  >
+                    {submittingReport ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Flag className="h-4 w-4" />
+                        Submit Report
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   )

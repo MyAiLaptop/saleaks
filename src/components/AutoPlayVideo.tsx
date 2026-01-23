@@ -88,7 +88,7 @@ export function AutoPlayVideo({ src, className = '', poster }: AutoPlayVideoProp
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-full object-contain cursor-pointer"
+        className="w-full h-full object-cover cursor-pointer"
         playsInline
         muted={isMuted}
         loop
@@ -115,6 +115,7 @@ export function AutoPlayVideo({ src, className = '', poster }: AutoPlayVideoProp
           type="button"
           onClick={handlePlay}
           className="absolute inset-0 flex items-center justify-center bg-black/30"
+          title="Play video"
         >
           <div className="p-4 bg-white/20 rounded-full backdrop-blur-sm">
             <Play className="h-12 w-12 text-white fill-white" />

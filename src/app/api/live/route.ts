@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { sanitizeInput } from '@/lib/sanitize'
 import { encryptEmail } from '@/lib/crypto'
 import { nanoid } from 'nanoid'
+import { moderateTextContent } from '@/lib/content-moderation'
 
 // Billboard categories
 const BILLBOARD_CATEGORIES = [
@@ -101,8 +102,11 @@ export async function GET(request: NextRequest) {
       province?: string
       isHappeningNow?: boolean
       createdAt?: { gt?: Date; lt?: Date; gte?: Date }
+      moderationStatus?: { notIn: string[] }
     } = {
       status: 'LIVE',
+      // Only show posts that are APPROVED or PENDING (not FLAGGED or REJECTED)
+      moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] },
     }
 
     // Filter by time window
@@ -142,6 +146,10 @@ export async function GET(request: NextRequest) {
       take: limit,
       include: {
         media: {
+          where: {
+            // Only show media that's not rejected or flagged
+            moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] },
+          },
           orderBy: { order: 'asc' },
           take: 4, // Limit media per post
         },
@@ -238,6 +246,19 @@ export async function POST(request: NextRequest) {
       finalDisplayName = existingPost?.displayName || generateReporterName()
     }
 
+    // Moderate text content before creating post
+    const sanitizedContent = sanitizeInput(content)
+    const textModeration = moderateTextContent(sanitizedContent)
+    console.log('[Post Creation] Text moderation result:', textModeration)
+
+    // Reject posts with clearly offensive content
+    if (textModeration.status === 'REJECTED') {
+      return NextResponse.json(
+        { success: false, error: 'Content violates community guidelines' },
+        { status: 400 }
+      )
+    }
+
     // Create post
     const finalCategory = BILLBOARD_CATEGORIES.includes(category as typeof BILLBOARD_CATEGORIES[number])
       ? category
@@ -252,7 +273,7 @@ export async function POST(request: NextRequest) {
     const post = await prisma.liveBillboard.create({
       data: {
         publicId: nanoid(10),
-        content: sanitizeInput(content),
+        content: sanitizedContent,
         category: finalCategory,
         province: province || null,
         city: city || null,
@@ -264,6 +285,11 @@ export async function POST(request: NextRequest) {
         revenueShareContact: finalRevenueShareContact,
         revenueSharePercent: 50,
         revenueShareStatus: finalRevenueShareEnabled ? 'PENDING' : 'NONE',
+        // Content moderation fields
+        moderationStatus: textModeration.status,
+        moderationScore: textModeration.score,
+        moderationFlags: textModeration.flags.length > 0 ? JSON.stringify(textModeration.flags) : null,
+        moderatedAt: new Date(),
       },
       include: {
         media: true,

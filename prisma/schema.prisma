@@ -365,6 +365,14 @@ model LiveBillboard {
   // Is this happening right now?
   isHappeningNow Boolean @default(true)
 
+  // Content moderation
+  // Status: PENDING (awaiting review), APPROVED (safe), FLAGGED (needs review), REJECTED (blocked)
+  moderationStatus String   @default("PENDING")
+  moderationScore  Float?   // AI confidence score (0-1, higher = more likely NSFW)
+  moderationFlags  String?  // JSON array of detected issues: ["nsfw", "violence", "spam"]
+  moderatedAt      DateTime?
+  reportCount      Int      @default(0) // Number of user reports
+
   // Revenue sharing option
   // If true, submitter wants 50/50 split and provided contact for payment
   revenueShareEnabled   Boolean  @default(false)
@@ -380,11 +388,13 @@ model LiveBillboard {
   media        LiveBillboardMedia[]
   votes        LiveBillboardVote[]
   comments     LiveBillboardComment[]
+  reports      ContentReport[]
 
   @@index([category, createdAt])
   @@index([province, createdAt])
   @@index([trendingScore])
   @@index([status, isHappeningNow])
+  @@index([moderationStatus])
 }
 
 // Media attachments for live billboard posts
@@ -413,12 +423,19 @@ model LiveBillboardMedia {
   price        Int?     // e.g., 5000 = R50.00, null = use default
   forSale      Boolean  @default(true) // Can be purchased watermark-free
 
+  // Content moderation for individual media files
+  moderationStatus String   @default("PENDING") // PENDING, APPROVED, FLAGGED, REJECTED
+  moderationScore  Float?   // AI NSFW confidence score (0-1)
+  moderationFlags  String?  // JSON array: ["nsfw", "violence", "gore", "nudity"]
+  moderatedAt      DateTime?
+
   // Order for display
   order        Int      @default(0)
 
   createdAt    DateTime @default(now())
 
   @@index([postId])
+  @@index([moderationStatus])
 }
 
 // Votes on live billboard posts
@@ -451,6 +468,32 @@ model LiveBillboardComment {
   createdAt    DateTime @default(now())
 
   @@index([postId, createdAt])
+}
+
+// User reports for content moderation
+model ContentReport {
+  id           String   @id @default(cuid())
+
+  // What was reported
+  postId       String
+  post         LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Report reason: NSFW, VIOLENCE, SPAM, FAKE, HARASSMENT, OTHER
+  reason       String
+  description  String?  // Optional additional details
+
+  // Reporter fingerprint (to prevent spam reports)
+  fingerprint  String
+
+  // Status: PENDING, REVIEWED, DISMISSED, ACTIONED
+  status       String   @default("PENDING")
+
+  createdAt    DateTime @default(now())
+  reviewedAt   DateTime?
+
+  @@unique([postId, fingerprint]) // One report per user per post
+  @@index([status])
+  @@index([postId])
 }
 
 // Push notification subscriptions

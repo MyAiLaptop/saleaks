@@ -6,6 +6,7 @@ import path from 'path'
 import { nanoid } from 'nanoid'
 import { applyImageWatermark, applyVideoWatermark, isImage, isVideo, isFFmpegAvailable } from '@/lib/watermark'
 import { uploadToR2, isR2Configured } from '@/lib/r2-storage'
+import { moderateImageContent, moderateVideoContent, type ModerationResult } from '@/lib/content-moderation'
 
 // Allow up to 5 minutes for video processing (watermarking + upload)
 export const maxDuration = 300
@@ -118,6 +119,30 @@ export async function POST(
       const bytes = await file.arrayBuffer()
       const buffer = Buffer.from(bytes)
       console.log(`[Media Upload] Buffer ready: ${buffer.length} bytes`)
+
+      // Run content moderation on the media
+      console.log(`[Media Upload] Running content moderation...`)
+      let moderationResult: ModerationResult
+      try {
+        if (isImage(baseMimeType)) {
+          moderationResult = await moderateImageContent(buffer, baseMimeType)
+        } else if (isVideo(baseMimeType)) {
+          moderationResult = await moderateVideoContent(buffer, baseMimeType)
+        } else {
+          moderationResult = { status: 'PENDING', score: 0, flags: [], requiresReview: false }
+        }
+        console.log(`[Media Upload] Moderation result:`, moderationResult)
+      } catch (modError) {
+        console.error('[Media Upload] Moderation error:', modError)
+        // On moderation error, allow upload but mark for review
+        moderationResult = { status: 'PENDING', score: 0, flags: [], requiresReview: true }
+      }
+
+      // If content is auto-rejected, skip this file
+      if (moderationResult.status === 'REJECTED') {
+        console.log(`[Media Upload] File rejected by moderation: ${file.name}`)
+        continue
+      }
 
       let mediaPath: string
       let watermarkedPath: string | null = null
@@ -271,6 +296,11 @@ export async function POST(
           r2WatermarkedKey,
           storageType,
           order: post._count.media + i,
+          // Content moderation fields
+          moderationStatus: moderationResult.status,
+          moderationScore: moderationResult.score,
+          moderationFlags: moderationResult.flags.length > 0 ? JSON.stringify(moderationResult.flags) : null,
+          moderatedAt: new Date(),
         },
       })
 
