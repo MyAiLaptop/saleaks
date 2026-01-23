@@ -28,6 +28,7 @@ interface EmojiReaction {
 
 interface FullscreenVideoPlayerProps {
   src: string
+  watermarkedSrc?: string // For downloads
   poster?: string
   postId: string
   comments: Comment[]
@@ -45,12 +46,15 @@ const EMOJI_OPTIONS = [
 
 export function FullscreenVideoPlayer({
   src,
+  watermarkedSrc,
   poster,
   postId,
   comments,
   onClose,
   onAddComment,
 }: FullscreenVideoPlayerProps) {
+  // Use watermarked version for downloads, clean version for viewing
+  const downloadSrc = watermarkedSrc || src
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const commentInputRef = useRef<HTMLInputElement>(null)
@@ -205,7 +209,8 @@ export function FullscreenVideoPlayer({
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(src)
+      // Download watermarked version (free download)
+      const response = await fetch(downloadSrc)
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -218,7 +223,7 @@ export function FullscreenVideoPlayer({
     } catch (error) {
       console.error('Download failed:', error)
       // Fallback: open in new tab
-      window.open(src, '_blank')
+      window.open(downloadSrc, '_blank')
     }
   }
 

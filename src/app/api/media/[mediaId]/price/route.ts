@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 
 // Default prices in cents (ZAR)
-const DEFAULT_IMAGE_PRICE = 5000 // R50
-const DEFAULT_VIDEO_PRICE = 15000 // R150
-const MIN_PRICE = 1000 // R10 minimum
+const DEFAULT_IMAGE_PRICE = 100 // R1
+const DEFAULT_VIDEO_PRICE = 300 // R3
+const MIN_PRICE = 100 // R1 minimum
 const MAX_PRICE = 1000000 // R10,000 maximum
 
 interface PriceUpdateRequest {

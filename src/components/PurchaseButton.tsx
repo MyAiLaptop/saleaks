@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingCart, X, Loader2 } from 'lucide-react'
+import { ShoppingCart, X, Loader2, CreditCard, Smartphone, Check } from 'lucide-react'
+
+type PaymentMethod = 'payfast' | 'carrier'
 
 interface PurchaseButtonProps {
   mediaId: string
@@ -12,63 +14,108 @@ interface PurchaseButtonProps {
 
 export function PurchaseButton({ mediaId, mediaType, price, className = '' }: PurchaseButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('carrier') // Default to carrier billing
   const [email, setEmail] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [carrierMessage, setCarrierMessage] = useState<string | null>(null)
 
   // Default prices in Rands
-  const defaultImagePrice = 50
-  const defaultVideoPrice = 150
+  const defaultImagePrice = 1
+  const defaultVideoPrice = 3
   const displayPrice = price ? price / 100 : null
 
   const handlePurchase = async () => {
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address')
-      return
-    }
-
-    setLoading(true)
     setError(null)
+    setCarrierMessage(null)
 
-    try {
-      const res = await fetch('/api/media/purchase', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, mediaType, mediaId })
-      })
-
-      const data = await res.json()
-
-      if (!data.success) {
-        throw new Error(data.error || 'Purchase failed')
+    if (paymentMethod === 'payfast') {
+      // PayFast payment - requires email
+      if (!email || !email.includes('@')) {
+        setError('Please enter a valid email address')
+        return
       }
 
-      // If PayFast is configured, redirect to payment
-      if (data.data.paymentUrl && data.data.paymentData) {
-        // Create and submit a form to PayFast
-        const form = document.createElement('form')
-        form.method = 'POST'
-        form.action = data.data.paymentUrl
+      setLoading(true)
 
-        for (const [key, value] of Object.entries(data.data.paymentData)) {
-          const input = document.createElement('input')
-          input.type = 'hidden'
-          input.name = key
-          input.value = value as string
-          form.appendChild(input)
+      try {
+        const res = await fetch('/api/media/purchase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, mediaType, mediaId })
+        })
+
+        const data = await res.json()
+
+        if (!data.success) {
+          throw new Error(data.error || 'Purchase failed')
         }
 
-        document.body.appendChild(form)
-        form.submit()
-      } else if (data.data.demoMode) {
-        // Demo mode - show download link directly
-        alert(`Demo mode: Your download token is ${data.data.downloadToken}\n\nIn production, you would be redirected to PayFast to complete payment.`)
-        setIsOpen(false)
+        // If PayFast is configured, redirect to payment
+        if (data.data.paymentUrl && data.data.paymentData) {
+          // Create and submit a form to PayFast
+          const form = document.createElement('form')
+          form.method = 'POST'
+          form.action = data.data.paymentUrl
+
+          for (const [key, value] of Object.entries(data.data.paymentData)) {
+            const input = document.createElement('input')
+            input.type = 'hidden'
+            input.name = key
+            input.value = value as string
+            form.appendChild(input)
+          }
+
+          document.body.appendChild(form)
+          form.submit()
+        } else if (data.data.demoMode) {
+          // Demo mode - show download link directly
+          alert(`Demo mode: Your download token is ${data.data.downloadToken}\n\nIn production, you would be redirected to PayFast to complete payment.`)
+          setIsOpen(false)
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to initiate purchase')
+      } finally {
+        setLoading(false)
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to initiate purchase')
-    } finally {
-      setLoading(false)
+    } else {
+      // Carrier billing - requires phone number
+      if (!phoneNumber || phoneNumber.length < 10) {
+        setError('Please enter a valid SA phone number')
+        return
+      }
+
+      setLoading(true)
+
+      try {
+        const res = await fetch('/api/media/carrier-purchase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phoneNumber, mediaType, mediaId })
+        })
+
+        const data = await res.json()
+
+        if (!data.success) {
+          throw new Error(data.error || 'Purchase failed')
+        }
+
+        if (data.data.demoMode) {
+          // Demo mode
+          setCarrierMessage(data.data.message)
+        } else if (data.data.confirmationRequired) {
+          // Show message about SMS confirmation
+          setCarrierMessage(data.data.message)
+        } else {
+          // Payment completed immediately (rare)
+          window.location.href = `/download/${data.data.downloadToken}`
+        }
+      } catch (err: any) {
+        setError(err.message || 'Failed to initiate purchase')
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
@@ -137,19 +184,83 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
               </li>
             </ul>
 
-            {/* Email Input */}
+            {/* Payment Method Selection */}
             <div className="mb-4">
               <label className="block text-sm text-gray-400 mb-2">
-                Email address (for download link)
+                Payment method
               </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="w-full px-4 py-3 bg-ink-700 border border-ink-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
-              />
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('carrier')}
+                  className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                    paymentMethod === 'carrier'
+                      ? 'border-primary-500 bg-primary-500/20'
+                      : 'border-ink-600 bg-ink-700 hover:border-ink-500'
+                  }`}
+                >
+                  <Smartphone className="h-5 w-5 text-primary-400" />
+                  <div className="text-left">
+                    <div className="text-white text-sm font-medium">Airtime/Bill</div>
+                    <div className="text-gray-500 text-xs">Pay with phone</div>
+                  </div>
+                  {paymentMethod === 'carrier' && (
+                    <Check className="h-4 w-4 text-primary-400 ml-auto" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('payfast')}
+                  className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                    paymentMethod === 'payfast'
+                      ? 'border-primary-500 bg-primary-500/20'
+                      : 'border-ink-600 bg-ink-700 hover:border-ink-500'
+                  }`}
+                >
+                  <CreditCard className="h-5 w-5 text-primary-400" />
+                  <div className="text-left">
+                    <div className="text-white text-sm font-medium">Card/EFT</div>
+                    <div className="text-gray-500 text-xs">PayFast</div>
+                  </div>
+                  {paymentMethod === 'payfast' && (
+                    <Check className="h-4 w-4 text-primary-400 ml-auto" />
+                  )}
+                </button>
+              </div>
             </div>
+
+            {/* Conditional Input based on payment method */}
+            {paymentMethod === 'carrier' ? (
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-2">
+                  Phone number (Vodacom, MTN, Telkom, Cell C)
+                </label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                  placeholder="0821234567"
+                  maxLength={12}
+                  className="w-full px-4 py-3 bg-ink-700 border border-ink-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Amount will be charged to your airtime or added to your bill
+                </p>
+              </div>
+            ) : (
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-2">
+                  Email address (for download link)
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="w-full px-4 py-3 bg-ink-700 border border-ink-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+                />
+              </div>
+            )}
 
             {error && (
               <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">
@@ -157,27 +268,60 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
               </div>
             )}
 
+            {carrierMessage && (
+              <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm">
+                <div className="flex items-start gap-2">
+                  <Check className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium">Check your phone!</p>
+                    <p className="mt-1">{carrierMessage}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Purchase Button */}
-            <button
-              onClick={handlePurchase}
-              disabled={loading}
-              className="w-full py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <ShoppingCart className="h-5 w-5" />
-                  Proceed to Payment
-                </>
-              )}
-            </button>
+            {!carrierMessage && (
+              <button
+                type="button"
+                onClick={handlePurchase}
+                disabled={loading}
+                className="w-full py-3 bg-primary-500 text-white rounded-lg font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Processing...
+                  </>
+                ) : paymentMethod === 'carrier' ? (
+                  <>
+                    <Smartphone className="h-5 w-5" />
+                    Pay with Airtime/Bill
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="h-5 w-5" />
+                    Proceed to Payment
+                  </>
+                )}
+              </button>
+            )}
+
+            {carrierMessage && (
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-full py-3 bg-ink-700 text-white rounded-lg font-semibold hover:bg-ink-600 transition-colors"
+              >
+                Close
+              </button>
+            )}
 
             <p className="text-xs text-gray-500 text-center mt-4">
-              Secure payment via PayFast. You'll receive a download link via email.
+              {paymentMethod === 'carrier'
+                ? 'Payment via your mobile carrier. Confirm via SMS to complete purchase.'
+                : 'Secure payment via PayFast. You\'ll receive a download link via email.'
+              }
             </p>
           </div>
         </div>

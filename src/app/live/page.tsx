@@ -171,6 +171,7 @@ export default function LiveBillboardPage() {
   const [fullscreenVideo, setFullscreenVideo] = useState<{
     isOpen: boolean
     src: string
+    watermarkedSrc: string // For downloads
     poster?: string
     postId: string
   } | null>(null)
@@ -178,7 +179,7 @@ export default function LiveBillboardPage() {
   // Fullscreen image gallery state
   const [imageGallery, setImageGallery] = useState<{
     isOpen: boolean
-    images: { id: string; src: string; alt: string }[]
+    images: { id: string; src: string; watermarkedSrc?: string; alt: string }[]
     initialIndex: number
   } | null>(null)
 
@@ -527,7 +528,7 @@ export default function LiveBillboardPage() {
   }
 
   // Open fullscreen video with comments
-  const openFullscreenVideo = async (src: string, postId: string, poster?: string) => {
+  const openFullscreenVideo = async (src: string, postId: string, poster?: string, watermarkedSrc?: string) => {
     // Load comments if not already loaded
     if (!postComments[postId]) {
       try {
@@ -540,7 +541,7 @@ export default function LiveBillboardPage() {
         // Ignore errors, will show empty comments
       }
     }
-    setFullscreenVideo({ isOpen: true, src, postId, poster })
+    setFullscreenVideo({ isOpen: true, src, postId, poster, watermarkedSrc: watermarkedSrc || src })
   }
 
   // Submit report
@@ -1183,7 +1184,8 @@ export default function LiveBillboardPage() {
                                     .filter(m => m.mimeType.startsWith('image/'))
                                     .map(m => ({
                                       id: m.id,
-                                      src: getMediaUrl(m.watermarkedPath) || getMediaUrl(m.path),
+                                      src: getMediaUrl(m.path), // Display clean/unwatermarked
+                                      watermarkedSrc: getMediaUrl(m.watermarkedPath) || getMediaUrl(m.path), // For downloads
                                       alt: m.originalName,
                                     }))
                                   const clickedIndex = postImages.findIndex(img => img.id === media.id)
@@ -1195,7 +1197,7 @@ export default function LiveBillboardPage() {
                                 }}
                               >
                                 <img
-                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                  src={getMediaUrl(media.path)}
                                   alt={media.originalName}
                                   className="w-full h-full object-cover"
                                   loading="lazy"
@@ -1211,12 +1213,14 @@ export default function LiveBillboardPage() {
                               <div
                                 className="w-full h-full cursor-pointer"
                                 onClick={() => openFullscreenVideo(
-                                  getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path),
-                                  post.publicId
+                                  getMediaUrl(media.path), // Display clean/unwatermarked
+                                  post.publicId,
+                                  undefined,
+                                  getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path) // For downloads
                                 )}
                               >
                                 <AutoPlayVideo
-                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                  src={getMediaUrl(media.path)}
                                   className="w-full h-full pointer-events-none"
                                 />
                                 {/* Tap to expand indicator */}
@@ -1660,6 +1664,7 @@ export default function LiveBillboardPage() {
       {fullscreenVideo?.isOpen && (
         <FullscreenVideoPlayer
           src={fullscreenVideo.src}
+          watermarkedSrc={fullscreenVideo.watermarkedSrc}
           poster={fullscreenVideo.poster}
           postId={fullscreenVideo.postId}
           comments={postComments[fullscreenVideo.postId] || []}

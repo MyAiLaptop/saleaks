@@ -6,6 +6,7 @@ import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download } from 'lucide-
 interface GalleryImage {
   id: string
   src: string
+  watermarkedSrc?: string // For downloads
   alt: string
 }
 
@@ -132,8 +133,10 @@ export function FullscreenImageGallery({
   }
 
   const handleDownload = async () => {
+    // Download watermarked version (free download)
+    const downloadSrc = currentImage.watermarkedSrc || currentImage.src
     try {
-      const response = await fetch(currentImage.src)
+      const response = await fetch(downloadSrc)
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -146,7 +149,7 @@ export function FullscreenImageGallery({
     } catch (error) {
       console.error('Download failed:', error)
       // Fallback: open in new tab
-      window.open(currentImage.src, '_blank')
+      window.open(downloadSrc, '_blank')
     }
   }
 

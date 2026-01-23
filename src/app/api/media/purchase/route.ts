@@ -4,8 +4,8 @@ import { nanoid } from 'nanoid'
 import crypto from 'crypto'
 
 // Default prices in cents (ZAR)
-const DEFAULT_IMAGE_PRICE = 5000 // R50
-const DEFAULT_VIDEO_PRICE = 15000 // R150
+const DEFAULT_IMAGE_PRICE = 100 // R1
+const DEFAULT_VIDEO_PRICE = 300 // R3
 const PLATFORM_SHARE_PERCENT = 50 // 50% to platform, 50% to submitter
 
 // PayFast configuration
