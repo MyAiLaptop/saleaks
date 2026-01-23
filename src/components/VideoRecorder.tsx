@@ -371,6 +371,7 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
           // Post-recording controls
           <div className="flex items-center justify-center gap-6">
             <button
+              type="button"
               onClick={retake}
               className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
             >
@@ -380,8 +381,10 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
               <span className="text-xs">Retake</span>
             </button>
             <button
+              type="button"
               onClick={confirmRecording}
-              className="flex flex-col items-center gap-1 text-white"
+              disabled={!recordedBlob}
+              className="flex flex-col items-center gap-1 text-white disabled:opacity-50"
             >
               <div className="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
                 <Check className="h-8 w-8" />
