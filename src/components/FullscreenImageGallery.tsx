@@ -1,0 +1,273 @@
+'use client'
+
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react'
+
+interface GalleryImage {
+  id: string
+  src: string
+  alt: string
+}
+
+interface FullscreenImageGalleryProps {
+  images: GalleryImage[]
+  initialIndex: number
+  onClose: () => void
+}
+
+export function FullscreenImageGallery({
+  images,
+  initialIndex,
+  onClose,
+}: FullscreenImageGalleryProps) {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex)
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
+  const [touchDelta, setTouchDelta] = useState(0)
+  const [isClosing, setIsClosing] = useState(false)
+  const [verticalDelta, setVerticalDelta] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const currentImage = images[currentIndex]
+  const hasNext = currentIndex < images.length - 1
+  const hasPrev = currentIndex > 0
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose()
+      } else if (e.key === 'ArrowLeft' && hasPrev) {
+        setCurrentIndex(prev => prev - 1)
+      } else if (e.key === 'ArrowRight' && hasNext) {
+        setCurrentIndex(prev => prev + 1)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose, hasNext, hasPrev])
+
+  // Prevent body scroll when gallery is open
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [])
+
+  const goToNext = useCallback(() => {
+    if (hasNext) {
+      setCurrentIndex(prev => prev + 1)
+      setTouchDelta(0)
+    } else {
+      // On last image, close and continue scrolling
+      onClose()
+    }
+  }, [hasNext, onClose])
+
+  const goToPrev = useCallback(() => {
+    if (hasPrev) {
+      setCurrentIndex(prev => prev - 1)
+      setTouchDelta(0)
+    }
+  }, [hasPrev])
+
+  // Touch handlers for swipe navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (isZoomed) return
+    setTouchStart({
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    })
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStart || isZoomed) return
+
+    const deltaX = e.touches[0].clientX - touchStart.x
+    const deltaY = e.touches[0].clientY - touchStart.y
+
+    // Determine if this is a horizontal or vertical swipe
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Horizontal swipe - navigate between images
+      setTouchDelta(deltaX)
+      setVerticalDelta(0)
+    } else {
+      // Vertical swipe - close gallery
+      setVerticalDelta(deltaY)
+      setTouchDelta(0)
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || isZoomed) {
+      setTouchStart(null)
+      return
+    }
+
+    const threshold = 80
+
+    // Handle horizontal swipe
+    if (Math.abs(touchDelta) > threshold) {
+      if (touchDelta > 0) {
+        goToPrev()
+      } else {
+        goToNext()
+      }
+    }
+
+    // Handle vertical swipe down to close
+    if (verticalDelta > threshold) {
+      setIsClosing(true)
+      setTimeout(onClose, 200)
+    }
+
+    setTouchDelta(0)
+    setVerticalDelta(0)
+    setTouchStart(null)
+  }
+
+  const toggleZoom = () => {
+    setIsZoomed(!isZoomed)
+  }
+
+  // Calculate transform based on swipe
+  const getTransform = () => {
+    if (isClosing) {
+      return 'translateY(100%)'
+    }
+    if (verticalDelta > 0) {
+      return `translateY(${verticalDelta}px)`
+    }
+    return `translateX(${touchDelta}px)`
+  }
+
+  const getOpacity = () => {
+    if (verticalDelta > 0) {
+      return Math.max(0.3, 1 - verticalDelta / 300)
+    }
+    return 1
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-[100] bg-black flex flex-col"
+      style={{ opacity: getOpacity() }}
+    >
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/60 to-transparent">
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+          title="Close"
+        >
+          <X className="h-6 w-6" />
+        </button>
+
+        {/* Image counter */}
+        <div className="px-3 py-1 bg-black/50 rounded-full text-white text-sm">
+          {currentIndex + 1} / {images.length}
+        </div>
+
+        <button
+          type="button"
+          onClick={toggleZoom}
+          className="p-2 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+          title={isZoomed ? 'Zoom out' : 'Zoom in'}
+        >
+          {isZoomed ? <ZoomOut className="h-6 w-6" /> : <ZoomIn className="h-6 w-6" />}
+        </button>
+      </div>
+
+      {/* Main image area */}
+      <div
+        className="flex-1 flex items-center justify-center overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div
+          className="w-full h-full flex items-center justify-center transition-transform duration-200"
+          style={{
+            transform: getTransform(),
+            transitionDuration: touchStart ? '0ms' : '200ms',
+          }}
+        >
+          <img
+            src={currentImage.src}
+            alt={currentImage.alt}
+            className={`max-w-full max-h-full object-contain transition-transform duration-200 ${
+              isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
+            }`}
+            onClick={toggleZoom}
+            draggable={false}
+          />
+        </div>
+      </div>
+
+      {/* Navigation arrows (desktop) */}
+      {hasPrev && (
+        <button
+          type="button"
+          onClick={goToPrev}
+          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors hidden sm:block"
+          title="Previous image"
+        >
+          <ChevronLeft className="h-8 w-8" />
+        </button>
+      )}
+      {hasNext && (
+        <button
+          type="button"
+          onClick={goToNext}
+          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors hidden sm:block"
+          title="Next image"
+        >
+          <ChevronRight className="h-8 w-8" />
+        </button>
+      )}
+
+      {/* Thumbnail strip at bottom */}
+      {images.length > 1 && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+          <div className="flex justify-center gap-2 overflow-x-auto py-2">
+            {images.map((image, index) => (
+              <button
+                key={image.id}
+                type="button"
+                onClick={() => setCurrentIndex(index)}
+                className={`flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                  index === currentIndex
+                    ? 'border-white scale-110'
+                    : 'border-transparent opacity-60 hover:opacity-100'
+                }`}
+              >
+                <img
+                  src={image.src}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
+          </div>
+
+          {/* Swipe hint */}
+          <p className="text-center text-white/60 text-xs mt-2 sm:hidden">
+            Swipe left/right to navigate • Swipe down to close
+          </p>
+        </div>
+      )}
+
+      {/* Single image swipe hint */}
+      {images.length === 1 && (
+        <div className="absolute bottom-4 left-0 right-0">
+          <p className="text-center text-white/60 text-xs sm:hidden">
+            Swipe down to close • Tap to zoom
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}

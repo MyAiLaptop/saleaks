@@ -40,6 +40,7 @@ import {
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenVideoPlayer } from '@/components/FullscreenVideoPlayer'
+import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
 
 interface Media {
   id: string
@@ -172,6 +173,13 @@ export default function LiveBillboardPage() {
     src: string
     poster?: string
     postId: string
+  } | null>(null)
+
+  // Fullscreen image gallery state
+  const [imageGallery, setImageGallery] = useState<{
+    isOpen: boolean
+    images: { id: string; src: string; alt: string }[]
+    initialIndex: number
   } | null>(null)
 
   // Fetch posts
@@ -1167,12 +1175,38 @@ export default function LiveBillboardPage() {
                             }`}
                           >
                             {media.mimeType.startsWith('image/') ? (
-                              <img
-                                src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                                alt={media.originalName}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
+                              <div
+                                className="w-full h-full cursor-pointer"
+                                onClick={() => {
+                                  // Get all images from this post for the gallery
+                                  const postImages = post.media
+                                    .filter(m => m.mimeType.startsWith('image/'))
+                                    .map(m => ({
+                                      id: m.id,
+                                      src: getMediaUrl(m.watermarkedPath) || getMediaUrl(m.path),
+                                      alt: m.originalName,
+                                    }))
+                                  const clickedIndex = postImages.findIndex(img => img.id === media.id)
+                                  setImageGallery({
+                                    isOpen: true,
+                                    images: postImages,
+                                    initialIndex: clickedIndex >= 0 ? clickedIndex : 0,
+                                  })
+                                }}
+                              >
+                                <img
+                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                  alt={media.originalName}
+                                  className="w-full h-full object-cover"
+                                  loading="lazy"
+                                />
+                                {/* Tap to expand indicator for multiple images */}
+                                {post.media.filter(m => m.mimeType.startsWith('image/')).length > 1 && (
+                                  <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 rounded text-white text-xs">
+                                    {post.media.filter(m => m.mimeType.startsWith('image/')).length} photos
+                                  </div>
+                                )}
+                              </div>
                             ) : media.mimeType.startsWith('video/') ? (
                               <div
                                 className="w-full h-full cursor-pointer"
@@ -1654,6 +1688,15 @@ export default function LiveBillboardPage() {
               console.error('Failed to post comment')
             }
           }}
+        />
+      )}
+
+      {/* Fullscreen Image Gallery */}
+      {imageGallery?.isOpen && (
+        <FullscreenImageGallery
+          images={imageGallery.images}
+          initialIndex={imageGallery.initialIndex}
+          onClose={() => setImageGallery(null)}
         />
       )}
     </div>
