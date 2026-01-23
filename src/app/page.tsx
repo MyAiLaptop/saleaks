@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Globe, ArrowRight, Shield, Radio, AlertTriangle } from 'lucide-react'
@@ -9,11 +9,21 @@ import { countries, getEnabledCountries, DEFAULT_COUNTRY } from '@/lib/countries
 
 export default function GlobalLandingPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isReady, setIsReady] = useState(false)
   const enabledCountries = getEnabledCountries()
 
+  // Check if user is explicitly changing region
+  const isChangingRegion = searchParams.get('change') === 'true'
+
   useEffect(() => {
     setIsReady(true)
+
+    // If user explicitly wants to change region, clear preference and don't redirect
+    if (isChangingRegion) {
+      localStorage.removeItem('preferred_country')
+      return
+    }
 
     // Check if user has a saved country preference
     const savedCountry = localStorage.getItem('preferred_country')
@@ -28,7 +38,7 @@ export default function GlobalLandingPage() {
     if (enabledCodes.length === 1) {
       router.push(`/${enabledCodes[0]}`)
     }
-  }, [router, enabledCountries])
+  }, [router, enabledCountries, isChangingRegion])
 
   const handleCountrySelect = (countryCode: string) => {
     // Save preference

@@ -87,7 +87,7 @@ export function Header() {
               <span>Account</span>
             </Link>
             <Link
-              href="/"
+              href="/?change=true"
               className="flex items-center space-x-1 text-gray-500 hover:text-gray-300 transition-colors"
               title="Change Region"
             >
@@ -159,7 +159,7 @@ export function Header() {
                 <span>My Account</span>
               </Link>
               <Link
-                href="/"
+                href="/?change=true"
                 className="flex items-center space-x-2 text-gray-500 hover:text-gray-300 pt-4 border-t border-white/10"
                 onClick={() => setIsMenuOpen(false)}
               >
