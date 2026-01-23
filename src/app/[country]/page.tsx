@@ -125,7 +125,7 @@ export default function CountryHomePage() {
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-6">
               <DollarSign className="h-4 w-4 text-green-400" />
-              <span className="text-green-400 font-medium text-sm">Get Paid for Your Content</span>
+              <span className="text-green-400 font-medium text-sm">Earn 50% of Every Sale</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
               Capture the Moment.<br />
@@ -179,13 +179,13 @@ export default function CountryHomePage() {
                     Earn Money for Your Content
                   </h2>
                   <p className="text-gray-300">
-                    Upload videos and photos of breaking news. Get paid when your content goes viral.
+                    Upload videos and photos of breaking news. Earn 50% every time someone purchases your content.
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-center px-4">
-                  <div className="text-2xl font-bold text-green-400">70%</div>
+                  <div className="text-2xl font-bold text-green-400">50%</div>
                   <div className="text-xs text-gray-400">Revenue Share</div>
                 </div>
                 <Link
@@ -433,7 +433,7 @@ export default function CountryHomePage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-2">Get Paid</h3>
               <p className="text-gray-300 text-sm">
-                Earn money when your content gets views. 70% revenue share on premium content.
+                Earn 50% of every sale. Withdraw anytime once you reach R10 minimum.
               </p>
             </div>
 
@@ -480,7 +480,7 @@ export default function CountryHomePage() {
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-200">
                   <CheckCircle className="h-4 w-4 text-green-400" />
-                  Earn 70% revenue share
+                  Earn 50% of every sale
                 </li>
                 <li className="flex items-center gap-2 text-sm text-gray-200">
                   <CheckCircle className="h-4 w-4 text-red-400" />
@@ -640,7 +640,7 @@ export default function CountryHomePage() {
                 {
                   step: '4',
                   title: 'Get Paid',
-                  description: 'Earn money as your content gets views and engagement.',
+                  description: 'Earn 50% when viewers purchase your content. Withdraw from R10.',
                   icon: DollarSign,
                 },
               ].map((item) => (
@@ -812,7 +812,7 @@ export default function CountryHomePage() {
             <div className="flex items-center justify-center gap-4 mb-8 text-sm">
               <span className="flex items-center gap-1 text-green-400">
                 <DollarSign className="h-4 w-4" />
-                70% Revenue Share
+                50% Revenue Share
               </span>
               <span className="text-gray-500">•</span>
               <span className="flex items-center gap-1 text-red-400">
