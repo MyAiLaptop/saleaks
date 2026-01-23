@@ -49,6 +49,23 @@ interface Media {
   forSale?: boolean
 }
 
+// Helper to convert R2 keys to proper URLs
+const R2_PUBLIC_URL = 'https://media.saleaks.co.za'
+
+function getMediaUrl(path: string | null | undefined): string {
+  if (!path) return ''
+  // Already a full URL
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+  // Local path (starts with /)
+  if (path.startsWith('/')) {
+    return path
+  }
+  // R2 key - convert to full URL
+  return `${R2_PUBLIC_URL}/${path}`
+}
+
 interface LivePost {
   id: string
   publicId: string
@@ -1024,13 +1041,13 @@ export default function LiveBillboardPage() {
                             <div key={media.id} className="relative aspect-video bg-white/10 rounded-lg overflow-hidden">
                               {media.mimeType.startsWith('image/') ? (
                                 <img
-                                  src={media.watermarkedPath || media.path}
+                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                                   alt={media.originalName}
                                   className="w-full h-full object-cover"
                                 />
                               ) : media.mimeType.startsWith('video/') ? (
                                 <video
-                                  src={media.watermarkedPath || media.path}
+                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                                   controls
                                   className="w-full h-full object-cover"
                                 />

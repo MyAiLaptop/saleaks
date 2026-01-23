@@ -42,6 +42,23 @@ interface Media {
   forSale?: boolean
 }
 
+// Helper to convert R2 keys to proper URLs
+const R2_PUBLIC_URL = 'https://media.saleaks.co.za'
+
+function getMediaUrl(path: string | null | undefined): string {
+  if (!path) return ''
+  // Already a full URL
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path
+  }
+  // Local path (starts with /)
+  if (path.startsWith('/')) {
+    return path
+  }
+  // R2 key - convert to full URL
+  return `${R2_PUBLIC_URL}/${path}`
+}
+
 interface Comment {
   id: string
   displayName: string
@@ -358,13 +375,13 @@ export default function LivePostPage() {
                     <div key={media.id} className="relative bg-white/10 rounded-lg overflow-hidden">
                       {media.mimeType.startsWith('image/') ? (
                         <img
-                          src={media.watermarkedPath || media.path}
+                          src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                           alt={media.originalName}
                           className="w-full max-h-[500px] object-contain"
                         />
                       ) : media.mimeType.startsWith('video/') ? (
                         <video
-                          src={media.watermarkedPath || media.path}
+                          src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                           controls
                           className="w-full max-h-[500px]"
                         />
@@ -372,7 +389,7 @@ export default function LivePostPage() {
                       {/* Download/Purchase options */}
                       <div className="absolute bottom-2 right-2 flex items-center gap-2">
                         <a
-                          href={media.watermarkedPath || media.path}
+                          href={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                           download={media.originalName}
                           className="flex items-center gap-1 px-2 py-1 bg-black/60 text-white text-xs rounded hover:bg-black/80 transition-colors"
                           title="Download with watermark (free)"
