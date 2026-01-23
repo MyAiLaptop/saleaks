@@ -95,6 +95,7 @@ export async function POST(request: NextRequest) {
             downloadToken: nanoid(32),
             downloadsUsed: 0,
             maxDownloads: 99, // Unlimited for exclusive buyer
+            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year for exclusive
           },
         })
 
