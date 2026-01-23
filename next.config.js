@@ -17,14 +17,14 @@ const nextConfig = {
           // Allow R2 storage URLs for media content
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.r2.cloudflarestorage.com *.r2.dev; media-src 'self' blob: *.r2.cloudflarestorage.com *.r2.dev; font-src 'self'; connect-src 'self' *.r2.cloudflarestorage.com; frame-ancestors 'none';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.r2.cloudflarestorage.com *.r2.dev media.saleaks.co.za; media-src 'self' blob: *.r2.cloudflarestorage.com *.r2.dev media.saleaks.co.za; font-src 'self'; connect-src 'self' *.r2.cloudflarestorage.com media.saleaks.co.za; frame-ancestors 'none';"
           },
           // Referrer policy - don't leak referrer info
           { key: 'Referrer-Policy', value: 'no-referrer' },
-          // Permissions policy - disable tracking features
+          // Permissions policy - allow camera/mic for video recording, disable tracking
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+            value: 'camera=(self), microphone=(self), geolocation=(), interest-cohort=()'
           },
           // HSTS
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
