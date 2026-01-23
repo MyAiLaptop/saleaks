@@ -54,7 +54,16 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.muted = true // Mute preview to avoid feedback
-        await videoRef.current.play()
+        // Ensure video plays with a small delay for DOM to settle
+        setTimeout(async () => {
+          try {
+            if (videoRef.current) {
+              await videoRef.current.play()
+            }
+          } catch (playErr) {
+            console.error('Video play error:', playErr)
+          }
+        }, 100)
       }
     } catch (err) {
       console.error('Camera access error:', err)
@@ -312,6 +321,9 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
             playsInline
             autoPlay
             muted
+            // @ts-ignore - webkit attribute for iOS
+            webkit-playsinline="true"
+            x-webkit-airplay="deny"
           />
         )}
 
