@@ -3,15 +3,19 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio, User, Globe } from 'lucide-react'
-import { useCountry } from '@/lib/country-context'
+import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const pathname = usePathname()
 
-  // Get country from context - will use default if not in country route
-  const { country, config } = useCountry()
+  // Extract country from URL path (e.g., /ng/browse -> ng)
+  const pathCountry = pathname?.split('/')[1] || DEFAULT_COUNTRY
+  const country = countries[pathCountry] ? pathCountry : DEFAULT_COUNTRY
+  const config: CountryConfig = countries[country] || countries[DEFAULT_COUNTRY]
 
   // Ensure component is mounted before rendering to prevent hydration mismatch
   useEffect(() => {
