@@ -4,31 +4,36 @@ import { existsSync } from 'fs'
 import { writeFile, mkdir } from 'fs/promises'
 
 // Watermark configuration
-const WATERMARK_TEXT = 'saleaks.co.za'
-const WATERMARK_OPACITY = 0.4
-const WATERMARK_COLOR = 'rgba(255, 255, 255, 0.8)'
+const WATERMARK_TEXT = 'SALEAKS.CO.ZA'
+const WATERMARK_OPACITY = 0.6
+const WATERMARK_COLOR = 'rgba(255, 255, 255, 0.9)'
 
 /**
  * Creates an SVG watermark overlay for images
  */
 function createWatermarkSvg(width: number, height: number, text: string = WATERMARK_TEXT): Buffer {
-  // Calculate font size based on image dimensions (roughly 3% of the smaller dimension)
-  const fontSize = Math.max(16, Math.min(width, height) * 0.03)
-  const padding = fontSize * 0.5
+  // Calculate font size based on image dimensions (roughly 5% of the smaller dimension for better visibility)
+  const fontSize = Math.max(24, Math.min(width, height) * 0.05)
+  const padding = fontSize * 0.8
+  const cornerFontSize = Math.max(32, Math.min(width, height) * 0.06)
 
-  // Create diagonal repeated pattern watermark
+  // Create diagonal repeated pattern watermark with larger, more visible text
   const svgText = `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <pattern id="watermarkPattern" x="0" y="0" width="${fontSize * 12}" height="${fontSize * 6}" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
+        <pattern id="watermarkPattern" x="0" y="0" width="${fontSize * 10}" height="${fontSize * 5}" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
           <text x="0" y="${fontSize}" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="${WATERMARK_COLOR}" opacity="${WATERMARK_OPACITY}">
             ${text}
           </text>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#watermarkPattern)" />
-      <!-- Corner watermark for visibility -->
-      <text x="${width - padding}" y="${height - padding}" font-family="Arial, sans-serif" font-size="${fontSize * 1.5}" font-weight="bold" fill="white" text-anchor="end" opacity="0.7">
+      <!-- Large corner watermark for clear visibility -->
+      <text x="${width - padding}" y="${height - padding}" font-family="Arial, sans-serif" font-size="${cornerFontSize}" font-weight="bold" fill="white" text-anchor="end" opacity="0.85" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+        ${text}
+      </text>
+      <!-- Secondary watermark in top-left corner -->
+      <text x="${padding}" y="${cornerFontSize + padding}" font-family="Arial, sans-serif" font-size="${cornerFontSize * 0.7}" font-weight="bold" fill="white" opacity="0.7" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
         ${text}
       </text>
     </svg>
@@ -41,14 +46,16 @@ function createWatermarkSvg(width: number, height: number, text: string = WATERM
  * Creates a centered watermark for thumbnails/smaller images
  */
 function createCenteredWatermarkSvg(width: number, height: number, text: string = WATERMARK_TEXT): Buffer {
-  const fontSize = Math.max(14, Math.min(width, height) * 0.08)
+  const fontSize = Math.max(20, Math.min(width, height) * 0.12)
 
   const svgText = `
     <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.6">
+      <!-- Shadow layer for contrast -->
+      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="middle" opacity="0.5" transform="translate(3, 3)">
         ${text}
       </text>
-      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="black" text-anchor="middle" dominant-baseline="middle" opacity="0.3" transform="translate(2, 2)">
+      <!-- Main text -->
+      <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle" opacity="0.8">
         ${text}
       </text>
     </svg>
@@ -176,32 +183,32 @@ export function getVideoWatermarkArgs(
   const text = options?.text || WATERMARK_TEXT
   const position = options?.position || 'bottomright'
 
-  // FFmpeg drawtext filter for watermark
+  // FFmpeg drawtext filter for watermark - using larger font sizes for visibility
   let positionFilter: string
   switch (position) {
     case 'topright':
-      positionFilter = 'x=w-tw-10:y=10'
+      positionFilter = 'x=w-tw-30:y=30'
       break
     case 'center':
       positionFilter = 'x=(w-tw)/2:y=(h-th)/2'
       break
     case 'tiled':
-      // For tiled, we use multiple drawtext filters
+      // For tiled, we use multiple drawtext filters with larger fonts
       return [
         '-i', inputPath,
-        '-vf', `drawtext=text='${text}':fontcolor=white@0.5:fontsize=24:x=10:y=10,drawtext=text='${text}':fontcolor=white@0.5:fontsize=24:x=w-tw-10:y=h-th-10,drawtext=text='${text}':fontcolor=white@0.3:fontsize=18:x=(w-tw)/2:y=(h-th)/2`,
+        '-vf', `drawtext=text='${text}':fontcolor=white@0.7:fontsize=36:x=30:y=30:shadowcolor=black@0.5:shadowx=2:shadowy=2,drawtext=text='${text}':fontcolor=white@0.85:fontsize=48:x=w-tw-30:y=h-th-30:shadowcolor=black@0.6:shadowx=3:shadowy=3,drawtext=text='${text}':fontcolor=white@0.35:fontsize=64:x=(w-tw)/2:y=(h-th)/2`,
         '-codec:a', 'copy',
         '-y',
         outputPath
       ]
     case 'bottomright':
     default:
-      positionFilter = 'x=w-tw-10:y=h-th-10'
+      positionFilter = 'x=w-tw-30:y=h-th-30'
   }
 
   return [
     '-i', inputPath,
-    '-vf', `drawtext=text='${text}':fontcolor=white@0.6:fontsize=24:${positionFilter}:shadowcolor=black@0.4:shadowx=2:shadowy=2`,
+    '-vf', `drawtext=text='${text}':fontcolor=white@0.85:fontsize=48:${positionFilter}:shadowcolor=black@0.6:shadowx=3:shadowy=3`,
     '-codec:a', 'copy',
     '-y',
     outputPath
@@ -220,10 +227,20 @@ export async function applyVideoWatermark(
   const { spawn } = await import('child_process')
 
   return new Promise((resolve, reject) => {
-    // FFmpeg command with multiple watermarks for visibility
+    // FFmpeg command with multiple large, visible watermarks
+    // - Large watermark bottom-right (main, very visible)
+    // - Medium watermark top-left
+    // - Semi-transparent watermark in center
     const args = [
       '-i', inputPath,
-      '-vf', `drawtext=text='${text}':fontcolor=white@0.6:fontsize=24:x=w-tw-20:y=h-th-20:shadowcolor=black@0.4:shadowx=2:shadowy=2,drawtext=text='${text}':fontcolor=white@0.3:fontsize=18:x=20:y=20`,
+      '-vf', [
+        // Large bottom-right watermark (main)
+        `drawtext=text='${text}':fontcolor=white@0.85:fontsize=48:x=w-tw-30:y=h-th-30:shadowcolor=black@0.6:shadowx=3:shadowy=3`,
+        // Medium top-left watermark
+        `drawtext=text='${text}':fontcolor=white@0.7:fontsize=36:x=30:y=40:shadowcolor=black@0.5:shadowx=2:shadowy=2`,
+        // Semi-transparent center watermark (diagonal)
+        `drawtext=text='${text}':fontcolor=white@0.35:fontsize=72:x=(w-tw)/2:y=(h-th)/2:shadowcolor=black@0.2:shadowx=2:shadowy=2`
+      ].join(','),
       '-codec:a', 'copy',
       '-y',
       outputPath

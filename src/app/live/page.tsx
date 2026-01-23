@@ -655,6 +655,25 @@ export default function LiveBillboardPage() {
                   </div>
                 </div>
 
+                {/* Upload Progress Indicator */}
+                {uploadingMedia && (
+                  <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 flex items-center gap-3">
+                    <Loader2 className="h-5 w-5 text-blue-400 animate-spin flex-shrink-0" />
+                    <div>
+                      <p className="text-blue-200 font-medium">
+                        {selectedFiles.some(f => f.type.startsWith('video/'))
+                          ? 'Uploading and processing video...'
+                          : 'Uploading media...'}
+                      </p>
+                      <p className="text-blue-400 text-sm">
+                        {selectedFiles.some(f => f.type.startsWith('video/'))
+                          ? 'Videos are being watermarked. This may take a minute for larger files.'
+                          : 'Please wait, this should only take a moment.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-gray-400">
                     {displayName ? `Posting as ${displayName}` : 'You\'ll get an anonymous reporter name'}
@@ -675,7 +694,11 @@ export default function LiveBillboardPage() {
                       {creating || uploadingMedia ? (
                         <>
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          {uploadingMedia ? 'Uploading media...' : 'Posting...'}
+                          {uploadingMedia
+                            ? selectedFiles.some(f => f.type.startsWith('video/'))
+                              ? 'Uploading video (please wait)...'
+                              : 'Uploading media...'
+                            : 'Posting...'}
                         </>
                       ) : (
                         <>

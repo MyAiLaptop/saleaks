@@ -82,13 +82,17 @@ export async function POST(
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
 
+      console.log(`[Media Upload] Processing file ${i + 1}/${files.length}: ${file.name} (${file.type}, ${(file.size / 1024 / 1024).toFixed(2)}MB)`)
+
       // Validate file type
       if (!ALLOWED_TYPES.includes(file.type)) {
+        console.log(`[Media Upload] Skipping file - invalid type: ${file.type}`)
         continue
       }
 
       // Validate file size
       if (file.size > MAX_FILE_SIZE) {
+        console.log(`[Media Upload] Skipping file - too large: ${file.size} bytes`)
         continue
       }
 
@@ -97,8 +101,10 @@ export async function POST(
       const filename = `${nanoid(12)}.${ext}`
 
       // Get file buffer
+      console.log(`[Media Upload] Reading file into buffer...`)
       const bytes = await file.arrayBuffer()
       const buffer = Buffer.from(bytes)
+      console.log(`[Media Upload] Buffer ready: ${buffer.length} bytes`)
 
       let mediaPath: string
       let watermarkedPath: string | null = null
@@ -109,16 +115,24 @@ export async function POST(
       if (useR2) {
         // Upload to Cloudflare R2
         storageType = 'r2'
+        console.log(`[Media Upload] Using R2 storage`)
 
         // Upload original
+        console.log(`[Media Upload] Uploading original to R2...`)
+        const uploadStartTime = Date.now()
         const originalResult = await uploadToR2(buffer, filename, {
           postType: 'live',
           postId: post.id,
           folder: 'originals',
           mimeType: file.type,
         })
+        console.log(`[Media Upload] Original uploaded to R2 in ${Date.now() - uploadStartTime}ms: ${originalResult.key}`)
         r2OriginalKey = originalResult.key
         mediaPath = originalResult.key
+
+        // Also create a public URL for the original (used as fallback if watermarking fails)
+        const r2PublicUrl = process.env.R2_PUBLIC_URL
+        const originalPublicUrl = r2PublicUrl ? `${r2PublicUrl}/${originalResult.key}` : originalResult.key
 
         // Create and upload watermarked version
         if (isImage(file.type)) {
@@ -134,10 +148,14 @@ export async function POST(
             watermarkedPath = wmResult.url
           } catch (err) {
             console.error('Error creating image watermark for R2:', err)
+            // Fallback: use original file URL if watermarking fails
+            watermarkedPath = originalPublicUrl
           }
         } else if (isVideo(file.type)) {
           // For videos, we need to process locally then upload
+          console.log(`[Media Upload] Processing video...`)
           const ffmpegAvailable = await isFFmpegAvailable()
+          console.log(`[Media Upload] FFmpeg available: ${ffmpegAvailable}`)
           if (ffmpegAvailable) {
             try {
               // Create temp files for video processing
@@ -149,27 +167,44 @@ export async function POST(
               const tempWatermarked = path.join(tempDir, `wm_${filename}`)
 
               // Write original to temp, watermark, upload
+              console.log(`[Media Upload] Writing to temp file: ${tempOriginal}`)
               await writeFile(tempOriginal, buffer)
+
+              console.log(`[Media Upload] Starting video watermark (this may take a while)...`)
+              const wmStartTime = Date.now()
               await applyVideoWatermark(tempOriginal, tempWatermarked)
+              console.log(`[Media Upload] Video watermark completed in ${Date.now() - wmStartTime}ms`)
 
               const { readFile, unlink } = await import('fs/promises')
               const watermarkedBuffer = await readFile(tempWatermarked)
+              console.log(`[Media Upload] Watermarked video size: ${watermarkedBuffer.length} bytes`)
 
+              console.log(`[Media Upload] Uploading watermarked video to R2...`)
+              const wmUploadStartTime = Date.now()
               const wmResult = await uploadToR2(watermarkedBuffer, filename, {
                 postType: 'live',
                 postId: post.id,
                 folder: 'watermarked',
                 mimeType: file.type,
               })
+              console.log(`[Media Upload] Watermarked video uploaded in ${Date.now() - wmUploadStartTime}ms: ${wmResult.key}`)
               r2WatermarkedKey = wmResult.key
               watermarkedPath = wmResult.url
 
               // Clean up temp files
               await unlink(tempOriginal).catch(() => {})
               await unlink(tempWatermarked).catch(() => {})
+              console.log(`[Media Upload] Temp files cleaned up`)
             } catch (err) {
-              console.error('Error creating video watermark for R2:', err)
+              console.error('[Media Upload] Error creating video watermark for R2:', err)
+              // Fallback: use original file URL if watermarking fails
+              watermarkedPath = originalPublicUrl
+              console.log(`[Media Upload] Using original video URL as fallback: ${originalPublicUrl}`)
             }
+          } else {
+            // FFmpeg not available - use original file URL
+            console.log('[Media Upload] FFmpeg not available, using original video without watermark')
+            watermarkedPath = originalPublicUrl
           }
         }
       } else {
@@ -208,6 +243,8 @@ export async function POST(
       }
 
       // Save to database
+      // For R2 storage, ensure watermarkedPath is always set (for display)
+      // path stores the original URL/key for purchases
       const media = await prisma.liveBillboardMedia.create({
         data: {
           postId: post.id,
@@ -216,7 +253,7 @@ export async function POST(
           mimeType: file.type,
           size: file.size,
           path: mediaPath,
-          watermarkedPath,
+          watermarkedPath: watermarkedPath || mediaPath, // Ensure watermarkedPath is always set
           r2OriginalKey,
           r2WatermarkedKey,
           storageType,
@@ -242,9 +279,14 @@ export async function POST(
         }
       }
 
+      console.log(`[Media Upload] Media saved to database: ${media.id}`)
+      console.log(`[Media Upload] - Path: ${media.path}`)
+      console.log(`[Media Upload] - Watermarked: ${media.watermarkedPath}`)
+      console.log(`[Media Upload] - Storage: ${media.storageType}`)
       uploadedMedia.push(media)
     }
 
+    console.log(`[Media Upload] Complete! ${uploadedMedia.length} files uploaded successfully`)
     return NextResponse.json({
       success: true,
       data: {
