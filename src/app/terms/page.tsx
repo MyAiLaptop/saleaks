@@ -104,9 +104,49 @@ export default function TermsPage() {
             </ul>
           </section>
 
+          {/* Auction System */}
+          <section>
+            <h2 className="text-xl font-semibold text-white mb-4">4. Exclusive Rights Auction</h2>
+            <p className="text-gray-300 leading-relaxed mb-4">
+              All new content on SA Leaks goes through a 1-hour auction period where media
+              organizations can bid for exclusive rights:
+            </p>
+            <ul className="list-disc pl-6 space-y-3 text-gray-300">
+              <li>
+                <strong className="text-white">Auction Duration:</strong> All content is available
+                for exclusive bidding for 1 hour after submission. Content is visible to everyone
+                during this period (with watermark).
+              </li>
+              <li>
+                <strong className="text-white">Exclusive Rights:</strong> The winning bidder
+                receives exclusive rights to the content. The content is removed from public
+                view and cannot be purchased by anyone else.
+              </li>
+              <li>
+                <strong className="text-white">Minimum Bid:</strong> The minimum starting bid is
+                R50. Each subsequent bid must be at least R5 higher than the current bid.
+              </li>
+              <li>
+                <strong className="text-white">Anti-Sniping:</strong> If a bid is placed in the
+                last minute of the auction, the auction is extended by 2 minutes to allow others
+                to respond.
+              </li>
+              <li>
+                <strong className="text-white">No Bids:</strong> If no bids are received during
+                the auction period, the content becomes available for regular public purchase
+                (non-exclusive) at standard pricing.
+              </li>
+              <li>
+                <strong className="text-white">Payment:</strong> Winning bidders must complete
+                payment to finalize the purchase. Failure to pay may result in the content
+                being released for public sale.
+              </li>
+            </ul>
+          </section>
+
           {/* Content Guidelines */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">4. Content Guidelines</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">5. Content Guidelines</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
               The following content is prohibited:
             </p>
@@ -125,7 +165,7 @@ export default function TermsPage() {
 
           {/* Anonymity */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">5. Anonymity & Privacy</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">6. Anonymity & Privacy</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
               SA Leaks is designed to protect the anonymity of content submitters:
             </p>
@@ -139,7 +179,7 @@ export default function TermsPage() {
 
           {/* Payments */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">6. Payments & Withdrawals</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">7. Payments & Withdrawals</h2>
             <ul className="list-disc pl-6 space-y-2 text-gray-300">
               <li>Prices are displayed in South African Rand (ZAR)</li>
               <li>Payments are processed via carrier billing (airtime/bill) or PayFast</li>
@@ -151,7 +191,7 @@ export default function TermsPage() {
 
           {/* Disclaimer */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">7. Disclaimer</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">8. Disclaimer</h2>
             <p className="text-gray-300 leading-relaxed">
               SA Leaks acts as a platform connecting content submitters with buyers. We do not
               verify the accuracy or authenticity of submitted content. Buyers are responsible
@@ -163,7 +203,7 @@ export default function TermsPage() {
 
           {/* Changes */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">8. Changes to Terms</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">9. Changes to Terms</h2>
             <p className="text-gray-300 leading-relaxed">
               SA Leaks reserves the right to modify these terms at any time. Continued use of
               the platform after changes constitutes acceptance of the new terms.
@@ -172,7 +212,7 @@ export default function TermsPage() {
 
           {/* Contact */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">9. Contact</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">10. Contact</h2>
             <p className="text-gray-300 leading-relaxed">
               For questions about these terms, contact us through the platform or at the
               contact details provided on our website.

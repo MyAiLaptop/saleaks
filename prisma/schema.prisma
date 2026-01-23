@@ -388,6 +388,20 @@ model LiveBillboard {
   submitterAccountId    String?
   submitterAccount      SubmitterAccount? @relation("SubmitterLivePosts", fields: [submitterAccountId], references: [id])
 
+  // Auction system - all content goes to 1-hour auction first
+  // After auction ends without winner, goes to public sale
+  auctionEndsAt         DateTime?  // When auction ends (1 hour after creation)
+  auctionStatus         String     @default("ACTIVE") // ACTIVE, ENDED, SOLD
+  currentBid            Int?       // Current highest bid in cents
+  currentBidderId       String?    // ID of current highest bidder
+  bidCount              Int        @default(0)
+
+  // Exclusive purchase (auction winner)
+  isExclusive           Boolean    @default(false) // True if sold via auction (exclusive rights)
+  exclusiveBuyerId      String?    // Who bought exclusive rights
+  exclusiveBuyerName    String?    // Display name for "purchased by" message
+  soldAt                DateTime?  // When it was sold exclusively
+
   // Timestamps
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -397,12 +411,42 @@ model LiveBillboard {
   votes        LiveBillboardVote[]
   comments     LiveBillboardComment[]
   reports      ContentReport[]
+  bids         AuctionBid[]
 
   @@index([category, createdAt])
   @@index([province, createdAt])
   @@index([trendingScore])
   @@index([status, isHappeningNow])
   @@index([moderationStatus])
+  @@index([auctionStatus, auctionEndsAt])
+}
+
+// Auction bids for exclusive content rights
+model AuctionBid {
+  id            String   @id @default(cuid())
+
+  // Link to post being bid on
+  postId        String
+  post          LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Bidder info (phone-based, like submitter accounts)
+  bidderPhone   String   // Normalized phone number
+  bidderName    String?  // Optional display name (e.g., "News24", "eNCA")
+  bidderEmail   String?  // Email for notifications
+
+  // Bid details
+  amount        Int      // Bid amount in cents
+  isWinning     Boolean  @default(false) // Is this currently the winning bid?
+  isWinner      Boolean  @default(false) // Did this bid win the auction?
+
+  // Payment status (for winning bids)
+  paymentStatus String   @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  paymentId     String?  // Payment transaction ID
+
+  createdAt     DateTime @default(now())
+
+  @@index([postId, amount])
+  @@index([bidderPhone])
 }
 
 // Media attachments for live billboard posts

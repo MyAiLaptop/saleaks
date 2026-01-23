@@ -51,6 +51,24 @@ async function autoExpireHappeningNow() {
   })
 }
 
+// Auto-end expired auctions (move to public sale if no bids)
+async function autoEndExpiredAuctions() {
+  const now = new Date()
+
+  // Find all active auctions that have expired and have no bids
+  await prisma.liveBillboard.updateMany({
+    where: {
+      auctionStatus: 'ACTIVE',
+      auctionEndsAt: { lt: now },
+      bidCount: 0,
+    },
+    data: {
+      auctionStatus: 'ENDED',
+      isExclusive: false,
+    },
+  })
+}
+
 // Send push notifications to subscribed users
 async function sendPushNotifications(payload: {
   title: string
@@ -80,8 +98,9 @@ async function sendPushNotifications(payload: {
 // GET /api/live - Get live billboard posts
 export async function GET(request: NextRequest) {
   try {
-    // Auto-expire old "Happening Now" posts
+    // Auto-expire old "Happening Now" posts and ended auctions
     await autoExpireHappeningNow()
+    await autoEndExpiredAuctions()
 
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category')
@@ -183,10 +202,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        posts: posts.map((post) => ({
-          ...post,
-          commentCount: post._count.comments,
-        })),
+        posts: posts.map((post) => {
+          const now = Date.now()
+          const auctionEndsAt = post.auctionEndsAt?.getTime() || 0
+          const timeRemaining = Math.max(0, auctionEndsAt - now)
+          const isAuctionActive = post.auctionStatus === 'ACTIVE' && timeRemaining > 0
+
+          return {
+            ...post,
+            commentCount: post._count.comments,
+            // Auction info
+            auction: {
+              status: post.auctionStatus,
+              isActive: isAuctionActive,
+              endsAt: post.auctionEndsAt,
+              timeRemaining,
+              currentBid: post.currentBid,
+              bidCount: post.bidCount,
+              isExclusive: post.isExclusive,
+              exclusiveBuyerName: post.exclusiveBuyerName,
+              soldAt: post.soldAt,
+              // Can buy publicly only after auction ends with no winner
+              canBuyPublic: post.auctionStatus === 'ENDED' && !post.isExclusive,
+            },
+          }
+        }),
         pagination: {
           page,
           limit,
@@ -299,6 +339,9 @@ export async function POST(request: NextRequest) {
       ? encryptEmail(revenueShareContact.trim())
       : null
 
+    // Auction ends 1 hour from now
+    const auctionEndsAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+
     const post = await prisma.liveBillboard.create({
       data: {
         publicId: nanoid(10),
@@ -315,6 +358,9 @@ export async function POST(request: NextRequest) {
         submitterAccountId: submitterAccountId, // Link to phone-based account
         revenueSharePercent: 50,
         revenueShareStatus: finalRevenueShareEnabled ? 'PENDING' : 'NONE',
+        // Auction - all content starts with 1-hour exclusive auction
+        auctionEndsAt,
+        auctionStatus: 'ACTIVE',
         // Content moderation fields
         moderationStatus: textModeration.status,
         moderationScore: textModeration.score,
