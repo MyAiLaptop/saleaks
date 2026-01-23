@@ -165,8 +165,12 @@ export default function LiveBillboardPage() {
       const data = await res.json()
 
       if (data.success) {
-        if (isPoll && data.data.posts.length > 0 && !showArchive) {
-          setNewPostsCount(prev => prev + data.data.posts.length)
+        if (isPoll) {
+          // Polling should ONLY add new posts to the notification count, never replace existing posts
+          if (data.data.posts.length > 0 && !showArchive) {
+            setNewPostsCount(prev => prev + data.data.posts.length)
+          }
+          // Don't modify posts array during polling - just update metadata
         } else if (isRefresh || page === 1) {
           setPosts(data.data.posts)
           setNewPostsCount(0)
