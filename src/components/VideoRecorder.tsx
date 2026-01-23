@@ -152,6 +152,12 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
       setIsRecording(true)
       setIsPaused(false)
 
+      // Re-attach stream to video element to fix mobile preview
+      if (videoRef.current && streamRef.current) {
+        videoRef.current.srcObject = streamRef.current
+        videoRef.current.play().catch(() => {})
+      }
+
       // Start duration timer
       timerRef.current = setInterval(() => {
         setDuration(prev => {
