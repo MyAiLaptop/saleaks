@@ -133,7 +133,7 @@ export default function CountryHomePage() {
             </h1>
             <p className="text-lg md:text-xl text-gray-200 mb-4 max-w-2xl mx-auto">
               {config.name}&apos;s platform for citizen journalists. Share breaking news, traffic updates,
-              and live events — and earn money when your content gets views.
+              and live events — and earn money when viewers purchase your content.
             </p>
             <p className="text-sm text-gray-400 mb-8 flex items-center justify-center gap-2">
               <BadgeCheck className="h-4 w-4 text-primary-400" />
@@ -475,7 +475,7 @@ export default function CountryHomePage() {
               </div>
               <p className="text-gray-300 mb-6">
                 Report breaking news as it happens. Traffic jams, protests, accidents, weather events,
-                community alerts — capture it all and get paid for views.
+                community alerts — capture it all and earn when viewers buy your content.
               </p>
               <ul className="space-y-3 mb-6">
                 <li className="flex items-center gap-2 text-sm text-gray-200">
