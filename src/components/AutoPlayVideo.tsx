@@ -12,7 +12,7 @@ interface AutoPlayVideoProps {
 export function AutoPlayVideo({ src, className = '', poster }: AutoPlayVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isMuted, setIsMuted] = useState(true)
+  const [isMuted, setIsMuted] = useState(false) // Sound on by default
   const [isPlaying, setIsPlaying] = useState(false)
   const [showPlayButton, setShowPlayButton] = useState(false)
 
