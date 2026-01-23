@@ -36,6 +36,7 @@ import {
   VideoIcon,
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
+import { PhotoCapture } from '@/components/PhotoCapture'
 import { Flag } from '@/components/Flag'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenVideoPlayer } from '@/components/FullscreenVideoPlayer'
@@ -132,8 +133,8 @@ export default function CountryLiveBillboardPage() {
   const [displayName, setDisplayName] = useState<string | null>(null)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploadingMedia, setUploadingMedia] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
+  const [showPhotoCapture, setShowPhotoCapture] = useState(false)
   const [showCameraPermissionDialog, setShowCameraPermissionDialog] = useState(false)
   const [cameraPermissionDenied, setCameraPermissionDenied] = useState(false)
 
@@ -254,16 +255,6 @@ export default function CountryLiveBillboardPage() {
     fetchPosts()
   }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    const validFiles = files.filter(file => {
-      const isValidType = file.type.startsWith('image/') || file.type.startsWith('video/')
-      const isValidSize = file.size <= 50 * 1024 * 1024
-      return isValidType && isValidSize
-    })
-    setSelectedFiles(prev => [...prev, ...validFiles].slice(0, 4))
-  }
-
   const removeFile = (index: number) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index))
   }
@@ -271,6 +262,29 @@ export default function CountryLiveBillboardPage() {
   const handleVideoRecordingComplete = (file: File) => {
     setSelectedFiles(prev => [...prev, file].slice(0, 4))
     setShowVideoRecorder(false)
+  }
+
+  const handlePhotoCaptureComplete = (file: File) => {
+    setSelectedFiles(prev => [...prev, file].slice(0, 4))
+    setShowPhotoCapture(false)
+  }
+
+  const requestPhotoPermission = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraPermissionDenied(true)
+      setShowCameraPermissionDialog(true)
+      return
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true })
+      stream.getTracks().forEach(track => track.stop())
+      setShowPhotoCapture(true)
+    } catch (err) {
+      console.error('Camera permission error:', err)
+      setCameraPermissionDenied(true)
+      setShowCameraPermissionDialog(true)
+    }
   }
 
   const requestCameraPermission = async () => {
@@ -688,30 +702,39 @@ export default function CountryLiveBillboardPage() {
                   />
                 </div>
 
-                {/* Media Upload */}
+                {/* Media Capture - Camera Only */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Photos & Videos (Optional)
                   </label>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*,video/*"
-                    multiple
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    title="Select photos or videos to upload"
-                  />
+
+                  {/* Camera-only notice */}
+                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2 mb-3">
+                    <p className="text-xs text-green-400 flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3" />
+                      Camera-only capture ensures authentic, AI-free content
+                    </p>
+                  </div>
 
                   {selectedFiles.length < 4 && (
-                    <button
-                      type="button"
-                      onClick={requestCameraPermission}
-                      className="w-full mb-3 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 font-medium"
-                    >
-                      <Video className="h-5 w-5" />
-                      Record Video
-                    </button>
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      <button
+                        type="button"
+                        onClick={requestCameraPermission}
+                        className="py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 font-medium"
+                      >
+                        <Video className="h-5 w-5" />
+                        Record Video
+                      </button>
+                      <button
+                        type="button"
+                        onClick={requestPhotoPermission}
+                        className="py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg hover:from-blue-600 hover:to-cyan-600 transition-all flex items-center justify-center gap-2 font-medium"
+                      >
+                        <Camera className="h-5 w-5" />
+                        Take Photo
+                      </button>
+                    </div>
                   )}
 
                   <div className="flex flex-wrap gap-2">
@@ -751,19 +774,9 @@ export default function CountryLiveBillboardPage() {
                         )}
                       </div>
                     ))}
-                    {selectedFiles.length < 4 && (
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-20 h-20 rounded-lg border-2 border-dashed border-white/20 flex flex-col items-center justify-center text-gray-400 hover:border-primary-500 hover:text-primary-500 transition-colors"
-                      >
-                        <Camera className="h-6 w-6 mb-1" />
-                        <span className="text-xs">Upload</span>
-                      </button>
-                    )}
                   </div>
                   <p className="text-xs text-gray-400 mt-2">
-                    Max 4 files, 50MB each.
+                    Max 4 captures. All media is captured live through your camera.
                   </p>
                 </div>
 
@@ -1489,6 +1502,14 @@ export default function CountryLiveBillboardPage() {
           onRecordingComplete={handleVideoRecordingComplete}
           onCancel={() => setShowVideoRecorder(false)}
           maxDuration={300}
+        />
+      )}
+
+      {/* Photo Capture Modal */}
+      {showPhotoCapture && (
+        <PhotoCapture
+          onPhotoCapture={handlePhotoCaptureComplete}
+          onCancel={() => setShowPhotoCapture(false)}
         />
       )}
 
