@@ -78,17 +78,22 @@ export async function POST(request: NextRequest) {
 
       // Credit submitter (if revenue share enabled)
       if (post.submitterAccountId && post.media[0]) {
+        const { nanoid } = await import('nanoid')
+        const submitterShare = Math.floor(winningBid.amount * 0.5)
+
         // Create a purchase record for the auction sale
         const purchase = await prisma.mediaPurchase.create({
           data: {
             email: winningBid.bidderEmail || 'auction@saleaks.co.za',
             amount: winningBid.amount,
-            submitterShare: Math.floor(winningBid.amount * 0.5), // 50%
+            submitterShare,
+            platformShare: winningBid.amount - submitterShare,
             status: 'COMPLETED',
             paymentProvider: 'auction',
             paymentId,
             liveMediaId: post.media[0].id,
-            downloadCount: 0,
+            downloadToken: nanoid(32),
+            downloadsUsed: 0,
             maxDownloads: 99, // Unlimited for exclusive buyer
           },
         })
