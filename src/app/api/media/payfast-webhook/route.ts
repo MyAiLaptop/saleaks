@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import crypto from 'crypto'
+import { creditSubmitterEarning } from '@/lib/submitter-earnings'
 
 // PayFast configuration
 const PAYFAST_MERCHANT_ID = process.env.PAYFAST_MERCHANT_ID || ''
@@ -151,6 +152,18 @@ export async function POST(request: NextRequest) {
       })
 
       console.log('Payment completed:', purchaseId)
+
+      // Credit the submitter's account if linked
+      const mediaType = purchase.liveMediaId ? 'live' : 'file'
+      const mediaId = purchase.liveMediaId || purchase.fileId
+      if (mediaId) {
+        const creditResult = await creditSubmitterEarning({
+          purchaseId,
+          mediaType,
+          mediaId,
+        })
+        console.log('Submitter credit result:', creditResult)
+      }
 
       // TODO: Send email with download link
       // await sendDownloadEmail(purchase.email, downloadToken)

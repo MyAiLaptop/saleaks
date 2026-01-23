@@ -4,6 +4,7 @@ import { sanitizeInput } from '@/lib/sanitize'
 import { encryptEmail } from '@/lib/crypto'
 import { nanoid } from 'nanoid'
 import { moderateTextContent } from '@/lib/content-moderation'
+import { isValidSAPhoneNumber, formatPhoneNumber, detectCarrier } from '@/lib/carrier-billing'
 
 // Billboard categories
 const BILLBOARD_CATEGORIES = [
@@ -216,7 +217,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { content, category, province, city, sessionToken, displayName, isHappeningNow, revenueShareEnabled, revenueShareContact } = body
+    const { content, category, province, city, sessionToken, displayName, isHappeningNow, revenueShareEnabled, revenueShareContact, submitterPhone } = body
 
     // Validation
     if (!content || content.trim().length === 0) {
@@ -264,9 +265,37 @@ export async function POST(request: NextRequest) {
       ? category
       : 'OTHER'
 
-    // Handle revenue sharing
-    const finalRevenueShareEnabled = revenueShareEnabled === true
-    const finalRevenueShareContact = finalRevenueShareEnabled && revenueShareContact
+    // Handle revenue sharing via phone-based account
+    let submitterAccountId: string | null = null
+    let finalRevenueShareEnabled = revenueShareEnabled === true
+
+    // If submitter provides a phone number, create/link to their account
+    if (submitterPhone && isValidSAPhoneNumber(submitterPhone)) {
+      const normalizedPhone = formatPhoneNumber(submitterPhone)
+      const carrier = detectCarrier(submitterPhone)
+
+      // Find or create submitter account
+      let account = await prisma.submitterAccount.findUnique({
+        where: { phoneNumber: normalizedPhone },
+      })
+
+      if (!account) {
+        // Create new unverified account (they can verify later to withdraw)
+        account = await prisma.submitterAccount.create({
+          data: {
+            phoneNumber: normalizedPhone,
+            carrier,
+            verified: false, // Will need OTP verification to withdraw
+          },
+        })
+      }
+
+      submitterAccountId = account.id
+      finalRevenueShareEnabled = true // Enable revenue share since they provided phone
+    }
+
+    // Fallback to encrypted contact if no phone but contact provided
+    const finalRevenueShareContact = finalRevenueShareEnabled && revenueShareContact && !submitterAccountId
       ? encryptEmail(revenueShareContact.trim())
       : null
 
@@ -283,6 +312,7 @@ export async function POST(request: NextRequest) {
         trendingScore: 100, // Start with full recency boost
         revenueShareEnabled: finalRevenueShareEnabled,
         revenueShareContact: finalRevenueShareContact,
+        submitterAccountId: submitterAccountId, // Link to phone-based account
         revenueSharePercent: 50,
         revenueShareStatus: finalRevenueShareEnabled ? 'PENDING' : 'NONE',
         // Content moderation fields

@@ -66,6 +66,10 @@ model Post {
   // Status: NONE, PENDING, PAID
   revenueShareStatus    String   @default("NONE")
 
+  // Link to submitter account (optional - for phone-based revenue sharing)
+  submitterAccountId    String?
+  submitterAccount      SubmitterAccount? @relation("SubmitterPosts", fields: [submitterAccountId], references: [id])
+
   // Timestamps
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -380,6 +384,10 @@ model LiveBillboard {
   revenueSharePercent   Int      @default(50)
   revenueShareStatus    String   @default("NONE") // NONE, PENDING, PAID
 
+  // Link to submitter account (optional - for phone-based revenue sharing)
+  submitterAccountId    String?
+  submitterAccount      SubmitterAccount? @relation("SubmitterLivePosts", fields: [submitterAccountId], references: [id])
+
   // Timestamps
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -611,4 +619,140 @@ model ScheduledPublish {
   @@index([scheduledFor])
   @@index([youtubeStatus])
   @@index([tiktokStatus])
+}
+
+// ============================================
+// SUBMITTER ACCOUNTS - Phone-based instant accounts for revenue sharing
+// ============================================
+
+// Submitter account - created with just a phone number
+model SubmitterAccount {
+  id            String   @id @default(cuid())
+
+  // Phone number (normalized to +27 format)
+  phoneNumber   String   @unique
+
+  // Optional 4-digit PIN for extra security
+  pin           String?
+
+  // Balance tracking (all amounts in cents ZAR)
+  balance       Int      @default(0)  // Current available balance
+  totalEarned   Int      @default(0)  // Lifetime earnings
+  totalWithdrawn Int     @default(0)  // Lifetime withdrawals
+
+  // Verification
+  verified      Boolean  @default(false)
+  verifiedAt    DateTime?
+
+  // Carrier detected from phone number
+  carrier       String?  // vodacom, mtn, telkom, cellc
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  earnings      SubmitterEarning[]
+  withdrawals   SubmitterWithdrawal[]
+  posts         Post[]            @relation("SubmitterPosts")
+  livePosts     LiveBillboard[] @relation("SubmitterLivePosts")
+
+  @@index([phoneNumber])
+  @@index([verified])
+}
+
+// Individual earning record - tracks each sale
+model SubmitterEarning {
+  id            String   @id @default(cuid())
+
+  // Link to submitter account
+  accountId     String
+  account       SubmitterAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // Link to purchase
+  purchaseId    String
+  // Note: Can't use @relation here as MediaPurchase doesn't have back-relation
+
+  // Earning details
+  amount        Int      // Amount earned in cents (after platform share)
+  grossAmount   Int      // Original purchase amount
+  description   String?  // What was sold (e.g., "Image: filename.jpg")
+
+  // Status: PENDING (payment processing), AVAILABLE (can withdraw), WITHDRAWN
+  status        String   @default("PENDING")
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  availableAt   DateTime? // When funds become available for withdrawal
+
+  @@index([accountId])
+  @@index([status])
+}
+
+// Withdrawal request
+model SubmitterWithdrawal {
+  id            String   @id @default(cuid())
+
+  // Link to submitter account
+  accountId     String
+  account       SubmitterAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // Withdrawal details
+  amount        Int      // Amount in cents
+  method        String   // CARRIER (airtime/bill), EFT, EWALLET
+
+  // For EFT withdrawals
+  bankName      String?
+  accountNumber String?
+  branchCode    String?
+
+  // For carrier/ewallet
+  phoneNumber   String?
+
+  // Status: PENDING, PROCESSING, COMPLETED, FAILED
+  status        String   @default("PENDING")
+  failureReason String?
+
+  // Processing info
+  processedAt   DateTime?
+  transactionId String?  // External transaction reference
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([accountId])
+  @@index([status])
+}
+
+// OTP verification codes
+model OtpCode {
+  id            String   @id @default(cuid())
+
+  // Phone number this OTP is for
+  phoneNumber   String
+
+  // The 6-digit code
+  code          String
+
+  // Purpose: VERIFY_ACCOUNT, LOGIN, WITHDRAW
+  purpose       String
+
+  // Attempts tracking
+  attempts      Int      @default(0)
+  maxAttempts   Int      @default(3)
+
+  // Expiry (5 minutes)
+  expiresAt     DateTime
+
+  // Used flag
+  used          Boolean  @default(false)
+  usedAt        DateTime?
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+
+  @@index([phoneNumber])
+  @@index([code])
+  @@index([expiresAt])
 }

@@ -4,6 +4,7 @@ import {
   verifyWebhookSignature,
   CarrierWebhookPayload,
 } from '@/lib/carrier-billing'
+import { creditSubmitterEarning } from '@/lib/submitter-earnings'
 
 /**
  * Carrier Billing Webhook Handler
@@ -93,6 +94,18 @@ export async function POST(request: NextRequest) {
           }
         })
         console.log('[Carrier Webhook] Payment completed:', purchase.id)
+
+        // Credit the submitter's account if linked
+        const mediaType = purchase.liveMediaId ? 'live' : 'file'
+        const mediaId = purchase.liveMediaId || purchase.fileId
+        if (mediaId) {
+          const creditResult = await creditSubmitterEarning({
+            purchaseId: purchase.id,
+            mediaType,
+            mediaId,
+          })
+          console.log('[Carrier Webhook] Submitter credit result:', creditResult)
+        }
         break
 
       case 'failed':
