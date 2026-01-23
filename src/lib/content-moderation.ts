@@ -156,7 +156,7 @@ function determineStatus(score: number, flags: ContentFlag[]): ModerationResult 
   return {
     status,
     score,
-    flags: [...new Set(flags)], // Remove duplicates
+    flags: Array.from(new Set(flags)), // Remove duplicates
     requiresReview,
     reason: flags.length > 0 ? `Detected: ${flags.join(', ')}` : undefined
   }

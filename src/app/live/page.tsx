@@ -39,6 +39,7 @@ import {
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
+import { FullscreenVideoPlayer } from '@/components/FullscreenVideoPlayer'
 
 interface Media {
   id: string
@@ -153,7 +154,7 @@ export default function LiveBillboardPage() {
 
   // Inline comments state (Facebook-style)
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set())
-  const [postComments, setPostComments] = useState<Record<string, { displayName: string; content: string; createdAt: string }[]>>({})
+  const [postComments, setPostComments] = useState<Record<string, { id?: string; displayName: string; content: string; createdAt: string }[]>>({})
   const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set())
   const [newComments, setNewComments] = useState<Record<string, string>>({})
   const [postingComment, setPostingComment] = useState<Set<string>>(new Set())
@@ -164,6 +165,14 @@ export default function LiveBillboardPage() {
   const [reportDescription, setReportDescription] = useState<string>('')
   const [submittingReport, setSubmittingReport] = useState(false)
   const [reportSuccess, setReportSuccess] = useState(false)
+
+  // Fullscreen video state
+  const [fullscreenVideo, setFullscreenVideo] = useState<{
+    isOpen: boolean
+    src: string
+    poster?: string
+    postId: string
+  } | null>(null)
 
   // Fetch posts
   const fetchPosts = useCallback(async (isRefresh = false, isPoll = false) => {
@@ -507,6 +516,23 @@ export default function LiveBillboardPage() {
         return next
       })
     }
+  }
+
+  // Open fullscreen video with comments
+  const openFullscreenVideo = async (src: string, postId: string, poster?: string) => {
+    // Load comments if not already loaded
+    if (!postComments[postId]) {
+      try {
+        const res = await fetch(`/api/live/${postId}`)
+        const data = await res.json()
+        if (data.success && data.data.comments) {
+          setPostComments(prev => ({ ...prev, [postId]: data.data.comments }))
+        }
+      } catch {
+        // Ignore errors, will show empty comments
+      }
+    }
+    setFullscreenVideo({ isOpen: true, src, postId, poster })
   }
 
   // Submit report
@@ -1148,10 +1174,23 @@ export default function LiveBillboardPage() {
                                 loading="lazy"
                               />
                             ) : media.mimeType.startsWith('video/') ? (
-                              <AutoPlayVideo
-                                src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                                className="w-full h-full"
-                              />
+                              <div
+                                className="w-full h-full cursor-pointer"
+                                onClick={() => openFullscreenVideo(
+                                  getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path),
+                                  post.publicId
+                                )}
+                              >
+                                <AutoPlayVideo
+                                  src={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                  className="w-full h-full pointer-events-none"
+                                />
+                                {/* Tap to expand indicator */}
+                                <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 rounded text-white text-xs flex items-center gap-1">
+                                  <VideoIcon className="h-3 w-3" />
+                                  Tap to expand
+                                </div>
+                              </div>
                             ) : null}
                           </div>
                         ))}
@@ -1581,6 +1620,41 @@ export default function LiveBillboardPage() {
             )}
           </div>
         </div>
+      )}
+
+      {/* Fullscreen Video Player */}
+      {fullscreenVideo?.isOpen && (
+        <FullscreenVideoPlayer
+          src={fullscreenVideo.src}
+          poster={fullscreenVideo.poster}
+          postId={fullscreenVideo.postId}
+          comments={postComments[fullscreenVideo.postId] || []}
+          onClose={() => setFullscreenVideo(null)}
+          onAddComment={async (content) => {
+            // Reuse existing comment posting logic
+            const publicId = fullscreenVideo.postId
+            try {
+              const res = await fetch(`/api/live/${publicId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  content,
+                  sessionToken,
+                }),
+              })
+              const data = await res.json()
+              if (data.success) {
+                // Add new comment to local state
+                setPostComments(prev => ({
+                  ...prev,
+                  [publicId]: [...(prev[publicId] || []), data.data.comment],
+                }))
+              }
+            } catch {
+              console.error('Failed to post comment')
+            }
+          }}
+        />
       )}
     </div>
   )
