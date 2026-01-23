@@ -36,6 +36,7 @@ model Post {
   category      Category  @relation(fields: [categoryId], references: [id])
 
   // Location info (optional, user-provided)
+  country       String    @default("sa") // Country code: sa, ng, ke, etc.
   province      String?
   city          String?
   organization  String?   // Company/Government dept involved
@@ -347,6 +348,7 @@ model LiveBillboard {
   category     String   @default("OTHER")
 
   // Location
+  country      String   @default("sa") // Country code: sa, ng, ke, etc.
   province     String?
   city         String?
 
@@ -419,6 +421,7 @@ model LiveBillboard {
   @@index([status, isHappeningNow])
   @@index([moderationStatus])
   @@index([auctionStatus, auctionEndsAt])
+  @@index([country, createdAt])
 }
 
 // Auction bids for exclusive content rights
@@ -673,8 +676,9 @@ model ScheduledPublish {
 model SubmitterAccount {
   id            String   @id @default(cuid())
 
-  // Phone number (normalized to +27 format)
+  // Phone number (normalized to international format)
   phoneNumber   String   @unique
+  country       String   @default("sa") // Country code: sa, ng, ke, etc.
 
   // Optional 4-digit PIN for extra security
   pin           String?

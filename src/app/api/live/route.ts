@@ -103,6 +103,7 @@ export async function GET(request: NextRequest) {
     await autoEndExpiredAuctions()
 
     const { searchParams } = new URL(request.url)
+    const country = searchParams.get('country') || 'sa' // Default to South Africa
     const category = searchParams.get('category')
     const province = searchParams.get('province')
     const sort = searchParams.get('sort') || 'latest' // latest, trending, hot
@@ -118,6 +119,7 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const whereClause: {
       status: string
+      country?: string
       category?: string
       province?: string
       isHappeningNow?: boolean
@@ -125,6 +127,7 @@ export async function GET(request: NextRequest) {
       moderationStatus?: { notIn: string[] }
     } = {
       status: 'LIVE',
+      country, // Filter by country
       // Only show posts that are APPROVED or PENDING (not FLAGGED or REJECTED)
       moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] },
     }
@@ -182,21 +185,21 @@ export async function GET(request: NextRequest) {
     // Get total count for pagination
     const totalCount = await prisma.liveBillboard.count({ where: whereClause })
 
-    // Get category counts for filters (only active posts from last 7 days)
+    // Get category counts for filters (only active posts from last 7 days, filtered by country)
     const categoryCounts = await prisma.liveBillboard.groupBy({
       by: ['category'],
-      where: { status: 'LIVE', createdAt: { gte: sevenDaysAgo } },
+      where: { status: 'LIVE', country, createdAt: { gte: sevenDaysAgo } },
       _count: { category: true },
     })
 
-    // Get "Happening Now" count
+    // Get "Happening Now" count (filtered by country)
     const happeningNowCount = await prisma.liveBillboard.count({
-      where: { status: 'LIVE', isHappeningNow: true, createdAt: { gte: sevenDaysAgo } },
+      where: { status: 'LIVE', country, isHappeningNow: true, createdAt: { gte: sevenDaysAgo } },
     })
 
-    // Get archive count
+    // Get archive count (filtered by country)
     const archiveCount = await prisma.liveBillboard.count({
-      where: { status: 'LIVE', createdAt: { lt: sevenDaysAgo } },
+      where: { status: 'LIVE', country, createdAt: { lt: sevenDaysAgo } },
     })
 
     return NextResponse.json({
@@ -257,7 +260,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { content, category, province, city, sessionToken, displayName, isHappeningNow, revenueShareEnabled, revenueShareContact, submitterPhone } = body
+    const { content, category, province, city, sessionToken, displayName, isHappeningNow, revenueShareEnabled, revenueShareContact, submitterPhone, country } = body
+    const finalCountry = country || 'sa' // Default to South Africa
 
     // Validation
     if (!content || content.trim().length === 0) {
@@ -347,6 +351,7 @@ export async function POST(request: NextRequest) {
         publicId: nanoid(10),
         content: sanitizedContent,
         category: finalCategory,
+        country: finalCountry, // Store the country
         province: province || null,
         city: city || null,
         displayName: finalDisplayName,
