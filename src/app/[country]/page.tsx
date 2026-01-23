@@ -179,7 +179,7 @@ export default function CountryHomePage() {
                     Earn Money for Your Content
                   </h2>
                   <p className="text-gray-300">
-                    Upload videos and photos of breaking news. Earn 50% every time someone purchases your content.
+                    Capture videos and photos of breaking news directly from your camera. Earn 50% every time someone purchases your content.
                   </p>
                 </div>
               </div>
@@ -439,11 +439,11 @@ export default function CountryHomePage() {
 
             <div className="bg-black/40 backdrop-blur-sm rounded-2xl p-6 border border-red-500/30 text-center">
               <div className="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Video className="h-7 w-7 text-white" />
+                <Users className="h-7 w-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Go Viral</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Reach Buyers</h3>
               <p className="text-gray-300 text-sm">
-                Your breaking news reaches thousands instantly. Build your reputation as a trusted reporter.
+                Your content is seen by journalists, newsrooms, and media buyers looking for authentic footage.
               </p>
             </div>
 
@@ -610,10 +610,10 @@ export default function CountryHomePage() {
           <div className="bg-gradient-to-br from-red-900/20 to-orange-900/20 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-red-500/30">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Start Earning in 60 Seconds
+                How It Works
               </h2>
               <p className="text-lg text-gray-300">
-                See something newsworthy? Capture it and start earning.
+                See something newsworthy? Capture it and put it up for sale.
               </p>
             </div>
 
@@ -639,8 +639,8 @@ export default function CountryHomePage() {
                 },
                 {
                   step: '4',
-                  title: 'Get Paid',
-                  description: 'Earn 50% when viewers purchase your content. Withdraw from R10.',
+                  title: 'Earn Money',
+                  description: 'When buyers purchase your content, you earn 50%. Withdraw from R10.',
                   icon: DollarSign,
                 },
               ].map((item) => (
@@ -806,8 +806,8 @@ export default function CountryHomePage() {
               Your Phone. Your Story. Your Earnings.
             </h2>
             <p className="text-xl text-gray-300 mb-4">
-              Join thousands of citizen journalists across {config.name}.
-              Capture breaking news and get paid for your authentic content.
+              Become a citizen journalist in {config.name}.
+              Capture breaking news and get paid when buyers purchase your content.
             </p>
             <div className="flex items-center justify-center gap-4 mb-8 text-sm">
               <span className="flex items-center gap-1 text-green-400">
