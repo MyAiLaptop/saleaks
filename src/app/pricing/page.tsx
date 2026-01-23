@@ -76,7 +76,7 @@ export default function PricingPage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/background.png')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-6xl mx-auto px-4 py-12">

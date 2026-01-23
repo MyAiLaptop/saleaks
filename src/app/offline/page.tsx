@@ -6,7 +6,7 @@ export default function OfflinePage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat flex items-center justify-center"
-      style={{ backgroundImage: "url('/api/static/uploads/background.png')" }}
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/background.png')" }}
     >
       <div className="bg-black/60 absolute inset-0" />
       <div className="text-center relative z-10 px-4">
