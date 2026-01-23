@@ -17,7 +17,7 @@ const nextConfig = {
           // Allow R2 storage URLs for media content
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: *.r2.cloudflarestorage.com *.r2.dev media.saleaks.co.za; media-src 'self' blob: *.r2.cloudflarestorage.com *.r2.dev media.saleaks.co.za; font-src 'self'; connect-src 'self' *.r2.cloudflarestorage.com media.saleaks.co.za; frame-ancestors 'none';"
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.r2.cloudflarestorage.com https://*.r2.dev https://media.saleaks.co.za; media-src 'self' blob: https://*.r2.cloudflarestorage.com https://*.r2.dev https://media.saleaks.co.za; font-src 'self'; connect-src 'self' https://*.r2.cloudflarestorage.com https://media.saleaks.co.za; frame-ancestors 'none';"
           },
           // Referrer policy - don't leak referrer info
           { key: 'Referrer-Policy', value: 'no-referrer' },
@@ -34,10 +34,9 @@ const nextConfig = {
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate' },
           { key: 'Pragma', value: 'no-cache' },
           { key: 'Expires', value: '0' },
-          // Cross-Origin policies
-          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
-          { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
-          { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+          // Cross-Origin policies - relaxed to allow R2 media loading
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+          // Note: COEP removed to allow loading images from R2 without CORS headers
         ],
       },
     ];
