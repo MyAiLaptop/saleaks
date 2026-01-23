@@ -269,7 +269,8 @@ export function SubmitterLogin({ onLoginSuccess }: SubmitterLoginProps) {
         )}
 
         <p className="text-xs text-gray-500 text-center mt-6">
-          By signing in, you agree to our Terms of Service and Privacy Policy
+          By signing in, you agree to our{' '}
+          <a href="/terms" className="text-primary-400 hover:underline">Terms & Conditions</a>
         </p>
       </div>
     </div>
