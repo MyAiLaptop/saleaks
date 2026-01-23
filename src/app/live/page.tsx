@@ -116,6 +116,8 @@ export default function LiveBillboardPage() {
   const [uploadingMedia, setUploadingMedia] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
+  const [showCameraPermissionDialog, setShowCameraPermissionDialog] = useState(false)
+  const [cameraPermissionDenied, setCameraPermissionDenied] = useState(false)
 
   // Revenue sharing
   const [revenueShareEnabled, setRevenueShareEnabled] = useState(false)
@@ -223,6 +225,42 @@ export default function LiveBillboardPage() {
   const handleVideoRecordingComplete = (file: File) => {
     setSelectedFiles(prev => [...prev, file].slice(0, 4))
     setShowVideoRecorder(false)
+  }
+
+  // Request camera permission before showing recorder
+  const requestCameraPermission = async () => {
+    try {
+      // First check if we already have permission
+      const permissionStatus = await navigator.permissions.query({ name: 'camera' as PermissionName })
+
+      if (permissionStatus.state === 'granted') {
+        // Already have permission, show recorder
+        setShowVideoRecorder(true)
+        return
+      }
+
+      if (permissionStatus.state === 'denied') {
+        // Permission was denied, show help dialog
+        setCameraPermissionDenied(true)
+        setShowCameraPermissionDialog(true)
+        return
+      }
+
+      // Permission is 'prompt' - request access
+      setShowCameraPermissionDialog(true)
+      setCameraPermissionDenied(false)
+
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      // Permission granted - stop the test stream and show recorder
+      stream.getTracks().forEach(track => track.stop())
+      setShowCameraPermissionDialog(false)
+      setShowVideoRecorder(true)
+    } catch (err) {
+      console.error('Camera permission error:', err)
+      // Permission denied or error
+      setCameraPermissionDenied(true)
+      setShowCameraPermissionDialog(true)
+    }
   }
 
   // Create post
@@ -513,7 +551,7 @@ export default function LiveBillboardPage() {
                   {selectedFiles.length < 4 && (
                     <button
                       type="button"
-                      onClick={() => setShowVideoRecorder(true)}
+                      onClick={requestCameraPermission}
                       className="w-full mb-3 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:from-red-600 hover:to-pink-600 transition-all flex items-center justify-center gap-2 font-medium"
                     >
                       <Video className="h-5 w-5" />
@@ -1085,6 +1123,70 @@ export default function LiveBillboardPage() {
           )}
         </div>
       </div>
+
+      {/* Camera Permission Dialog */}
+      {showCameraPermissionDialog && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-ink-800 rounded-2xl p-6 max-w-md w-full">
+            <div className="w-16 h-16 bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Video className="h-8 w-8 text-primary-400" />
+            </div>
+
+            {cameraPermissionDenied ? (
+              <>
+                <h3 className="text-xl font-semibold text-white text-center mb-2">Camera Access Denied</h3>
+                <p className="text-gray-400 text-center mb-4">
+                  To record video, you need to allow camera access in your browser settings.
+                </p>
+                <div className="bg-ink-700 rounded-lg p-4 mb-6 text-sm">
+                  <p className="text-white font-medium mb-2">How to enable:</p>
+                  <ul className="text-gray-400 space-y-1">
+                    <li>• <strong>iPhone Safari:</strong> Tap aA in address bar → Website Settings → Camera → Allow</li>
+                    <li>• <strong>Android Chrome:</strong> Tap lock icon → Permissions → Camera → Allow</li>
+                    <li>• <strong>Desktop:</strong> Click the camera icon in the address bar</li>
+                  </ul>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCameraPermissionDialog(false)}
+                    className="flex-1 py-3 bg-ink-700 text-white rounded-lg hover:bg-ink-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowCameraPermissionDialog(false)
+                      setCameraPermissionDenied(false)
+                      requestCameraPermission()
+                    }}
+                    className="flex-1 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="text-xl font-semibold text-white text-center mb-2">Allow Camera Access</h3>
+                <p className="text-gray-400 text-center mb-6">
+                  SA Leaks needs access to your camera and microphone to record video. Please tap &quot;Allow&quot; when prompted.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCameraPermissionDialog(false)}
+                    className="flex-1 py-3 bg-ink-700 text-white rounded-lg hover:bg-ink-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Video Recorder Modal */}
       {showVideoRecorder && (
