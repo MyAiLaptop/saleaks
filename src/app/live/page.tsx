@@ -229,35 +229,22 @@ export default function LiveBillboardPage() {
 
   // Request camera permission before showing recorder
   const requestCameraPermission = async () => {
-    try {
-      // First check if we already have permission
-      const permissionStatus = await navigator.permissions.query({ name: 'camera' as PermissionName })
-
-      if (permissionStatus.state === 'granted') {
-        // Already have permission, show recorder
-        setShowVideoRecorder(true)
-        return
-      }
-
-      if (permissionStatus.state === 'denied') {
-        // Permission was denied, show help dialog
-        setCameraPermissionDenied(true)
-        setShowCameraPermissionDialog(true)
-        return
-      }
-
-      // Permission is 'prompt' - request access
+    // Check if mediaDevices is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraPermissionDenied(true)
       setShowCameraPermissionDialog(true)
-      setCameraPermissionDenied(false)
+      return
+    }
 
+    try {
+      // Directly try to access camera - this triggers the browser's permission prompt
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       // Permission granted - stop the test stream and show recorder
       stream.getTracks().forEach(track => track.stop())
-      setShowCameraPermissionDialog(false)
       setShowVideoRecorder(true)
     } catch (err) {
       console.error('Camera permission error:', err)
-      // Permission denied or error
+      // Permission denied or error - show help dialog
       setCameraPermissionDenied(true)
       setShowCameraPermissionDialog(true)
     }
