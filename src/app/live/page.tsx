@@ -300,21 +300,36 @@ export default function LiveBillboardPage() {
         // Upload media if any files selected
         if (selectedFiles.length > 0) {
           setUploadingMedia(true)
-          const formData = new FormData()
-          formData.append('sessionToken', newSessionToken)
-          selectedFiles.forEach(file => formData.append('files', file))
+          try {
+            const formData = new FormData()
+            formData.append('sessionToken', newSessionToken)
+            selectedFiles.forEach(file => formData.append('files', file))
 
-          const mediaRes = await fetch(`/api/live/${data.data.post.publicId}/media`, {
-            method: 'POST',
-            body: formData,
-          })
-          const mediaData = await mediaRes.json()
+            const mediaRes = await fetch(`/api/live/${data.data.post.publicId}/media`, {
+              method: 'POST',
+              body: formData,
+            })
 
-          if (mediaData.success) {
-            // Update the post with media
-            data.data.post.media = mediaData.data.media
+            if (!mediaRes.ok) {
+              console.error('Media upload HTTP error:', mediaRes.status)
+              setError(`Media upload failed (HTTP ${mediaRes.status}). Your post was created but without media. Please try uploading again.`)
+            } else {
+              const mediaData = await mediaRes.json()
+
+              if (mediaData.success) {
+                // Update the post with media
+                data.data.post.media = mediaData.data.media
+              } else {
+                console.error('Media upload failed:', mediaData.error)
+                setError(`Media upload failed: ${mediaData.error || 'Unknown error'}. Your post was created but without media.`)
+              }
+            }
+          } catch (mediaError) {
+            console.error('Media upload error:', mediaError)
+            setError('Media upload timed out or failed. Your post was created but without media. For videos, try a shorter/smaller file.')
+          } finally {
+            setUploadingMedia(false)
           }
-          setUploadingMedia(false)
         }
 
         setPosts(prev => [data.data.post, ...prev])
