@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio, User, Globe } from 'lucide-react'
+import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio, User, Globe, ShoppingBag } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -83,6 +83,13 @@ export function Header() {
               <span>Alerts</span>
             </Link>
             <Link
+              href={`/${country}/buyer`}
+              className="flex items-center space-x-1 text-blue-400 hover:text-blue-300 transition-colors font-medium"
+            >
+              <ShoppingBag className="h-4 w-4" />
+              <span>Buyer</span>
+            </Link>
+            <Link
               href={`/${country}/account`}
               className="flex items-center space-x-1 text-gray-300 hover:text-primary-400 transition-colors"
             >
@@ -152,6 +159,14 @@ export function Header() {
               >
                 <Bell className="h-5 w-5" />
                 <span>Get Alerts</span>
+              </Link>
+              <Link
+                href={`/${country}/buyer`}
+                className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <ShoppingBag className="h-5 w-5" />
+                <span>Buyer Portal</span>
               </Link>
               <Link
                 href={`/${country}/account`}
