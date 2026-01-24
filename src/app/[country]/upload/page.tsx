@@ -137,7 +137,7 @@ export default function CountryUploadPage() {
     return (
       <div
         className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png')" }}
+        style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
       >
         <div className="bg-black/60 min-h-screen">
           <div className="max-w-2xl mx-auto px-4 py-16">
@@ -228,7 +228,7 @@ export default function CountryUploadPage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png')" }}
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-3xl mx-auto px-4 py-12">

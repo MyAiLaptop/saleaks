@@ -106,7 +106,7 @@ export default function CountryHomePage() {
   }
 
   // Global background for all countries
-  const backgroundUrl = 'https://media.saleaks.co.za/global_back_ground.png'
+  const backgroundUrl = 'https://media.saleaks.co.za/global_back_ground.png?v=2'
 
   return (
     <div

@@ -74,7 +74,7 @@ export default function GlobalLandingPage() {
   return (
     <div
       className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png')" }}
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
     >
       <div className="bg-black/70 min-h-screen">
         {/* Header */}
