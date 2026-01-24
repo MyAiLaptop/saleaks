@@ -97,6 +97,10 @@ export async function createOtp(
   return { success: true, code }
 }
 
+// Test bypass code - remove in production when SMS is live
+const TEST_BYPASS_CODE = '000000'
+const ENABLE_TEST_BYPASS = process.env.ENABLE_OTP_BYPASS === 'true' || process.env.NODE_ENV === 'development'
+
 /**
  * Verify an OTP code
  */
@@ -106,6 +110,12 @@ export async function verifyOtp(
   purpose: OtpPurpose
 ): Promise<{ success: boolean; error?: string }> {
   const normalizedPhone = formatPhoneNumber(phoneNumber)
+
+  // Test bypass: allow 000000 when SMS service isn't configured
+  if (ENABLE_TEST_BYPASS && code === TEST_BYPASS_CODE) {
+    console.log(`[OTP] Test bypass used for ${normalizedPhone} (purpose: ${purpose})`)
+    return { success: true }
+  }
 
   // Find the OTP
   const otp = await prisma.otpCode.findFirst({
