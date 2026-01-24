@@ -162,7 +162,8 @@ export function createPayFastPayment(options: {
   buyerPhone?: string
   buyerName?: string
 }): { url: string; redirectUrl: string; data: Record<string, string>; signature: string } {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  // Trim whitespace/newlines from baseUrl (common copy-paste issue in env vars)
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000').trim()
 
   const merchantId = process.env.PAYFAST_MERCHANT_ID || ''
   const merchantKey = process.env.PAYFAST_MERCHANT_KEY || ''
