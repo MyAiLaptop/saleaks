@@ -182,6 +182,7 @@ export async function POST(request: NextRequest) {
       })
 
       console.log(`[PayFast] Created payment ${paymentId} for buyer ${buyerId}, package ${packageId}, amount R${(creditPackage.price / 100).toFixed(2)}`)
+      console.log(`[PayFast] Redirect URL: ${payment.redirectUrl}`)
 
       return NextResponse.json({
         success: true,
@@ -189,6 +190,7 @@ export async function POST(request: NextRequest) {
           paymentMethod: 'payfast',
           paymentId,
           paymentUrl: payment.url,
+          redirectUrl: payment.redirectUrl, // Direct redirect URL with GET params
           paymentData: payment.data,
           isSandbox: isPayFastSandbox(),
         },

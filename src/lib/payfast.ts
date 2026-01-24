@@ -161,7 +161,7 @@ export function createPayFastPayment(options: {
   buyerEmail?: string
   buyerPhone?: string
   buyerName?: string
-}): { url: string; data: Record<string, string>; signature: string } {
+}): { url: string; redirectUrl: string; data: Record<string, string>; signature: string } {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
   const merchantId = process.env.PAYFAST_MERCHANT_ID || ''
@@ -199,20 +199,28 @@ export function createPayFastPayment(options: {
     }
   }
 
-  // Generate signature
-  const signature = generatePayFastSignature(paymentData, passphrase)
-
-  // Convert to string record for form submission
+  // Convert to string record (remove empty values)
   const formData: Record<string, string> = {}
   for (const [key, value] of Object.entries(paymentData)) {
     if (value !== undefined && value !== null && value !== '') {
       formData[key] = String(value)
     }
   }
+
+  // Generate signature from filtered data
+  const signature = generatePayFastSignature(formData, passphrase)
   formData.signature = signature
+
+  // Build redirect URL with GET parameters (like the working Python implementation)
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(formData)) {
+    params.append(key, value)
+  }
+  const redirectUrl = `${getPayFastUrl()}?${params.toString()}`
 
   return {
     url: getPayFastUrl(),
+    redirectUrl, // Use this for direct redirect (GET method)
     data: formData,
     signature,
   }

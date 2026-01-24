@@ -314,10 +314,8 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
           setCreditsSuccess(data.data.message)
           await refreshAccount()
         } else if (data.data.paymentMethod === 'payfast') {
-          // PayFast - redirect to payment page
-          setPayFastUrl(data.data.paymentUrl)
-          setPayFastData(data.data.paymentData)
-          // Form will auto-submit via useEffect
+          // PayFast - redirect directly using GET parameters (like working Python implementation)
+          window.location.href = data.data.redirectUrl
         }
       } else {
         setCreditsError(data.error || 'Failed to purchase credits')
