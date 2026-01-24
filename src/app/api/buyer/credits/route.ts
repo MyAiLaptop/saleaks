@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { nanoid } from 'nanoid'
 import { prisma } from '@/lib/db'
 import { CREDIT_PACKAGES, formatCredits } from '@/lib/credits'
+import { createPayFastPayment, isPayFastSandbox, PAYFAST_SANDBOX_CREDENTIALS } from '@/lib/payfast'
 
 /**
  * GET /api/buyer/credits
@@ -67,7 +69,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/buyer/credits
  *
- * Purchase credits - initiate payment
+ * Purchase credits - initiate payment via PayFast
  */
 export async function POST(request: NextRequest) {
   try {
@@ -104,9 +106,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For demo/development, auto-complete purchase
-    if (process.env.NODE_ENV === 'development' || process.env.DEMO_MODE === 'true') {
-      // Add credits immediately
+    // Demo mode - auto-complete purchase (for testing without payment)
+    if (paymentMethod === 'demo' && (process.env.NODE_ENV === 'development' || process.env.DEMO_MODE === 'true')) {
       const totalCredits = creditPackage.credits + creditPackage.bonus
 
       await prisma.$transaction([
@@ -142,25 +143,60 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Production: initiate payment
+    // PayFast payment
     if (paymentMethod === 'payfast') {
-      // TODO: Integrate PayFast
+      // Generate unique payment ID
+      const paymentId = `pay_${nanoid(16)}`
+
+      // Create pending transaction record
+      await prisma.creditTransaction.create({
+        data: {
+          buyerId,
+          type: 'PURCHASE_PENDING',
+          amount: creditPackage.credits + creditPackage.bonus,
+          balanceBefore: buyer.creditBalance,
+          balanceAfter: buyer.creditBalance, // Not added yet
+          referenceType: 'PAYFAST',
+          referenceId: paymentId,
+          description: `Pending: ${creditPackage.name} package`,
+        },
+      })
+
+      // Use sandbox credentials in development
+      if (isPayFastSandbox()) {
+        process.env.PAYFAST_MERCHANT_ID = process.env.PAYFAST_MERCHANT_ID || PAYFAST_SANDBOX_CREDENTIALS.merchant_id
+        process.env.PAYFAST_MERCHANT_KEY = process.env.PAYFAST_MERCHANT_KEY || PAYFAST_SANDBOX_CREDENTIALS.merchant_key
+      }
+
+      // Create PayFast payment
+      const payment = createPayFastPayment({
+        paymentId,
+        amount: creditPackage.price,
+        itemName: `Leakpoint Credits - ${creditPackage.name}`,
+        itemDescription: `${formatCredits(creditPackage.credits)} credits${creditPackage.bonus > 0 ? ` + ${formatCredits(creditPackage.bonus)} bonus` : ''}`,
+        buyerId,
+        packageId,
+        buyerEmail: buyer.email || undefined,
+        buyerPhone: buyer.phoneNumber,
+        buyerName: buyer.organizationName || buyer.contactPerson || undefined,
+      })
+
+      console.log(`[PayFast] Created payment ${paymentId} for buyer ${buyerId}, package ${packageId}, amount R${(creditPackage.price / 100).toFixed(2)}`)
+
       return NextResponse.json({
         success: true,
         data: {
-          paymentUrl: process.env.PAYFAST_URL || 'https://sandbox.payfast.co.za/eng/process',
-          paymentData: {
-            merchant_id: process.env.PAYFAST_MERCHANT_ID,
-            merchant_key: process.env.PAYFAST_MERCHANT_KEY,
-            amount: (creditPackage.price / 100).toFixed(2),
-            item_name: `Leakpoint Credits - ${creditPackage.name}`,
-            custom_str1: buyerId,
-            custom_str2: packageId,
-          },
+          paymentMethod: 'payfast',
+          paymentId,
+          paymentUrl: payment.url,
+          paymentData: payment.data,
+          isSandbox: isPayFastSandbox(),
         },
       })
-    } else if (paymentMethod === 'carrier') {
-      // TODO: Integrate carrier billing
+    }
+
+    // Carrier billing (not implemented)
+    if (paymentMethod === 'carrier') {
       return NextResponse.json({
         success: false,
         error: 'Carrier billing not yet available for credit purchases',
@@ -169,7 +205,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: false,
-      error: 'Invalid payment method',
+      error: 'Invalid payment method. Use "payfast" or "demo".',
     }, { status: 400 })
   } catch (error) {
     console.error('[Credits Purchase] Error:', error)

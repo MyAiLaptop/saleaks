@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
   Loader2,
@@ -189,6 +190,40 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
   const [showCreditsModal, setShowCreditsModal] = useState(false)
   const [buyingCredits, setBuyingCredits] = useState(false)
   const [creditsError, setCreditsError] = useState('')
+  const [creditsSuccess, setCreditsSuccess] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState<'demo' | 'payfast'>('demo')
+
+  // PayFast form ref
+  const payFastFormRef = useRef<HTMLFormElement>(null)
+  const [payFastData, setPayFastData] = useState<Record<string, string> | null>(null)
+  const [payFastUrl, setPayFastUrl] = useState('')
+
+  // URL search params for payment status
+  const searchParams = useSearchParams()
+
+  // Check for payment status from URL (after PayFast redirect)
+  useEffect(() => {
+    const paymentStatus = searchParams.get('payment')
+    if (paymentStatus === 'success') {
+      setCreditsSuccess('Payment successful! Your credits have been added.')
+      setActiveTab('credits')
+      // Refresh account to get updated balance
+      refreshAccount()
+      // Clear the URL params
+      window.history.replaceState({}, '', window.location.pathname)
+    } else if (paymentStatus === 'cancelled') {
+      setCreditsError('Payment was cancelled. No credits were added.')
+      setActiveTab('credits')
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [searchParams])
+
+  // Submit PayFast form when data is set
+  useEffect(() => {
+    if (payFastData && payFastFormRef.current) {
+      payFastFormRef.current.submit()
+    }
+  }, [payFastData])
 
   // Fetch active auctions
   const fetchAuctions = useCallback(async () => {
@@ -262,20 +297,28 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
   const handleBuyCredits = async (packageId: string) => {
     setBuyingCredits(true)
     setCreditsError('')
+    setCreditsSuccess('')
 
     try {
       const res = await fetch('/api/buyer/credits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ packageId, paymentMethod: 'demo' }),
+        body: JSON.stringify({ packageId, paymentMethod }),
       })
 
       const data = await res.json()
 
       if (data.success) {
-        // Refresh account to get new balance
-        await refreshAccount()
-        setShowCreditsModal(false)
+        if (data.data.demoMode) {
+          // Demo mode - credits added immediately
+          setCreditsSuccess(data.data.message)
+          await refreshAccount()
+        } else if (data.data.paymentMethod === 'payfast') {
+          // PayFast - redirect to payment page
+          setPayFastUrl(data.data.paymentUrl)
+          setPayFastData(data.data.paymentData)
+          // Form will auto-submit via useEffect
+        }
       } else {
         setCreditsError(data.error || 'Failed to purchase credits')
       }
@@ -674,6 +717,50 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
               <p className="text-gray-400">Buy credits to bid on auctions. Credits are deducted when you win.</p>
             </div>
 
+            {/* Payment Method Selection */}
+            <div className="mb-6 p-4 bg-ink-800 rounded-xl border border-ink-700">
+              <h4 className="text-white font-medium mb-3">Payment Method</h4>
+              <div className="flex gap-3">
+                <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg cursor-pointer border-2 transition-colors ${
+                  paymentMethod === 'payfast' ? 'border-primary-500 bg-primary-500/10' : 'border-ink-600 hover:border-ink-500'
+                }`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="payfast"
+                    checked={paymentMethod === 'payfast'}
+                    onChange={() => setPaymentMethod('payfast')}
+                    className="h-4 w-4 text-primary-500"
+                  />
+                  <div>
+                    <div className="text-white font-medium">PayFast</div>
+                    <div className="text-xs text-gray-400">Credit/Debit Card, EFT, SnapScan</div>
+                  </div>
+                </label>
+                <label className={`flex-1 flex items-center gap-3 p-3 rounded-lg cursor-pointer border-2 transition-colors ${
+                  paymentMethod === 'demo' ? 'border-green-500 bg-green-500/10' : 'border-ink-600 hover:border-ink-500'
+                }`}>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="demo"
+                    checked={paymentMethod === 'demo'}
+                    onChange={() => setPaymentMethod('demo')}
+                    className="h-4 w-4 text-green-500"
+                  />
+                  <div>
+                    <div className="text-white font-medium">Demo Mode</div>
+                    <div className="text-xs text-gray-400">Free credits for testing</div>
+                  </div>
+                </label>
+              </div>
+              {paymentMethod === 'demo' && (
+                <div className="mt-3 p-2 bg-green-500/10 border border-green-500/30 rounded-lg">
+                  <p className="text-xs text-green-400">Demo mode: Credits added instantly without payment (for testing only)</p>
+                </div>
+              )}
+            </div>
+
             {/* Credit Packages */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {CREDIT_PACKAGES.map((pkg) => (
@@ -715,7 +802,7 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
                     ) : (
                       <>
                         <CreditCard className="h-5 w-5" />
-                        Buy Now
+                        {paymentMethod === 'payfast' ? 'Pay with PayFast' : 'Add Credits (Demo)'}
                       </>
                     )}
                   </button>
@@ -723,10 +810,32 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
               ))}
             </div>
 
+            {/* Success Message */}
+            {creditsSuccess && (
+              <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm text-center">
+                {creditsSuccess}
+              </div>
+            )}
+
+            {/* Error Message */}
             {creditsError && (
               <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm text-center">
                 {creditsError}
               </div>
+            )}
+
+            {/* Hidden PayFast Form */}
+            {payFastData && (
+              <form
+                ref={payFastFormRef}
+                action={payFastUrl}
+                method="POST"
+                className="hidden"
+              >
+                {Object.entries(payFastData).map(([key, value]) => (
+                  <input key={key} type="hidden" name={key} value={value} />
+                ))}
+              </form>
             )}
 
             <div className="mt-6 p-4 bg-ink-800/50 rounded-xl border border-ink-700">
