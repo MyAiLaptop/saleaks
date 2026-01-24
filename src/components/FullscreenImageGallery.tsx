@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, ShieldAlert } from 'lucide-react'
+import { DynamicWatermark } from './DynamicWatermark'
+import { useContentProtection, contentProtectionStyles } from '@/hooks/useContentProtection'
 
 interface GalleryImage {
   id: string
@@ -14,12 +16,18 @@ interface FullscreenImageGalleryProps {
   images: GalleryImage[]
   initialIndex: number
   onClose: () => void
+  contentId?: string // For forensic watermarking
+  userId?: string // For forensic watermarking
+  enableProtection?: boolean // Enable content protection features
 }
 
 export function FullscreenImageGallery({
   images,
   initialIndex,
   onClose,
+  contentId,
+  userId,
+  enableProtection = true,
 }: FullscreenImageGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isZoomed, setIsZoomed] = useState(false)
@@ -27,7 +35,20 @@ export function FullscreenImageGallery({
   const [touchDelta, setTouchDelta] = useState(0)
   const [isClosing, setIsClosing] = useState(false)
   const [verticalDelta, setVerticalDelta] = useState(0)
+  const [showProtectionWarning, setShowProtectionWarning] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // Content protection hook
+  const { isBlurred, protectionStyles } = useContentProtection({
+    preventRightClick: enableProtection,
+    preventKeyboardShortcuts: enableProtection,
+    blurOnHidden: enableProtection,
+    onSuspiciousActivity: (activity) => {
+      console.log('[ContentProtection] Activity detected:', activity.type)
+      setShowProtectionWarning(true)
+      setTimeout(() => setShowProtectionWarning(false), 3000)
+    },
+  })
 
   const currentImage = images[currentIndex]
   const hasNext = currentIndex < images.length - 1
@@ -175,8 +196,45 @@ export function FullscreenImageGallery({
     <div
       ref={containerRef}
       className="fixed inset-0 z-[100] bg-black flex flex-col"
-      style={{ opacity: getOpacity() }}
+      style={{
+        opacity: getOpacity(),
+        ...(enableProtection ? { ...protectionStyles, ...contentProtectionStyles } : {}),
+      }}
     >
+      {/* Dynamic Forensic Watermark */}
+      {enableProtection && contentId && (
+        <DynamicWatermark
+          contentId={contentId}
+          userId={userId}
+          visible={true}
+          opacity={0.35}
+          fontSize="sm"
+          showSecondary={true}
+          showTertiary={false}
+        />
+      )}
+
+      {/* Protection Warning Banner */}
+      {showProtectionWarning && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 animate-pulse">
+          <div className="flex items-center gap-2 px-4 py-2 bg-red-600/90 text-white rounded-full text-sm font-medium shadow-lg">
+            <ShieldAlert className="h-4 w-4" />
+            <span>This content is protected and traceable</span>
+          </div>
+        </div>
+      )}
+
+      {/* Blur overlay when content should be hidden */}
+      {isBlurred && (
+        <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-40">
+          <div className="text-center text-white p-6">
+            <ShieldAlert className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
+            <p className="text-lg font-semibold">Content Protected</p>
+            <p className="text-sm text-gray-400 mt-2">Return to this tab to continue viewing</p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4 bg-gradient-to-b from-black/60 to-transparent">
         <button
@@ -233,6 +291,7 @@ export function FullscreenImageGallery({
             className={`max-w-full max-h-full object-contain transition-transform duration-200 ${
               isZoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in'
             }`}
+            style={enableProtection ? contentProtectionStyles : undefined}
             onClick={toggleZoom}
             draggable={false}
           />

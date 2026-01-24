@@ -1,7 +1,9 @@
 'use client'
 
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { X, Volume2, VolumeX, Play, Pause, Send, Heart, ThumbsUp, Flame, Laugh, Angry, Download } from 'lucide-react'
+import { X, Volume2, VolumeX, Play, Pause, Send, Heart, ThumbsUp, Flame, Laugh, Angry, Download, ShieldAlert } from 'lucide-react'
+import { DynamicWatermark } from './DynamicWatermark'
+import { useContentProtection, contentProtectionStyles } from '@/hooks/useContentProtection'
 
 interface Comment {
   id?: string
@@ -34,6 +36,8 @@ interface FullscreenVideoPlayerProps {
   comments: Comment[]
   onClose: () => void
   onAddComment: (content: string) => Promise<void>
+  userId?: string // For forensic watermarking
+  enableProtection?: boolean // Enable content protection features
 }
 
 const EMOJI_OPTIONS = [
@@ -52,6 +56,8 @@ export function FullscreenVideoPlayer({
   comments,
   onClose,
   onAddComment,
+  userId,
+  enableProtection = true,
 }: FullscreenVideoPlayerProps) {
   // Use watermarked version for downloads, clean version for viewing
   const downloadSrc = watermarkedSrc || src
@@ -66,7 +72,20 @@ export function FullscreenVideoPlayer({
   const [floatingComments, setFloatingComments] = useState<FloatingComment[]>([])
   const [emojiReactions, setEmojiReactions] = useState<EmojiReaction[]>([])
   const [showControls, setShowControls] = useState(true)
+  const [showProtectionWarning, setShowProtectionWarning] = useState(false)
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Content protection hook
+  const { isBlurred, suspiciousCount, protectionStyles } = useContentProtection({
+    preventRightClick: enableProtection,
+    preventKeyboardShortcuts: enableProtection,
+    blurOnHidden: enableProtection,
+    onSuspiciousActivity: (activity) => {
+      console.log('[ContentProtection] Activity detected:', activity.type)
+      setShowProtectionWarning(true)
+      setTimeout(() => setShowProtectionWarning(false), 3000)
+    },
+  })
 
   // Initialize floating comments from existing comments
   useEffect(() => {
@@ -232,6 +251,7 @@ export function FullscreenVideoPlayer({
       ref={containerRef}
       className="fixed inset-0 z-[100] bg-black flex items-center justify-center"
       onClick={handleContainerClick}
+      style={enableProtection ? { ...protectionStyles, ...contentProtectionStyles } : undefined}
     >
       {/* Video */}
       <video
@@ -239,6 +259,7 @@ export function FullscreenVideoPlayer({
         src={src}
         poster={poster}
         className="w-full h-full object-contain"
+        style={enableProtection ? contentProtectionStyles : undefined}
         playsInline
         loop
         muted={isMuted}
@@ -247,6 +268,40 @@ export function FullscreenVideoPlayer({
           togglePlay()
         }}
       />
+
+      {/* Dynamic Forensic Watermark */}
+      {enableProtection && (
+        <DynamicWatermark
+          contentId={postId}
+          userId={userId}
+          visible={true}
+          opacity={0.35}
+          fontSize="sm"
+          showSecondary={true}
+          showTertiary={false}
+        />
+      )}
+
+      {/* Protection Warning Banner */}
+      {showProtectionWarning && (
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 animate-pulse">
+          <div className="flex items-center gap-2 px-4 py-2 bg-red-600/90 text-white rounded-full text-sm font-medium shadow-lg">
+            <ShieldAlert className="h-4 w-4" />
+            <span>This content is protected and traceable</span>
+          </div>
+        </div>
+      )}
+
+      {/* Blur overlay when content should be hidden */}
+      {isBlurred && (
+        <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-40">
+          <div className="text-center text-white p-6">
+            <ShieldAlert className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
+            <p className="text-lg font-semibold">Content Protected</p>
+            <p className="text-sm text-gray-400 mt-2">Return to this tab to continue viewing</p>
+          </div>
+        </div>
+      )}
 
       {/* Gradient overlays for better text visibility */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40 pointer-events-none" />
