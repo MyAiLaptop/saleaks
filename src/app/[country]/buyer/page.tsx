@@ -20,6 +20,7 @@ interface BuyerAccount {
   totalPurchases: number
   totalSpent: number
   auctionsWon: number
+  creditBalance: number
   verified: boolean
 }
 

@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
         totalPurchases: account.totalPurchases,
         totalSpent: account.totalSpent,
         auctionsWon: account.auctionsWon,
+        creditBalance: account.creditBalance,
         recentPurchases: account.purchases,
         createdAt: account.createdAt,
       },

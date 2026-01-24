@@ -24,6 +24,12 @@ import {
   Phone,
   User,
   Building2,
+  Bookmark,
+  BookmarkPlus,
+  CreditCard,
+  Download,
+  ExternalLink,
+  Wallet,
 } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
 import { Flag } from '@/components/Flag'
@@ -80,6 +86,30 @@ interface BuyerAccount {
   totalPurchases: number
   totalSpent: number
   auctionsWon: number
+  creditBalance: number
+}
+
+interface WonContent {
+  id: string
+  postId: string
+  title: string
+  category: string
+  province: string | null
+  wonAt: string
+  amountPaid: number
+  downloadToken: string
+  downloadsUsed: number
+  maxDownloads: number
+  expiresAt: string
+  media: {
+    id: string
+    filename: string
+    mimeType: string
+    size: number
+    isVideo: boolean
+    thumbnail: string | null
+    downloadUrl: string
+  }[]
 }
 
 interface BuyerDashboardProps {
@@ -88,7 +118,15 @@ interface BuyerDashboardProps {
 }
 
 // Tab types
-type TabType = 'browse' | 'mybids' | 'won' | 'settings'
+type TabType = 'browse' | 'mybids' | 'content' | 'credits' | 'settings'
+
+// Credit packages
+const CREDIT_PACKAGES = [
+  { id: 'starter', name: 'Starter', credits: 10000, price: 10000, bonus: 0, description: 'R100 credits' },
+  { id: 'basic', name: 'Basic', credits: 25000, price: 22500, bonus: 2500, description: '10% bonus' },
+  { id: 'pro', name: 'Pro', credits: 50000, price: 42500, bonus: 7500, description: '15% bonus', popular: true },
+  { id: 'enterprise', name: 'Enterprise', credits: 100000, price: 80000, bonus: 20000, description: '20% bonus' },
+]
 
 // R2 URL helper
 const R2_PUBLIC_URL = 'https://media.saleaks.co.za'
@@ -143,6 +181,15 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
   const [bidError, setBidError] = useState('')
   const [bidSuccess, setBidSuccess] = useState('')
 
+  // My content state (won auctions for download)
+  const [myContent, setMyContent] = useState<WonContent[]>([])
+  const [loadingContent, setLoadingContent] = useState(false)
+
+  // Credits modal state
+  const [showCreditsModal, setShowCreditsModal] = useState(false)
+  const [buyingCredits, setBuyingCredits] = useState(false)
+  const [creditsError, setCreditsError] = useState('')
+
   // Fetch active auctions
   const fetchAuctions = useCallback(async () => {
     setLoadingAuctions(true)
@@ -181,19 +228,80 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
     }
   }, [])
 
+  // Fetch my content (won auctions)
+  const fetchMyContent = useCallback(async () => {
+    setLoadingContent(true)
+    try {
+      const res = await fetch('/api/buyer/content')
+      const data = await res.json()
+
+      if (data.success) {
+        setMyContent(data.data.content)
+      }
+    } catch (error) {
+      console.error('Failed to fetch content:', error)
+    } finally {
+      setLoadingContent(false)
+    }
+  }, [])
+
+  // Refresh account (for credit balance updates)
+  const refreshAccount = useCallback(async () => {
+    try {
+      const res = await fetch('/api/buyer/account')
+      const data = await res.json()
+      if (data.success) {
+        setAccount(data.data)
+      }
+    } catch (error) {
+      console.error('Failed to refresh account:', error)
+    }
+  }, [])
+
+  // Buy credits
+  const handleBuyCredits = async (packageId: string) => {
+    setBuyingCredits(true)
+    setCreditsError('')
+
+    try {
+      const res = await fetch('/api/buyer/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packageId, paymentMethod: 'demo' }),
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        // Refresh account to get new balance
+        await refreshAccount()
+        setShowCreditsModal(false)
+      } else {
+        setCreditsError(data.error || 'Failed to purchase credits')
+      }
+    } catch (error) {
+      setCreditsError('Network error. Please try again.')
+    } finally {
+      setBuyingCredits(false)
+    }
+  }
+
   // Initial fetch
   useEffect(() => {
     fetchAuctions()
     fetchMyBids()
-  }, [fetchAuctions, fetchMyBids])
+    fetchMyContent()
+  }, [fetchAuctions, fetchMyBids, fetchMyContent])
 
   // Auto-refresh auctions every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       if (activeTab === 'browse') {
         fetchAuctions()
-      } else if (activeTab === 'mybids' || activeTab === 'won') {
+      } else if (activeTab === 'mybids') {
         fetchMyBids()
+      } else if (activeTab === 'content') {
+        fetchMyContent()
       }
     }, 30000)
 
@@ -285,6 +393,17 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
             </Link>
 
             <div className="flex items-center gap-4">
+              {/* Credits balance */}
+              <button
+                type="button"
+                onClick={() => setShowCreditsModal(true)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/20 hover:bg-yellow-500/30 rounded-full transition-colors"
+              >
+                <Wallet className="h-4 w-4 text-yellow-400" />
+                <span className="text-sm text-yellow-400 font-medium">{formatCurrency(account.creditBalance)}</span>
+                <span className="text-xs text-yellow-400/70">+</span>
+              </button>
+
               {/* Stats badges */}
               <div className="hidden md:flex items-center gap-3">
                 <div className="flex items-center gap-1.5 px-3 py-1 bg-green-500/20 rounded-full">
@@ -314,11 +433,12 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-3 -mb-px">
+          <div className="flex gap-1 mt-3 -mb-px overflow-x-auto">
             {[
-              { id: 'browse', label: 'Browse Auctions', icon: Gavel },
+              { id: 'browse', label: 'Auctions', icon: Gavel },
               { id: 'mybids', label: 'My Bids', icon: TrendingUp, badge: bidStats.activeBids },
-              { id: 'won', label: 'Won', icon: Trophy, badge: bidStats.won },
+              { id: 'content', label: 'My Content', icon: Download, badge: myContent.length },
+              { id: 'credits', label: 'Credits', icon: Wallet },
               { id: 'settings', label: 'Settings', icon: Bell },
             ].map((tab) => (
               <button
@@ -462,19 +582,25 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
           </div>
         )}
 
-        {/* Won Tab */}
-        {activeTab === 'won' && (
+        {/* My Content Tab - Downloads */}
+        {activeTab === 'content' && (
           <div>
-            {loadingBids ? (
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-white mb-2">My Content</h2>
+              <p className="text-gray-400">Download your won auction content - clean originals without watermarks.</p>
+            </div>
+
+            {loadingContent ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="h-8 w-8 animate-spin text-primary-400" />
               </div>
-            ) : myBids.filter(b => b.buyerStatus === 'won').length === 0 ? (
+            ) : myContent.length === 0 ? (
               <div className="text-center py-20">
-                <Trophy className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-white mb-2">No Won Auctions Yet</h3>
-                <p className="text-gray-400 mb-4">Win auctions to get exclusive content rights.</p>
+                <Download className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-white mb-2">No Content Yet</h3>
+                <p className="text-gray-400 mb-4">Win auctions to get exclusive content access.</p>
                 <button
+                  type="button"
                   onClick={() => setActiveTab('browse')}
                   className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition-colors"
                 >
@@ -483,13 +609,135 @@ export function BuyerDashboard({ initialAccount, onLogout }: BuyerDashboardProps
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {myBids
-                  .filter(b => b.buyerStatus === 'won')
-                  .map((bid) => (
-                    <WonAuctionCard key={bid.postId} bid={bid} country={country} />
-                  ))}
+                {myContent.map((content) => (
+                  <div key={content.id} className="bg-ink-800 rounded-xl border border-green-500/30 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Trophy className="h-5 w-5 text-green-400" />
+                      <span className="text-green-400 font-medium">Exclusive Content</span>
+                    </div>
+
+                    <p className="text-gray-300 text-sm mb-3">{content.title}</p>
+
+                    <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+                      <span>Won: {new Date(content.wonAt).toLocaleDateString()}</span>
+                      <span>Paid: {formatCurrency(content.amountPaid)}</span>
+                    </div>
+
+                    {/* Media files for download */}
+                    <div className="space-y-2">
+                      {content.media.map((media) => (
+                        <a
+                          key={media.id}
+                          href={media.downloadUrl}
+                          className="flex items-center justify-between p-3 bg-ink-700 hover:bg-ink-600 rounded-lg transition-colors group"
+                        >
+                          <div className="flex items-center gap-3">
+                            {media.isVideo ? (
+                              <Play className="h-5 w-5 text-blue-400" />
+                            ) : (
+                              <ImageIcon className="h-5 w-5 text-green-400" />
+                            )}
+                            <div>
+                              <div className="text-white text-sm font-medium">{media.filename}</div>
+                              <div className="text-xs text-gray-500">
+                                {media.isVideo ? 'Video' : 'Image'} • {(media.size / 1024 / 1024).toFixed(1)} MB
+                              </div>
+                            </div>
+                          </div>
+                          <Download className="h-5 w-5 text-gray-400 group-hover:text-green-400 transition-colors" />
+                        </a>
+                      ))}
+                    </div>
+
+                    <div className="mt-3 text-xs text-gray-500">
+                      Downloads: {content.downloadsUsed} / {content.maxDownloads} •
+                      Expires: {new Date(content.expiresAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Credits Tab */}
+        {activeTab === 'credits' && (
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-6 text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-yellow-500/20 rounded-xl mb-4">
+                <Wallet className="h-8 w-8 text-yellow-400" />
+                <div>
+                  <div className="text-2xl font-bold text-white">{formatCurrency(account.creditBalance)}</div>
+                  <div className="text-sm text-yellow-400">Current Balance</div>
+                </div>
+              </div>
+              <p className="text-gray-400">Buy credits to bid on auctions. Credits are deducted when you win.</p>
+            </div>
+
+            {/* Credit Packages */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {CREDIT_PACKAGES.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className={`bg-ink-800 rounded-xl p-6 border-2 transition-colors ${
+                    (pkg as any).popular ? 'border-primary-500' : 'border-ink-700 hover:border-ink-600'
+                  }`}
+                >
+                  {(pkg as any).popular && (
+                    <div className="text-xs text-primary-400 font-medium mb-2">MOST POPULAR</div>
+                  )}
+                  <h3 className="text-lg font-bold text-white">{pkg.name}</h3>
+                  <div className="flex items-baseline gap-2 mt-2">
+                    <span className="text-3xl font-bold text-white">{formatCurrency(pkg.price)}</span>
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    <div className="text-green-400 font-medium">
+                      Get {formatCurrency(pkg.credits + pkg.bonus)} in credits
+                    </div>
+                    {pkg.bonus > 0 && (
+                      <div className="text-sm text-yellow-400">
+                        +{formatCurrency(pkg.bonus)} bonus!
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleBuyCredits(pkg.id)}
+                    disabled={buyingCredits}
+                    className={`w-full mt-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                      (pkg as any).popular
+                        ? 'bg-primary-500 hover:bg-primary-600 text-white'
+                        : 'bg-ink-700 hover:bg-ink-600 text-white'
+                    }`}
+                  >
+                    {buyingCredits ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        <CreditCard className="h-5 w-5" />
+                        Buy Now
+                      </>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {creditsError && (
+              <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm text-center">
+                {creditsError}
+              </div>
+            )}
+
+            <div className="mt-6 p-4 bg-ink-800/50 rounded-xl border border-ink-700">
+              <h4 className="text-white font-medium mb-2">How Credits Work</h4>
+              <ul className="text-sm text-gray-400 space-y-1">
+                <li>• You need credits to place bids on auctions</li>
+                <li>• Credits are only deducted when you WIN an auction</li>
+                <li>• If you're outbid, your credits stay in your account</li>
+                <li>• Won content is available for immediate download - no watermarks</li>
+              </ul>
+            </div>
           </div>
         )}
 

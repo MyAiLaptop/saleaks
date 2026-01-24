@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { creditSubmitterEarning } from '@/lib/submitter-earnings'
+import { deductForAuctionWin, formatCredits } from '@/lib/credits'
 
 /**
  * POST /api/auction/end
  *
  * End an auction and process the winner (if any)
+ * - Deducts credits from winner's account
+ * - Creates WonAuction record for download access
+ * - Credits submitter with 50% share
+ *
  * Can be called by:
  * 1. Cron job to process expired auctions
- * 2. Payment webhook after winning bidder pays
+ * 2. Manual trigger
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { postId, paymentConfirmed, paymentId } = body
+    const { postId } = body
 
     // If no postId, process all expired auctions
     if (!postId) {
@@ -24,143 +29,9 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Get the post
-    const post = await prisma.liveBillboard.findFirst({
-      where: {
-        OR: [
-          { id: postId },
-          { publicId: postId },
-        ],
-      },
-      include: {
-        bids: {
-          where: { isWinning: true },
-          take: 1,
-        },
-        media: {
-          take: 1,
-        },
-      },
-    })
-
-    if (!post) {
-      return NextResponse.json(
-        { success: false, error: 'Post not found' },
-        { status: 404 }
-      )
-    }
-
-    // If payment confirmed, finalize the exclusive sale
-    if (paymentConfirmed && post.bids.length > 0) {
-      const winningBid = post.bids[0]
-
-      // Update post as sold exclusively
-      await prisma.$transaction([
-        prisma.liveBillboard.update({
-          where: { id: post.id },
-          data: {
-            auctionStatus: 'SOLD',
-            isExclusive: true,
-            exclusiveBuyerId: winningBid.bidderPhone,
-            exclusiveBuyerName: winningBid.bidderName || 'Media Organization',
-            soldAt: new Date(),
-          },
-        }),
-        prisma.auctionBid.update({
-          where: { id: winningBid.id },
-          data: {
-            isWinner: true,
-            paymentStatus: 'PAID',
-            paymentId,
-          },
-        }),
-      ])
-
-      // Credit submitter (if revenue share enabled)
-      if (post.submitterAccountId && post.media[0]) {
-        const { nanoid } = await import('nanoid')
-        const submitterShare = Math.floor(winningBid.amount * 0.5)
-
-        // Create a purchase record for the auction sale
-        const purchase = await prisma.mediaPurchase.create({
-          data: {
-            email: winningBid.bidderEmail || 'auction@saleaks.co.za',
-            amount: winningBid.amount,
-            submitterShare,
-            platformShare: winningBid.amount - submitterShare,
-            status: 'COMPLETED',
-            paymentProvider: 'auction',
-            paymentId,
-            liveMediaId: post.media[0].id,
-            downloadToken: nanoid(32),
-            downloadsUsed: 0,
-            maxDownloads: 99, // Unlimited for exclusive buyer
-            expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year for exclusive
-          },
-        })
-
-        await creditSubmitterEarning({
-          purchaseId: purchase.id,
-          mediaType: 'live',
-          mediaId: post.media[0].id,
-        })
-      }
-
-      console.log(`[Auction] Post ${postId} sold exclusively to ${winningBid.bidderName || winningBid.bidderPhone}`)
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          status: 'SOLD',
-          isExclusive: true,
-          buyer: winningBid.bidderName || 'Media Organization',
-          amount: winningBid.amount,
-        },
-      })
-    }
-
-    // Check if auction has expired
-    if (post.auctionEndsAt && new Date() < post.auctionEndsAt) {
-      return NextResponse.json(
-        { success: false, error: 'Auction has not ended yet' },
-        { status: 400 }
-      )
-    }
-
-    // Auction ended - check for winning bid
-    if (post.bids.length > 0) {
-      // There's a winning bid - wait for payment
-      return NextResponse.json({
-        success: true,
-        data: {
-          status: 'AWAITING_PAYMENT',
-          winningBid: {
-            amount: post.bids[0].amount,
-            bidder: post.bids[0].bidderName || 'Anonymous',
-          },
-          message: 'Awaiting payment from winning bidder',
-        },
-      })
-    }
-
-    // No bids - move to public sale
-    await prisma.liveBillboard.update({
-      where: { id: post.id },
-      data: {
-        auctionStatus: 'ENDED',
-        isExclusive: false,
-      },
-    })
-
-    console.log(`[Auction] Post ${postId} moved to public sale (no bids)`)
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        status: 'PUBLIC_SALE',
-        message: 'No bids received. Content is now available for public purchase.',
-      },
-    })
+    // Process single auction
+    const result = await processSingleAuction(postId)
+    return NextResponse.json(result)
   } catch (error) {
     console.error('[Auction End] Error:', error)
     return NextResponse.json(
@@ -171,7 +42,215 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * Process all expired auctions
+ * Process a single auction by postId
+ */
+async function processSingleAuction(postId: string) {
+  // Get the post with winning bid
+  const post = await prisma.liveBillboard.findFirst({
+    where: {
+      OR: [
+        { id: postId },
+        { publicId: postId },
+      ],
+    },
+    include: {
+      bids: {
+        where: { isWinning: true },
+        take: 1,
+      },
+      media: {
+        take: 1,
+      },
+    },
+  })
+
+  if (!post) {
+    return { success: false, error: 'Post not found' }
+  }
+
+  // Check if auction has ended
+  if (post.auctionEndsAt && new Date() < post.auctionEndsAt) {
+    return {
+      success: false,
+      error: 'Auction has not ended yet',
+      endsAt: post.auctionEndsAt,
+    }
+  }
+
+  // Already processed?
+  if (post.auctionStatus === 'SOLD' || post.auctionStatus === 'ENDED') {
+    return {
+      success: true,
+      data: {
+        status: post.auctionStatus,
+        message: 'Auction already processed',
+      },
+    }
+  }
+
+  // No winning bid - move to public sale
+  if (post.bids.length === 0) {
+    await prisma.liveBillboard.update({
+      where: { id: post.id },
+      data: {
+        auctionStatus: 'ENDED',
+        isExclusive: false,
+      },
+    })
+
+    console.log(`[Auction] Post ${postId} moved to public sale (no bids)`)
+
+    return {
+      success: true,
+      data: {
+        status: 'PUBLIC_SALE',
+        message: 'No bids received. Content is now available for public purchase.',
+      },
+    }
+  }
+
+  // Has winning bid - process winner
+  const winningBid = post.bids[0]
+
+  // Find buyer account
+  const buyer = await prisma.buyerAccount.findUnique({
+    where: { phoneNumber: winningBid.bidderPhone },
+  })
+
+  if (!buyer) {
+    console.error(`[Auction] Winner buyer account not found: ${winningBid.bidderPhone}`)
+    return {
+      success: false,
+      error: 'Winner buyer account not found',
+    }
+  }
+
+  // Check buyer has sufficient credits
+  if (buyer.creditBalance < winningBid.amount) {
+    console.error(`[Auction] Winner has insufficient credits: ${formatCredits(buyer.creditBalance)} < ${formatCredits(winningBid.amount)}`)
+    // This shouldn't happen since we validate on bid, but handle gracefully
+    // Mark auction as failed and move to public sale
+    await prisma.liveBillboard.update({
+      where: { id: post.id },
+      data: {
+        auctionStatus: 'ENDED',
+        isExclusive: false,
+      },
+    })
+
+    return {
+      success: false,
+      error: 'Winner has insufficient credits. Content moved to public sale.',
+    }
+  }
+
+  // Deduct credits from winner
+  const creditResult = await deductForAuctionWin(
+    buyer.id,
+    winningBid.amount,
+    post.id,
+    post.content.substring(0, 50)
+  )
+
+  if (!creditResult.success) {
+    console.error(`[Auction] Failed to deduct credits: ${creditResult.error}`)
+    return {
+      success: false,
+      error: 'Failed to process payment',
+    }
+  }
+
+  // Create WonAuction record for download access
+  const { nanoid } = await import('nanoid')
+  const downloadToken = nanoid(32)
+  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year
+
+  const wonAuction = await prisma.wonAuction.create({
+    data: {
+      buyerId: buyer.id,
+      postId: post.id,
+      winningBid: winningBid.amount,
+      downloadToken,
+      maxDownloads: 99,
+      expiresAt,
+    },
+  })
+
+  // Update post as sold exclusively
+  await prisma.$transaction([
+    prisma.liveBillboard.update({
+      where: { id: post.id },
+      data: {
+        auctionStatus: 'SOLD',
+        isExclusive: true,
+        exclusiveBuyerId: winningBid.bidderPhone,
+        exclusiveBuyerName: winningBid.bidderName || buyer.organizationName || 'Media Organization',
+        soldAt: new Date(),
+      },
+    }),
+    prisma.auctionBid.update({
+      where: { id: winningBid.id },
+      data: {
+        isWinner: true,
+        paymentStatus: 'PAID',
+      },
+    }),
+    prisma.buyerAccount.update({
+      where: { id: buyer.id },
+      data: {
+        auctionsWon: { increment: 1 },
+        totalSpent: { increment: winningBid.amount },
+      },
+    }),
+  ])
+
+  // Credit submitter (50% revenue share)
+  if (post.submitterAccountId && post.media[0]) {
+    const submitterShare = Math.floor(winningBid.amount * 0.5)
+
+    // Create a purchase record for tracking
+    const purchase = await prisma.mediaPurchase.create({
+      data: {
+        email: winningBid.bidderEmail || buyer.email || 'auction@saleaks.co.za',
+        amount: winningBid.amount,
+        submitterShare,
+        platformShare: winningBid.amount - submitterShare,
+        status: 'COMPLETED',
+        paymentProvider: 'credits',
+        paymentId: wonAuction.id,
+        liveMediaId: post.media[0].id,
+        downloadToken,
+        downloadsUsed: 0,
+        maxDownloads: 99,
+        expiresAt,
+      },
+    })
+
+    await creditSubmitterEarning({
+      purchaseId: purchase.id,
+      mediaType: 'live',
+      mediaId: post.media[0].id,
+    })
+
+    console.log(`[Auction] Credited submitter ${formatCredits(submitterShare)} for post ${postId}`)
+  }
+
+  console.log(`[Auction] Post ${postId} sold exclusively to ${buyer.organizationName || buyer.phoneNumber} for ${formatCredits(winningBid.amount)}`)
+
+  return {
+    success: true,
+    data: {
+      status: 'SOLD',
+      isExclusive: true,
+      buyer: winningBid.bidderName || buyer.organizationName || 'Media Organization',
+      amount: winningBid.amount,
+      downloadToken,
+    },
+  }
+}
+
+/**
+ * Process all expired auctions (called by cron)
  */
 async function processExpiredAuctions() {
   const now = new Date()
@@ -182,43 +261,38 @@ async function processExpiredAuctions() {
       auctionStatus: 'ACTIVE',
       auctionEndsAt: { lt: now },
     },
-    include: {
-      bids: {
-        where: { isWinning: true },
-        take: 1,
-      },
+    select: {
+      id: true,
+      publicId: true,
     },
   })
 
   let processed = 0
-  let withBids = 0
-  let noBids = 0
+  let sold = 0
+  let publicSale = 0
+  let failed = 0
 
   for (const post of expiredAuctions) {
-    if (post.bids.length > 0) {
-      // Has winning bid - mark as awaiting payment
-      // The winning bidder will be notified to complete payment
-      withBids++
-      // TODO: Send SMS to winning bidder to complete payment
-    } else {
-      // No bids - move to public sale
-      await prisma.liveBillboard.update({
-        where: { id: post.id },
-        data: {
-          auctionStatus: 'ENDED',
-          isExclusive: false,
-        },
-      })
-      noBids++
-    }
+    const result = await processSingleAuction(post.id)
+
     processed++
+    if (result.success) {
+      if (result.data?.status === 'SOLD') {
+        sold++
+      } else if (result.data?.status === 'PUBLIC_SALE') {
+        publicSale++
+      }
+    } else {
+      failed++
+    }
   }
 
-  console.log(`[Auction Cron] Processed ${processed} expired auctions: ${withBids} with bids, ${noBids} to public sale`)
+  console.log(`[Auction Cron] Processed ${processed} auctions: ${sold} sold, ${publicSale} to public sale, ${failed} failed`)
 
   return {
     processed,
-    withBids,
-    noBids,
+    sold,
+    publicSale,
+    failed,
   }
 }

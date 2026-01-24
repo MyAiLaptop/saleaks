@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { isValidSAPhoneNumber, formatPhoneNumber } from '@/lib/carrier-billing'
+import { formatCredits } from '@/lib/credits'
 
 // Minimum bid amount in cents (R50)
 const MINIMUM_BID = 5000
@@ -13,11 +14,12 @@ const SNIPE_EXTENSION_MS = 2 * 60 * 1000 // 2 minutes
  * POST /api/auction/bid
  *
  * Place a bid on a post's exclusive rights
+ * Requires sufficient credits in buyer account
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { postId, amount, phoneNumber, displayName, email } = body
+    const { postId, amount, phoneNumber, displayName, email, buyerId } = body
 
     // Validate inputs
     if (!postId) {
@@ -36,12 +38,38 @@ export async function POST(request: NextRequest) {
 
     if (!amount || amount < MINIMUM_BID) {
       return NextResponse.json(
-        { success: false, error: `Minimum bid is R${(MINIMUM_BID / 100).toFixed(2)}` },
+        { success: false, error: `Minimum bid is ${formatCredits(MINIMUM_BID)}` },
         { status: 400 }
       )
     }
 
     const normalizedPhone = formatPhoneNumber(phoneNumber)
+
+    // Find buyer account by phone number
+    const buyer = await prisma.buyerAccount.findUnique({
+      where: { phoneNumber: normalizedPhone },
+    })
+
+    if (!buyer) {
+      return NextResponse.json(
+        { success: false, error: 'Buyer account not found. Please register first.' },
+        { status: 400 }
+      )
+    }
+
+    // Check if buyer has sufficient credits
+    if (buyer.creditBalance < amount) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Insufficient credits. You have ${formatCredits(buyer.creditBalance)} but need ${formatCredits(amount)} to place this bid.`,
+          insufficientCredits: true,
+          currentBalance: buyer.creditBalance,
+          required: amount,
+        },
+        { status: 400 }
+      )
+    }
 
     // Get the post
     const post = await prisma.liveBillboard.findUnique({
@@ -79,7 +107,7 @@ export async function POST(request: NextRequest) {
     // Check bid is higher than current
     if (post.currentBid && amount <= post.currentBid) {
       return NextResponse.json(
-        { success: false, error: `Bid must be higher than current bid of R${(post.currentBid / 100).toFixed(2)}` },
+        { success: false, error: `Bid must be higher than current bid of ${formatCredits(post.currentBid)}` },
         { status: 400 }
       )
     }
@@ -96,14 +124,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Create bid and update post in transaction
+    // Note: Credits are NOT deducted here - only when auction is won
     const [bid] = await prisma.$transaction([
       // Create new bid
       prisma.auctionBid.create({
         data: {
           postId,
           bidderPhone: normalizedPhone,
-          bidderName: displayName || null,
-          bidderEmail: email || null,
+          bidderName: displayName || buyer.organizationName || null,
+          bidderEmail: email || buyer.email || null,
           amount,
           isWinning: true,
         },
@@ -132,7 +161,7 @@ export async function POST(request: NextRequest) {
 
     // TODO: Notify previous highest bidder they've been outbid (via SMS)
 
-    console.log(`[Auction] New bid on post ${postId}: R${(amount / 100).toFixed(2)} from ${normalizedPhone}`)
+    console.log(`[Auction] New bid on post ${postId}: ${formatCredits(amount)} from ${normalizedPhone} (has ${formatCredits(buyer.creditBalance)} credits)`)
 
     return NextResponse.json({
       success: true,
@@ -141,9 +170,10 @@ export async function POST(request: NextRequest) {
         amount,
         isHighestBid: true,
         auctionEndsAt: newAuctionEndsAt,
+        creditBalance: buyer.creditBalance, // Show current balance (not deducted until win)
         message: newAuctionEndsAt !== post.auctionEndsAt
-          ? 'Bid placed! Auction extended due to late bid.'
-          : 'Bid placed! You are the highest bidder.',
+          ? 'Bid placed! Auction extended due to late bid. Credits will be deducted if you win.'
+          : 'Bid placed! You are the highest bidder. Credits will be deducted if you win.',
       },
     })
   } catch (error) {

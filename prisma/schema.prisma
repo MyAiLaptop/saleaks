@@ -419,6 +419,7 @@ model LiveBillboard {
   comments     LiveBillboardComment[]
   reports      ContentReport[]
   bids         AuctionBid[]
+  wonAuctions  WonAuction[]
 
   @@index([category, createdAt])
   @@index([province, createdAt])
@@ -856,16 +857,82 @@ model BuyerAccount {
   totalSpent        Int   @default(0)  // In cents
   auctionsWon       Int   @default(0)
 
+  // Credit system - buyers pre-purchase credits to bid
+  creditBalance     Int   @default(0)  // Current credit balance in cents
+
   // Timestamps
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   // Relations
   purchases     BuyerPurchase[]
+  creditTransactions CreditTransaction[]
+  wonAuctions   WonAuction[]
 
   @@index([phoneNumber])
   @@index([verified])
   @@index([subscriptionTier])
+}
+
+// Track credit purchases and usage
+model CreditTransaction {
+  id            String   @id @default(cuid())
+
+  // Link to buyer account
+  buyerId       String
+  buyer         BuyerAccount @relation(fields: [buyerId], references: [id])
+
+  // Transaction details
+  type          String   // PURCHASE, AUCTION_WIN, REFUND, BONUS
+  amount        Int      // Amount in cents (positive for credits added, negative for spent)
+  balanceBefore Int      // Balance before transaction
+  balanceAfter  Int      // Balance after transaction
+
+  // Reference (what the transaction was for)
+  referenceType String?  // PAYFAST, CARRIER, AUCTION, ADMIN
+  referenceId   String?  // Payment ID or auction ID
+
+  // Description
+  description   String?  // Human-readable description
+
+  createdAt     DateTime @default(now())
+
+  @@index([buyerId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+// Track won auctions and their download access
+model WonAuction {
+  id            String   @id @default(cuid())
+
+  // Link to buyer
+  buyerId       String
+  buyer         BuyerAccount @relation(fields: [buyerId], references: [id])
+
+  // Link to post
+  postId        String
+  post          LiveBillboard @relation(fields: [postId], references: [id])
+
+  // Winning details
+  winningBid    Int      // Amount paid in cents
+  wonAt         DateTime @default(now())
+
+  // Download tracking
+  downloadToken String   @unique @default(cuid())
+  downloadsUsed Int      @default(0)
+  maxDownloads  Int      @default(99)  // Essentially unlimited for exclusive buyers
+  expiresAt     DateTime // When download access expires (1 year from win)
+
+  // Status
+  status        String   @default("ACTIVE")  // ACTIVE, EXPIRED, REVOKED
+
+  createdAt     DateTime @default(now())
+
+  @@index([buyerId])
+  @@index([postId])
+  @@index([downloadToken])
+  @@index([status])
 }
 
 // Track buyer purchases (links buyer to their media purchases)
