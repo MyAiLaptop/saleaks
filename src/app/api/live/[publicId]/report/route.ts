@@ -9,8 +9,12 @@ const REPORT_REASONS = [
   'SPAM',       // Spam or promotional content
   'FAKE',       // Fake news or AI-generated
   'HARASSMENT', // Harassment or bullying
+  'OFF_TOPIC',  // Not newsworthy / belongs in social
   'OTHER',      // Other violation
 ] as const
+
+// Threshold for auto-moving to Social section
+const OFF_TOPIC_THRESHOLD = 3
 
 // POST /api/live/[publicId]/report - Report a post
 export async function POST(
@@ -43,6 +47,7 @@ export async function POST(
       where: { publicId },
       select: {
         id: true,
+        category: true,
         reportCount: true,
         moderationStatus: true,
         status: true,
@@ -89,12 +94,31 @@ export async function POST(
       post.moderationStatus as 'PENDING' | 'APPROVED' | 'FLAGGED' | 'REJECTED'
     )
 
-    // Update the post with new report count and potentially new status
+    // Check if this is an OFF_TOPIC report and count how many we have
+    // Only move if not already in Social section (COMMUNITY or OTHER)
+    let moveToSocial = false
+    const socialCategories = ['COMMUNITY', 'OTHER']
+    if (reason === 'OFF_TOPIC' && !socialCategories.includes(post.category)) {
+      const offTopicCount = await prisma.contentReport.count({
+        where: {
+          postId: post.id,
+          reason: 'OFF_TOPIC',
+        },
+      })
+      // If we now have 3+ off-topic reports, move to COMMUNITY (Social section)
+      if (offTopicCount >= OFF_TOPIC_THRESHOLD) {
+        moveToSocial = true
+      }
+    }
+
+    // Update the post with new report count and potentially new status/category
     await prisma.liveBillboard.update({
       where: { id: post.id },
       data: {
         reportCount: { increment: 1 },
         moderationStatus: newStatus,
+        // Move to COMMUNITY if flagged as off-topic by users
+        ...(moveToSocial && { category: 'COMMUNITY' }),
         // If too many reports, hide the post
         status: shouldHide ? 'REMOVED' : post.status,
       },
@@ -103,7 +127,10 @@ export async function POST(
     return NextResponse.json({
       success: true,
       data: {
-        message: 'Report submitted successfully. Thank you for helping keep our community safe.',
+        message: moveToSocial
+          ? 'Report submitted. This post has been moved to the Social section based on community feedback.'
+          : 'Report submitted successfully. Thank you for helping keep our community safe.',
+        movedToSocial: moveToSocial,
       },
     })
   } catch (error) {

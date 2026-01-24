@@ -17,7 +17,8 @@ const PAYFAST_URL = process.env.NODE_ENV === 'production'
   : 'https://sandbox.payfast.co.za/eng/process'
 
 interface PurchaseRequest {
-  email: string
+  email?: string      // Optional - either email or phone required
+  phoneNumber?: string // Optional - for owner verification
   mediaType: 'file' | 'live'
   mediaId: string
 }
@@ -37,23 +38,43 @@ function generatePayFastSignature(data: Record<string, string>, passPhrase?: str
   return crypto.createHash('md5').update(stringToHash).digest('hex')
 }
 
+// Helper to normalize phone number
+function normalizePhone(phone: string): string {
+  // Remove all non-digit characters
+  const digits = phone.replace(/\D/g, '')
+  // Convert to +27 format
+  if (digits.startsWith('27')) return `+${digits}`
+  if (digits.startsWith('0')) return `+27${digits.slice(1)}`
+  return `+${digits}`
+}
+
 // POST /api/media/purchase - Create a purchase session
 export async function POST(request: NextRequest) {
   try {
     const body: PurchaseRequest = await request.json()
-    const { email, mediaType, mediaId } = body
+    const { email, phoneNumber, mediaType, mediaId } = body
 
-    // Validate email
-    if (!email || !email.includes('@')) {
+    // Validate - need either email or phone
+    if (!email && !phoneNumber) {
+      return NextResponse.json(
+        { success: false, error: 'Email or phone number required' },
+        { status: 400 }
+      )
+    }
+
+    if (email && !email.includes('@')) {
       return NextResponse.json(
         { success: false, error: 'Valid email required' },
         { status: 400 }
       )
     }
 
-    // Get media details and price
+    const normalizedPhone = phoneNumber ? normalizePhone(phoneNumber) : null
+
+    // Get media details and price, including submitter phone for owner verification
     let media: { id: string; mimeType: string; price: number | null; forSale: boolean; originalName: string } | null = null
     let postPublicId: string | null = null
+    let submitterPhone: string | null = null
 
     if (mediaType === 'file') {
       const file = await prisma.file.findUnique({
@@ -64,12 +85,18 @@ export async function POST(request: NextRequest) {
           price: true,
           forSale: true,
           originalName: true,
-          post: { select: { publicId: true } }
+          post: {
+            select: {
+              publicId: true,
+              submitterAccount: { select: { phoneNumber: true } }
+            }
+          }
         }
       })
       if (file) {
         media = file
         postPublicId = file.post.publicId
+        submitterPhone = file.post.submitterAccount?.phoneNumber || null
       }
     } else if (mediaType === 'live') {
       const liveMedia = await prisma.liveBillboardMedia.findUnique({
@@ -80,12 +107,20 @@ export async function POST(request: NextRequest) {
           price: true,
           forSale: true,
           originalName: true,
-          post: { select: { publicId: true } }
+          post: {
+            select: {
+              publicId: true,
+              submitterPhone: true,
+              submitterAccount: { select: { phoneNumber: true } }
+            }
+          }
         }
       })
       if (liveMedia) {
         media = liveMedia
         postPublicId = liveMedia.post.publicId
+        // Check both direct submitterPhone and linked account phone
+        submitterPhone = liveMedia.post.submitterPhone || liveMedia.post.submitterAccount?.phoneNumber || null
       }
     }
 
@@ -103,10 +138,50 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Calculate price
+    // CHECK IF THIS IS THE CONTENT OWNER - FREE DOWNLOAD!
+    const isOwner = normalizedPhone && submitterPhone && normalizedPhone === submitterPhone
+
+    if (isOwner) {
+      // Owner downloading their own content - FREE!
+      const downloadToken = nanoid(32)
+
+      const purchase = await prisma.mediaPurchase.create({
+        data: {
+          email: email || null,
+          phoneNumber: normalizedPhone,
+          fileId: mediaType === 'file' ? mediaId : null,
+          liveMediaId: mediaType === 'live' ? mediaId : null,
+          amount: 0, // FREE for owner
+          currency: 'ZAR',
+          downloadToken,
+          submitterShare: 0,
+          platformShare: 0,
+          isOwnerDownload: true,
+          status: 'COMPLETED', // Immediately completed - no payment needed
+          maxDownloads: 99, // Unlimited downloads for owner
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          message: 'This is your content! Download it for free.',
+          purchaseId: purchase.id,
+          downloadToken,
+          price: 0,
+          isOwnerDownload: true,
+          canDownloadNow: true,
+        }
+      })
+    }
+
+    // Calculate price - if submitter has no phone (anonymous), platform keeps 100%
     const isVideo = media.mimeType.startsWith('video/')
     const price = media.price ?? (isVideo ? DEFAULT_VIDEO_PRICE : DEFAULT_IMAGE_PRICE)
-    const submitterShare = Math.floor(price * (100 - PLATFORM_SHARE_PERCENT) / 100)
+
+    // Revenue split: 50/50 if submitter provided phone, 100% to platform if anonymous
+    const submitterShare = submitterPhone ? Math.floor(price * (100 - PLATFORM_SHARE_PERCENT) / 100) : 0
     const platformShare = price - submitterShare
 
     // Generate download token
@@ -115,7 +190,8 @@ export async function POST(request: NextRequest) {
     // Create purchase record
     const purchase = await prisma.mediaPurchase.create({
       data: {
-        email,
+        email: email || null,
+        phoneNumber: normalizedPhone,
         fileId: mediaType === 'file' ? mediaId : null,
         liveMediaId: mediaType === 'live' ? mediaId : null,
         amount: price,
@@ -123,6 +199,7 @@ export async function POST(request: NextRequest) {
         downloadToken,
         submitterShare,
         platformShare,
+        isOwnerDownload: false,
         status: 'PENDING',
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       }
@@ -141,7 +218,7 @@ export async function POST(request: NextRequest) {
         notify_url: `${appUrl}/api/media/payfast-webhook`,
         name_first: 'Media',
         name_last: 'Buyer',
-        email_address: email,
+        email_address: email || 'buyer@leakpoint.co.za', // Fallback email for PayFast
         m_payment_id: purchase.id,
         amount: (price / 100).toFixed(2), // Convert cents to Rands
         item_name: `Watermark-free ${isVideo ? 'Video' : 'Image'}: ${media.originalName.substring(0, 100)}`,

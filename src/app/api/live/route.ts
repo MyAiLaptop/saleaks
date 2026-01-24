@@ -18,6 +18,13 @@ const BILLBOARD_CATEGORIES = [
   'OTHER',
 ] as const
 
+// Feed sections - maps to multiple categories
+const FEED_SECTIONS = {
+  news: ['BREAKING', 'CRIME', 'PROTEST'],           // Main news: serious/newsworthy content
+  local: ['TRAFFIC', 'LOADSHEDDING', 'WEATHER'],    // Local updates: utility info
+  social: ['COMMUNITY', 'OTHER'],                    // Social: community/casual content
+} as const
+
 // Generate anonymous reporter name
 function generateReporterName(): string {
   const prefixes = ['Reporter', 'Witness', 'Citizen', 'Observer', 'Local', 'OnScene', 'EyeWitness', 'Insider']
@@ -105,6 +112,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const country = searchParams.get('country') || 'sa' // Default to South Africa
     const category = searchParams.get('category')
+    const section = searchParams.get('section') // news, local, social
     const province = searchParams.get('province')
     const sort = searchParams.get('sort') || 'latest' // latest, trending, hot
     const happeningNow = searchParams.get('happeningNow') === 'true'
@@ -120,7 +128,7 @@ export async function GET(request: NextRequest) {
     const whereClause: {
       status: string
       country?: string
-      category?: string
+      category?: string | { in: string[] }
       province?: string
       isHappeningNow?: boolean
       createdAt?: { gt?: Date; lt?: Date; gte?: Date }
@@ -144,7 +152,10 @@ export async function GET(request: NextRequest) {
       whereClause.createdAt = { gte: sevenDaysAgo }
     }
 
-    if (category && BILLBOARD_CATEGORIES.includes(category as typeof BILLBOARD_CATEGORIES[number])) {
+    // Filter by section (multiple categories) or single category
+    if (section && section in FEED_SECTIONS) {
+      whereClause.category = { in: FEED_SECTIONS[section as keyof typeof FEED_SECTIONS] as unknown as string[] }
+    } else if (category && BILLBOARD_CATEGORIES.includes(category as typeof BILLBOARD_CATEGORIES[number])) {
       whereClause.category = category
     }
     if (province) {
@@ -188,18 +199,29 @@ export async function GET(request: NextRequest) {
     // Get category counts for filters (only active posts from last 7 days, filtered by country)
     const categoryCounts = await prisma.liveBillboard.groupBy({
       by: ['category'],
-      where: { status: 'LIVE', country, createdAt: { gte: sevenDaysAgo } },
+      where: { status: 'LIVE', country, createdAt: { gte: sevenDaysAgo }, moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] } },
       _count: { category: true },
     })
 
+    // Calculate section counts from category counts
+    const categoryCountMap = categoryCounts.reduce(
+      (acc, { category, _count }) => ({ ...acc, [category]: _count.category }),
+      {} as Record<string, number>
+    )
+    const sectionCounts = {
+      news: (categoryCountMap['BREAKING'] || 0) + (categoryCountMap['CRIME'] || 0) + (categoryCountMap['PROTEST'] || 0),
+      local: (categoryCountMap['TRAFFIC'] || 0) + (categoryCountMap['LOADSHEDDING'] || 0) + (categoryCountMap['WEATHER'] || 0),
+      social: (categoryCountMap['COMMUNITY'] || 0) + (categoryCountMap['OTHER'] || 0),
+    }
+
     // Get "Happening Now" count (filtered by country)
     const happeningNowCount = await prisma.liveBillboard.count({
-      where: { status: 'LIVE', country, isHappeningNow: true, createdAt: { gte: sevenDaysAgo } },
+      where: { status: 'LIVE', country, isHappeningNow: true, createdAt: { gte: sevenDaysAgo }, moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] } },
     })
 
     // Get archive count (filtered by country)
     const archiveCount = await prisma.liveBillboard.count({
-      where: { status: 'LIVE', country, createdAt: { lt: sevenDaysAgo } },
+      where: { status: 'LIVE', country, createdAt: { lt: sevenDaysAgo }, moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] } },
     })
 
     return NextResponse.json({
@@ -237,10 +259,8 @@ export async function GET(request: NextRequest) {
           totalPages: Math.ceil(totalCount / limit),
         },
         filters: {
-          categoryCounts: categoryCounts.reduce(
-            (acc, { category, _count }) => ({ ...acc, [category]: _count.category }),
-            {} as Record<string, number>
-          ),
+          categoryCounts: categoryCountMap,
+          sectionCounts,
           happeningNowCount,
           archiveCount,
         },
@@ -346,6 +366,11 @@ export async function POST(request: NextRequest) {
     // Auction ends 1 hour from now
     const auctionEndsAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
+    // Store normalized phone for direct lookup (ownership verification)
+    const normalizedSubmitterPhone = submitterPhone && isValidSAPhoneNumber(submitterPhone)
+      ? formatPhoneNumber(submitterPhone)
+      : null
+
     const post = await prisma.liveBillboard.create({
       data: {
         publicId: nanoid(10),
@@ -360,6 +385,7 @@ export async function POST(request: NextRequest) {
         trendingScore: 100, // Start with full recency boost
         revenueShareEnabled: finalRevenueShareEnabled,
         revenueShareContact: finalRevenueShareContact,
+        submitterPhone: normalizedSubmitterPhone, // Store phone directly for ownership verification
         submitterAccountId: submitterAccountId, // Link to phone-based account
         revenueSharePercent: 50,
         revenueShareStatus: finalRevenueShareEnabled ? 'PENDING' : 'NONE',

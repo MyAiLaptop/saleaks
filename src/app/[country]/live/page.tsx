@@ -104,6 +104,13 @@ export default function CountryLiveBillboardPage() {
     { id: 'OTHER', label: 'Other', icon: MoreHorizontal, color: 'text-gray-500 bg-gray-100 dark:bg-gray-700' },
   ]
 
+  // Feed sections
+  const SECTIONS = [
+    { id: 'news', label: 'News', description: 'Breaking, Crime, Protest', color: 'from-red-500 to-orange-500' },
+    { id: 'local', label: 'Local', description: 'Traffic, Weather, Loadshedding', color: 'from-blue-500 to-cyan-500' },
+    { id: 'social', label: 'Social', description: 'Community & Other', color: 'from-green-500 to-emerald-500' },
+  ]
+
   const PROVINCES = config.provinces || []
 
   const [posts, setPosts] = useState<LivePost[]>([])
@@ -117,6 +124,7 @@ export default function CountryLiveBillboardPage() {
   const [newPostsCount, setNewPostsCount] = useState(0)
 
   // Filters
+  const [section, setSection] = useState<string | null>('news') // Default to news section
   const [category, setCategory] = useState<string | null>(null)
   const [province, setProvince] = useState<string | null>(null)
   const [sort, setSort] = useState<'latest' | 'trending' | 'hot'>('latest')
@@ -145,6 +153,7 @@ export default function CountryLiveBillboardPage() {
   // Stats
   const [happeningNowCount, setHappeningNowCount] = useState(0)
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
+  const [sectionCounts, setSectionCounts] = useState<Record<string, number>>({ news: 0, local: 0, social: 0 })
 
   // Voting state
   const [votingPosts, setVotingPosts] = useState<Set<string>>(new Set())
@@ -186,7 +195,12 @@ export default function CountryLiveBillboardPage() {
     try {
       const params = new URLSearchParams()
       params.set('country', country) // Add country filter
-      if (category) params.set('category', category)
+      // Use section filter unless a specific category is selected
+      if (category) {
+        params.set('category', category)
+      } else if (section) {
+        params.set('section', section)
+      }
       if (province) params.set('province', province)
       params.set('sort', sort)
       if (happeningNow) params.set('happeningNow', 'true')
@@ -213,6 +227,7 @@ export default function CountryLiveBillboardPage() {
         setLastFetch(data.data.serverTime)
         setHappeningNowCount(data.data.filters.happeningNowCount)
         setCategoryCounts(data.data.filters.categoryCounts)
+        setSectionCounts(data.data.filters.sectionCounts || { news: 0, local: 0, social: 0 })
         setArchiveCount(data.data.filters.archiveCount || 0)
         setError('')
       }
@@ -222,14 +237,14 @@ export default function CountryLiveBillboardPage() {
       setLoading(false)
       setLoadingMore(false)
     }
-  }, [country, category, province, sort, happeningNow, showArchive, page, lastFetch])
+  }, [country, section, category, province, sort, happeningNow, showArchive, page, lastFetch])
 
   // Initial load
   useEffect(() => {
     setLoading(true)
     setPage(1)
     fetchPosts(true)
-  }, [country, category, province, sort, happeningNow, showArchive])
+  }, [country, section, category, province, sort, happeningNow, showArchive])
 
   // Polling for new posts
   useEffect(() => {
@@ -644,6 +659,41 @@ export default function CountryLiveBillboardPage() {
             <Plus className="h-5 w-5" />
             Report Something Happening Now
           </button>
+
+          {/* Section Tabs */}
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSection(null)
+                setCategory(null)
+              }}
+              className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                !section
+                  ? 'bg-white/20 text-white ring-2 ring-white/40'
+                  : 'bg-white/10 text-gray-400 hover:bg-white/15'
+              }`}
+            >
+              All ({Object.values(sectionCounts).reduce((a, b) => a + b, 0)})
+            </button>
+            {SECTIONS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => {
+                  setSection(section === s.id ? null : s.id)
+                  setCategory(null) // Clear category when switching sections
+                }}
+                className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  section === s.id
+                    ? `bg-gradient-to-r ${s.color} text-white shadow-lg`
+                    : 'bg-white/10 text-gray-400 hover:bg-white/15'
+                }`}
+              >
+                {s.label} ({sectionCounts[s.id] || 0})
+              </button>
+            ))}
+          </div>
 
           {/* Create Post Form */}
           {showCreateForm && (
@@ -1552,6 +1602,7 @@ export default function CountryLiveBillboardPage() {
 
                 <div className="space-y-3 mb-6">
                   {[
+                    { id: 'OFF_TOPIC', label: 'Not newsworthy / Off-topic', icon: '📺', hint: '3 reports moves to Social' },
                     { id: 'NSFW', label: 'Sexual or adult content', icon: '🔞' },
                     { id: 'VIOLENCE', label: 'Violence or graphic content', icon: '⚠️' },
                     { id: 'SPAM', label: 'Spam or promotional', icon: '📢' },
@@ -1563,7 +1614,7 @@ export default function CountryLiveBillboardPage() {
                       key={reason.id}
                       className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
                         reportReason === reason.id
-                          ? 'bg-red-500/20 ring-2 ring-red-500'
+                          ? reason.id === 'OFF_TOPIC' ? 'bg-blue-500/20 ring-2 ring-blue-500' : 'bg-red-500/20 ring-2 ring-red-500'
                           : 'bg-white/5 hover:bg-white/10'
                       }`}
                     >
@@ -1576,7 +1627,12 @@ export default function CountryLiveBillboardPage() {
                         className="hidden"
                       />
                       <span className="text-lg">{reason.icon}</span>
-                      <span className="text-gray-200">{reason.label}</span>
+                      <div className="flex-1">
+                        <span className="text-gray-200">{reason.label}</span>
+                        {'hint' in reason && reason.hint && (
+                          <p className="text-xs text-gray-500">{reason.hint}</p>
+                        )}
+                      </div>
                     </label>
                   ))}
                 </div>

@@ -386,6 +386,11 @@ model LiveBillboard {
   revenueSharePercent   Int      @default(50)
   revenueShareStatus    String   @default("NONE") // NONE, PENDING, PAID
 
+  // Submitter phone number (for ownership verification and revenue sharing)
+  // If provided: user gets 50% revenue share AND can download their own content free
+  // If not provided: anonymous submission, platform keeps 100%
+  submitterPhone        String?
+
   // Link to submitter account (optional - for phone-based revenue sharing)
   submitterAccountId    String?
   submitterAccount      SubmitterAccount? @relation("SubmitterLivePosts", fields: [submitterAccountId], references: [id])
@@ -422,6 +427,7 @@ model LiveBillboard {
   @@index([moderationStatus])
   @@index([auctionStatus, auctionEndsAt])
   @@index([country, createdAt])
+  @@index([submitterPhone])
 }
 
 // Auction bids for exclusive content rights
@@ -587,7 +593,11 @@ model MediaPurchase {
   id            String   @id @default(cuid())
 
   // Buyer info (email for delivery, no account needed)
-  email         String
+  email         String?  // Made optional - can use phone instead
+
+  // Phone number for purchase verification (optional)
+  // Used to check if buyer is the original content owner (free download)
+  phoneNumber   String?
 
   // What was purchased
   fileId        String?  // For regular post files
@@ -596,6 +606,9 @@ model MediaPurchase {
   // Purchase details
   amount        Int      // Amount in cents (ZAR)
   currency      String   @default("ZAR")
+
+  // Is this a free owner download (owner reclaiming their own content)
+  isOwnerDownload Boolean @default(false)
 
   // Payment provider data (PayFast)
   paymentId       String?  // PayFast pf_payment_id
@@ -618,6 +631,7 @@ model MediaPurchase {
   updatedAt     DateTime @updatedAt
 
   @@index([email])
+  @@index([phoneNumber])
   @@index([downloadToken])
   @@index([status])
 }
@@ -783,7 +797,7 @@ model OtpCode {
   // The 6-digit code
   code          String
 
-  // Purpose: VERIFY_ACCOUNT, LOGIN, WITHDRAW
+  // Purpose: VERIFY_ACCOUNT, LOGIN, WITHDRAW, BUYER_VERIFY
   purpose       String
 
   // Attempts tracking
@@ -803,4 +817,87 @@ model OtpCode {
   @@index([phoneNumber])
   @@index([code])
   @@index([expiresAt])
+}
+
+// ============================================
+// BUYER ACCOUNTS - Phone-based accounts for newsrooms/media buyers
+// ============================================
+
+// Buyer account - for newsrooms and media organizations to subscribe and bid
+model BuyerAccount {
+  id            String   @id @default(cuid())
+
+  // Phone number (normalized to international format)
+  phoneNumber   String   @unique
+
+  // Organization details
+  organizationName String?  // e.g., "News24", "eNCA", "Daily Maverick"
+  email            String?  // For notifications
+  contactPerson    String?  // Name of primary contact
+
+  // Subscription tier: FREE, BASIC, PRO
+  subscriptionTier String   @default("FREE")
+
+  // Subscription status: ACTIVE, EXPIRED, CANCELLED
+  subscriptionStatus String @default("ACTIVE")
+  subscriptionEndsAt DateTime?
+
+  // Notification preferences
+  notifyOnNewContent  Boolean @default(true)  // SMS when new content available
+  notifyOnOutbid      Boolean @default(true)  // SMS when outbid
+  notifyCategories    String? // JSON array of categories to watch, null = all
+
+  // Verification
+  verified      Boolean  @default(false)
+  verifiedAt    DateTime?
+
+  // Stats
+  totalPurchases    Int   @default(0)
+  totalSpent        Int   @default(0)  // In cents
+  auctionsWon       Int   @default(0)
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  purchases     BuyerPurchase[]
+
+  @@index([phoneNumber])
+  @@index([verified])
+  @@index([subscriptionTier])
+}
+
+// Track buyer purchases (links buyer to their media purchases)
+model BuyerPurchase {
+  id            String   @id @default(cuid())
+
+  // Link to buyer account
+  buyerId       String
+  buyer         BuyerAccount @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+
+  // What was purchased
+  livePostId    String?  // LiveBillboard post ID
+  mediaId       String?  // Specific media file ID
+
+  // Purchase type: AUCTION (exclusive), PUBLIC (single file)
+  purchaseType  String   @default("PUBLIC")
+
+  // Amount paid
+  amount        Int      // In cents
+
+  // Download access
+  downloadToken String   @unique
+  downloadsUsed Int      @default(0)
+  maxDownloads  Int      @default(3)
+
+  // Status: PENDING, COMPLETED, REFUNDED
+  status        String   @default("PENDING")
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  expiresAt     DateTime
+
+  @@index([buyerId])
+  @@index([downloadToken])
 }

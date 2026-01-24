@@ -16,7 +16,7 @@ const OTP_EXPIRY_MINUTES = 5
 const MAX_ATTEMPTS = 3
 const COOLDOWN_SECONDS = 60 // Wait 60 seconds between OTP requests
 
-export type OtpPurpose = 'VERIFY_ACCOUNT' | 'LOGIN' | 'WITHDRAW'
+export type OtpPurpose = 'VERIFY_ACCOUNT' | 'LOGIN' | 'WITHDRAW' | 'BUYER_VERIFY' | 'BUYER_LOGIN'
 
 /**
  * Generate a random numeric OTP
@@ -174,6 +174,12 @@ export async function sendOtpSms(
       break
     case 'WITHDRAW':
       message = `Your SA Leaks withdrawal confirmation code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      break
+    case 'BUYER_VERIFY':
+      message = `Your Leakpoint Buyer verification code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      break
+    case 'BUYER_LOGIN':
+      message = `Your Leakpoint Buyer login code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
       break
   }
 
