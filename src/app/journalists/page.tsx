@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowLeft,
-  Newspaper,
+  ShoppingCart,
   Shield,
   Mail,
   Building2,
@@ -17,12 +17,14 @@ import {
   Lock,
   Zap,
   Radio,
-  Star
+  Star,
+  Eye,
+  Download
 } from 'lucide-react'
 
-export default function JournalistsPage() {
+export default function BuyersPage() {
   const [email, setEmail] = useState('')
-  const [outlet, setOutlet] = useState('')
+  const [organization, setOrganization] = useState('')
   const [role, setRole] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
@@ -31,7 +33,7 @@ export default function JournalistsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !outlet) return
+    if (!email || !organization) return
 
     setSubmitting(true)
     setMessage('')
@@ -41,7 +43,7 @@ export default function JournalistsPage() {
       const res = await fetch('/api/journalists', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, outlet, role }),
+        body: JSON.stringify({ email, outlet: organization, role }),
       })
       const data = await res.json()
 
@@ -78,11 +80,11 @@ export default function JournalistsPage() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-primary-500/20 border border-primary-500/30 rounded-xl flex items-center justify-center">
-                  <Newspaper className="h-6 w-6 text-primary-400" />
+                  <ShoppingCart className="h-6 w-6 text-primary-400" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-white">
-                    For Journalists
+                    For Media Buyers
                   </h1>
                   <p className="text-gray-400">
                     Get verified access to SpillNova
@@ -92,8 +94,8 @@ export default function JournalistsPage() {
 
               <div className="prose dark:prose-invert mb-8">
                 <p className="text-gray-400">
-                  Verified journalists get access to additional features that help
-                  with investigations while maintaining source protection.
+                  Verified buyers get access to additional features including early access
+                  to new content, exclusive bidding, and direct communication with creators.
                 </p>
               </div>
 
@@ -112,12 +114,12 @@ export default function JournalistsPage() {
                         </span>
                       </h3>
                       <p className="text-sm text-gray-400 mt-1">
-                        Get access to <span className="text-amber-400 font-semibold">breaking news and live updates 10 minutes before</span> the public.
-                        Be first to act on critical information from the Live Billboard.
+                        Get access to <span className="text-amber-400 font-semibold">new content 10 minutes before</span> the public.
+                        Be first to act on fresh uploads from the Live Feed.
                       </p>
                       <div className="flex items-center gap-2 mt-3">
                         <Radio className="h-4 w-4 text-red-400" />
-                        <span className="text-xs text-gray-500">Works with Live Billboard real-time posts</span>
+                        <span className="text-xs text-gray-500">Works with Live Feed real-time posts</span>
                       </div>
                     </div>
                   </div>
@@ -130,7 +132,7 @@ export default function JournalistsPage() {
                   <div>
                     <h3 className="font-medium text-white">Verified Badge</h3>
                     <p className="text-sm text-gray-400">
-                      Your messages to whistleblowers show a verified journalist badge
+                      Your messages to creators show a verified buyer badge, increasing response rates
                     </p>
                   </div>
                 </div>
@@ -139,7 +141,7 @@ export default function JournalistsPage() {
                   <div>
                     <h3 className="font-medium text-white">Priority Contact</h3>
                     <p className="text-sm text-gray-400">
-                      Whistleblowers can see you&apos;re a verified journalist before responding
+                      Creators can see you&apos;re a verified buyer before responding to your messages
                     </p>
                   </div>
                 </div>
@@ -153,19 +155,45 @@ export default function JournalistsPage() {
                       </span>
                     </h3>
                     <p className="text-sm text-gray-400">
-                      See new leaks and live posts before anyone else — act fast on breaking stories
+                      See new uploads before anyone else - act fast on fresh content
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10">
                   <Lock className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-medium text-white">Source Protection</h3>
+                    <h3 className="font-medium text-white">Exclusive Bidding</h3>
                     <p className="text-sm text-gray-400">
-                      All communications remain anonymous and encrypted
+                      Bid for exclusive rights during the 1-hour auction window
                     </p>
                   </div>
                 </div>
+              </div>
+
+              {/* What Buyers Get */}
+              <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-blue-400" />
+                  What Verified Buyers Get
+                </h4>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-blue-400" />
+                    Access to full-quality, watermark-free downloads
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-blue-400" />
+                    Participate in exclusive content auctions
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-blue-400" />
+                    Direct messaging with content creators
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-blue-400" />
+                    SMS/Email alerts for new content
+                  </li>
+                </ul>
               </div>
 
               {/* Pricing Link */}
@@ -181,7 +209,7 @@ export default function JournalistsPage() {
                     href="/pricing"
                     className="text-sm font-medium text-primary-400 hover:text-primary-300"
                   >
-                    View Plans →
+                    View Plans
                   </Link>
                 </div>
               </div>
@@ -208,7 +236,7 @@ export default function JournalistsPage() {
               ) : (
                 <>
                   <h2 className="text-xl font-bold text-white mb-6">
-                    Register as a Journalist
+                    Register as a Buyer
                   </h2>
 
                   {/* Privacy notice */}
@@ -218,8 +246,8 @@ export default function JournalistsPage() {
                       <div className="text-sm text-primary-300">
                         <p className="font-medium mb-1">Verification Process</p>
                         <p className="text-primary-400">
-                          We verify journalists through their professional email and news outlet.
-                          Your email is encrypted and never shared with sources.
+                          We verify buyers through their professional email and organization.
+                          Your information is kept secure and never shared with creators.
                         </p>
                       </div>
                     </div>
@@ -237,7 +265,7 @@ export default function JournalistsPage() {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           required
-                          placeholder="name@newsoutlet.co.za"
+                          placeholder="name@company.co.za"
                           className="w-full pl-10 pr-4 py-3 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
@@ -248,16 +276,16 @@ export default function JournalistsPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">
-                        News Outlet / Organization *
+                        Organization / Company *
                       </label>
                       <div className="relative">
                         <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
                         <input
                           type="text"
-                          value={outlet}
-                          onChange={(e) => setOutlet(e.target.value)}
+                          value={organization}
+                          onChange={(e) => setOrganization(e.target.value)}
                           required
-                          placeholder="e.g., Daily Maverick, News24"
+                          placeholder="e.g., News24, SABC, Production Company"
                           className="w-full pl-10 pr-4 py-3 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
@@ -273,7 +301,7 @@ export default function JournalistsPage() {
                           type="text"
                           value={role}
                           onChange={(e) => setRole(e.target.value)}
-                          placeholder="e.g., Investigative Reporter, Editor"
+                          placeholder="e.g., Content Manager, Editor, Producer"
                           className="w-full pl-10 pr-4 py-3 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                         />
                       </div>
@@ -289,7 +317,7 @@ export default function JournalistsPage() {
 
                     <button
                       type="submit"
-                      disabled={submitting || !email || !outlet}
+                      disabled={submitting || !email || !organization}
                       className="w-full flex items-center justify-center px-6 py-3 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {submitting ? (
@@ -299,7 +327,7 @@ export default function JournalistsPage() {
                         </>
                       ) : (
                         <>
-                          <Newspaper className="h-5 w-5 mr-2" />
+                          <Download className="h-5 w-5 mr-2" />
                           Submit for Verification
                         </>
                       )}

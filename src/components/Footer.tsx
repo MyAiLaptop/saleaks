@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Lock, Eye } from 'lucide-react'
+import { Shield, CheckCircle } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -11,25 +11,25 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="mb-4">
               <Image
-                src="/icons/globecon.png"
+                src="/icons/spillnova_floating.png"
                 alt="SpillNova"
-                width={80}
-                height={80}
-                className="rounded-xl"
+                width={160}
+                height={160}
+                className="drop-shadow-2xl"
               />
             </div>
             <p className="text-sm text-ink-400 mb-4">
-              A global platform to anonymously expose corruption, fraud, and misconduct.
-              Your identity is protected - we do not log IP addresses or require any personal information.
+              The global marketplace for authentic video and photo content.
+              Buy and sell real footage from real people, verified and protected.
             </p>
             <div className="flex space-x-4">
               <div className="flex items-center space-x-1 text-xs text-ink-500">
-                <Lock className="h-4 w-4" />
-                <span>No IP Logging</span>
+                <CheckCircle className="h-4 w-4" />
+                <span>Verified Real</span>
               </div>
               <div className="flex items-center space-x-1 text-xs text-ink-500">
-                <Eye className="h-4 w-4" />
-                <span>No Tracking</span>
+                <Shield className="h-4 w-4" />
+                <span>Content Protected</span>
               </div>
             </div>
           </div>
@@ -42,17 +42,17 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/live" className="text-sm text-accent-red hover:text-red-300 transition-colors font-medium">
-                  Live Billboard
+                  Live Feed
                 </Link>
               </li>
               <li>
                 <Link href="/browse" className="text-sm hover:text-primary-400 transition-colors">
-                  Browse Leaks
+                  Browse Content
                 </Link>
               </li>
               <li>
-                <Link href="/submit" className="text-sm hover:text-primary-400 transition-colors">
-                  Submit a Leak
+                <Link href="/upload" className="text-sm hover:text-primary-400 transition-colors">
+                  Sell Your Content
                 </Link>
               </li>
               <li>
@@ -66,8 +66,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/journalists" className="text-sm hover:text-primary-400 transition-colors">
-                  For Journalists
+                <Link href="/buyer" className="text-sm hover:text-primary-400 transition-colors">
+                  For Buyers
                 </Link>
               </li>
               <li>
@@ -78,20 +78,16 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Security */}
+          {/* Features */}
           <div>
             <h3 className="text-sm font-semibold text-ink-50 uppercase tracking-wider mb-4">
-              Your Safety
+              Why SpillNova
             </h3>
             <ul className="space-y-2 text-sm text-ink-400">
-              <li>No account required</li>
-              <li>Files are stripped of metadata</li>
-              <li>Anonymous messaging system</li>
-              <li>
-                <Link href="/canary" className="text-primary-400 hover:text-primary-300">
-                  Warrant Canary
-                </Link>
-              </li>
+              <li>100% real, verified content</li>
+              <li>No AI-generated fakes</li>
+              <li>Direct creator payments</li>
+              <li>Global coverage</li>
             </ul>
           </div>
         </div>
@@ -99,10 +95,10 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-ink-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-xs text-ink-500">
-              Protected under the Protected Disclosures Act (PDA) of South Africa
+              &copy; {new Date().getFullYear()} SpillNova. All rights reserved.
             </p>
             <p className="text-xs text-ink-500 mt-2 md:mt-0">
-              Speak up. Stay safe. Make a difference.
+              Real content. Real value. Real simple.
             </p>
           </div>
         </div>

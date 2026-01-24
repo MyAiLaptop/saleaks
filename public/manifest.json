@@ -1,7 +1,7 @@
 {
-  "name": "SpillNova - Global Citizen Journalism",
+  "name": "SpillNova - Real Content Marketplace",
   "short_name": "SpillNova",
-  "description": "Anonymous whistleblowing and live citizen journalism platform - global coverage",
+  "description": "Buy and sell authentic videos and photos from real people worldwide",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F131A",
@@ -19,17 +19,17 @@
   "categories": ["news", "social"],
   "shortcuts": [
     {
-      "name": "Live Billboard",
+      "name": "Live Feed",
       "short_name": "Live",
-      "description": "View live breaking news",
+      "description": "View live breaking content",
       "url": "/live",
       "icons": [{ "src": "/icons/globecon.png", "sizes": "96x96" }]
     },
     {
-      "name": "Submit a Leak",
-      "short_name": "Submit",
-      "description": "Submit anonymous tip",
-      "url": "/submit",
+      "name": "Sell Content",
+      "short_name": "Sell",
+      "description": "Upload and sell your content",
+      "url": "/upload",
       "icons": [{ "src": "/icons/globecon.png", "sizes": "96x96" }]
     }
   ]

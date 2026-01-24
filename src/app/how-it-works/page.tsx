@@ -5,9 +5,11 @@ import {
   FileText,
   MessageSquare,
   Upload,
-  AlertTriangle,
-  Globe,
+  Camera,
   CheckCircle,
+  DollarSign,
+  ShoppingCart,
+  BadgeCheck,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -24,128 +26,104 @@ export default function HowItWorksPage() {
               How SpillNova Works
             </h1>
             <p className="text-lg text-gray-300">
-              A guide to safely and anonymously reporting corruption in South Africa
+              The marketplace for authentic videos and photos
             </p>
           </div>
 
-          {/* Security Section */}
+          {/* Two Paths */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <Shield className="h-6 w-6 mr-2 text-primary-400" />
-              Your Security & Anonymity
-            </h2>
-
-            <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg p-6 space-y-6 border border-white/10">
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
-                  <Lock className="h-5 w-5 text-green-400" />
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-green-900/40 to-emerald-900/40 backdrop-blur-sm rounded-xl p-6 border border-green-500/30">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-green-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Sell Content</h3>
+                    <p className="text-sm text-green-300">For Creators</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-white mb-1">
-                    No IP Address Logging
-                  </h3>
-                  <p className="text-gray-300 text-sm">
-                    We do not record your IP address at any point. Our servers are configured
-                    to discard this information immediately, making it impossible to trace
-                    submissions back to you.
-                  </p>
-                </div>
+                <p className="text-gray-300 text-sm mb-4">
+                  Upload your authentic videos and photos. Earn 50% every time someone purchases your content.
+                </p>
+                <Link
+                  href="/upload"
+                  className="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm transition-colors"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Start Selling
+                </Link>
               </div>
 
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
-                  <Eye className="h-5 w-5 text-green-400" />
+              <div className="bg-gradient-to-br from-blue-900/40 to-indigo-900/40 backdrop-blur-sm rounded-xl p-6 border border-blue-500/30">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                    <ShoppingCart className="h-6 w-6 text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white">Buy Content</h3>
+                    <p className="text-sm text-blue-300">For Buyers</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-white mb-1">
-                    Zero Tracking
-                  </h3>
-                  <p className="text-gray-300 text-sm">
-                    No cookies, no analytics, no third-party scripts. We don&apos;t use Google
-                    Analytics, Facebook Pixel, or any other tracking tools. Your browsing
-                    behavior is completely private.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
-                  <FileText className="h-5 w-5 text-green-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white mb-1">
-                    Automatic Metadata Removal
-                  </h3>
-                  <p className="text-gray-300 text-sm">
-                    All uploaded files (photos, documents, videos) have their metadata
-                    automatically stripped. This removes EXIF data, GPS coordinates, device
-                    information, and any other identifying details embedded in the files.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start space-x-4">
-                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
-                  <MessageSquare className="h-5 w-5 text-green-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white mb-1">
-                    Anonymous Public Messaging
-                  </h3>
-                  <p className="text-gray-300 text-sm">
-                    Journalists can send you messages through the platform, and you can reply
-                    using your secret token. All conversations are public for transparency,
-                    but both parties remain completely anonymous.
-                  </p>
-                </div>
+                <p className="text-gray-300 text-sm mb-4">
+                  Browse and purchase authentic videos and photos. Get high-quality, watermark-free downloads.
+                </p>
+                <Link
+                  href="/browse"
+                  className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  Browse Content
+                </Link>
               </div>
             </div>
           </section>
 
-          {/* Steps Section */}
+          {/* For Sellers Section */}
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Submitting a Leak: Step by Step
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <Upload className="h-6 w-6 mr-2 text-green-400" />
+              For Sellers: Upload & Earn
             </h2>
 
             <div className="space-y-6">
               {[
                 {
                   step: 1,
-                  title: 'Choose a Category',
+                  title: 'Capture Content',
                   description:
-                    'Select the type of misconduct you want to report (government corruption, corporate fraud, police misconduct, etc.). This helps organize reports and makes them easier to find.',
+                    'Take photos or record videos directly from your device camera. We only accept authentic, camera-captured content - no AI-generated or manipulated media.',
                 },
                 {
                   step: 2,
-                  title: 'Write Your Report',
+                  title: 'Upload & Describe',
                   description:
-                    'Describe what happened in as much detail as possible. Include names, dates, locations, and any other relevant information. The more specific you are, the more credible and actionable your report becomes.',
+                    'Add your content with a clear title, detailed description, and select the appropriate category. The more context you provide, the more attractive it will be to buyers.',
                 },
                 {
                   step: 3,
-                  title: 'Attach Evidence (Optional)',
+                  title: 'Set Your Preferences',
                   description:
-                    'Upload documents, photos, videos, or audio recordings that support your claims. All metadata is automatically removed to protect your identity. You can upload up to 10 files (50MB each).',
+                    'Choose whether to enable messaging from buyers. Opt into revenue sharing to earn 50% of every sale by providing contact details.',
                 },
                 {
                   step: 4,
-                  title: 'Enable Secure Messaging (Recommended)',
+                  title: 'Go Live',
                   description:
-                    'If you want journalists to be able to contact you for follow-up questions, enable secure messaging. You\'ll receive a secret token - save it! It\'s the only way to check your messages.',
+                    'Your content is published immediately with watermark protection. Buyers can preview and purchase. You earn 50% of each sale.',
                 },
                 {
                   step: 5,
-                  title: 'Submit & Save Your Token',
+                  title: 'Get Paid',
                   description:
-                    'Your report is published immediately. If you enabled messaging, SAVE YOUR SECRET TOKEN - it\'s shown only once. Without it, you cannot receive or respond to messages.',
+                    'Withdraw your earnings once you reach the R10 minimum. Payments are processed within 24-48 hours.',
                 },
               ].map((item) => (
                 <div
                   key={item.step}
                   className="flex items-start space-x-4 bg-black/40 backdrop-blur-sm rounded-lg p-6 border border-white/10"
                 >
-                  <div className="w-10 h-10 bg-primary-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
+                  <div className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold">
                     {item.step}
                   </div>
                   <div>
@@ -161,109 +139,199 @@ export default function HowItWorksPage() {
             </div>
           </section>
 
-          {/* Recommendations Section */}
+          {/* For Buyers Section */}
           <section className="mb-16">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <AlertTriangle className="h-6 w-6 mr-2 text-amber-400" />
-              Additional Safety Recommendations
+              <ShoppingCart className="h-6 w-6 mr-2 text-blue-400" />
+              For Buyers: Browse & Purchase
             </h2>
 
-            <div className="bg-amber-500/20 border border-amber-500/30 rounded-xl p-6">
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-white/10 space-y-6">
+              <div className="grid md:grid-cols-3 gap-4">
+                {[
+                  { icon: Eye, title: 'Browse', desc: 'Explore content by category, location, or trending' },
+                  { icon: ShoppingCart, title: 'Purchase', desc: 'Buy individual files or bid on exclusive rights' },
+                  { icon: FileText, title: 'Download', desc: 'Get high-quality, watermark-free files' },
+                ].map((item, i) => (
+                  <div key={i} className="text-center bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                    <item.icon className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                    <h4 className="font-semibold text-white text-sm mb-1">{item.title}</h4>
+                    <p className="text-xs text-gray-400">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-white/10 pt-6">
+                <h4 className="font-semibold text-white mb-4">Pricing</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Camera className="h-4 w-4 text-blue-400" />
+                      <span className="font-medium text-white">Photos</span>
+                    </div>
+                    <p className="text-sm text-gray-400">Starting from R1 per photo</p>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="h-4 w-4 text-blue-400" />
+                      <span className="font-medium text-white">Videos</span>
+                    </div>
+                    <p className="text-sm text-gray-400">Starting from R3 per video</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Authenticity Section */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <BadgeCheck className="h-6 w-6 mr-2 text-primary-400" />
+              100% Authentic Content
+            </h2>
+
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg p-6 space-y-6 border border-white/10">
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
+                  <Camera className="h-5 w-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">
+                    Camera-Only Capture
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    All content must be captured directly from a device camera. No AI-generated
+                    images, no screenshots, no manipulated media. This ensures buyers get
+                    authentic, real content.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
+                  <Shield className="h-5 w-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">
+                    Content Protection
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    Your content is protected with watermarks until purchased. Buyers receive
+                    clean, high-quality downloads. We use advanced protection to prevent
+                    unauthorized distribution.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
+                  <Lock className="h-5 w-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">
+                    Automatic Metadata Removal
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    All uploaded files have their metadata automatically stripped. This removes
+                    EXIF data, GPS coordinates, device information, and any other details
+                    embedded in the files for your privacy.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-green-500/30">
+                  <MessageSquare className="h-5 w-5 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-1">
+                    Secure Messaging
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    Buyers can contact sellers through our secure messaging system. All
+                    communications are encrypted. Use your secret token to check and respond
+                    to messages.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Auction System */}
+          <section className="mb-16">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+              <DollarSign className="h-6 w-6 mr-2 text-amber-400" />
+              The Auction System
+            </h2>
+
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-6">
+              <p className="text-gray-300 mb-6">
+                All new content goes through a 1-hour auction period where media buyers can bid for exclusive rights:
+              </p>
               <ul className="space-y-4">
                 <li className="flex items-start space-x-3">
                   <CheckCircle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-medium text-amber-200">Use a VPN or public WiFi</span>
+                    <span className="font-medium text-amber-200">1-Hour Exclusive Window</span>
                     <p className="text-sm text-amber-300 mt-1">
-                      For extra privacy, consider using a VPN service or accessing from public WiFi
-                      or mobile data. This adds an additional layer of protection to your connection.
+                      When content is uploaded, buyers have 1 hour to bid for exclusive rights.
+                      Content is visible to everyone during this period (with watermark).
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <CheckCircle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-medium text-amber-200">
-                      Don&apos;t use work devices or networks
-                    </span>
+                    <span className="font-medium text-amber-200">Exclusive Rights</span>
                     <p className="text-sm text-amber-300 mt-1">
-                      Your employer may monitor your internet activity. Use a personal device
-                      and a private internet connection (or public WiFi/mobile data).
+                      The winning bidder receives exclusive rights. Content is removed from
+                      public view and cannot be purchased by anyone else.
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <CheckCircle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-medium text-amber-200">
-                      Be careful with specific details
-                    </span>
+                    <span className="font-medium text-amber-200">If Not Sold</span>
                     <p className="text-sm text-amber-300 mt-1">
-                      While details make reports more credible, be aware that very specific
-                      information might narrow down who could have known it. Balance detail with
-                      protecting your identity.
+                      If no bids are received, content becomes available for regular purchase
+                      at standard pricing. Anyone can buy non-exclusive copies.
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start space-x-3">
                   <CheckCircle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-medium text-amber-200">
-                      Store your token securely
-                    </span>
+                    <span className="font-medium text-amber-200">Revenue Share</span>
                     <p className="text-sm text-amber-300 mt-1">
-                      Write down your secret token and keep it somewhere safe, not on your
-                      work computer or phone. Consider using a password manager.
+                      Sellers earn 50% of auction sales and 50% of each regular purchase.
+                      Payments are processed within 24-48 hours.
                     </p>
                   </div>
                 </li>
               </ul>
-            </div>
-          </section>
-
-          {/* Legal Section */}
-          <section className="mb-16">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <Globe className="h-6 w-6 mr-2 text-primary-400" />
-              Legal Protection in South Africa
-            </h2>
-
-            <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg p-6 border border-white/10">
-              <p className="text-gray-300 mb-4">
-                South Africa&apos;s <strong className="text-white">Protected Disclosures Act (PDA)</strong> provides legal
-                protection to employees who report unlawful or irregular conduct by their
-                employers or fellow employees. Key points:
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-300 text-sm">
-                <li>
-                  You are protected from occupational detriment (dismissal, demotion, harassment)
-                  for making a protected disclosure
-                </li>
-                <li>
-                  Disclosures can be made to a legal advisor, employer, government minister, or
-                  any person/body if certain conditions are met
-                </li>
-                <li>The disclosure must be made in good faith and you must reasonably believe the information is true</li>
-                <li>
-                  You cannot be required to disclose your identity if you make an anonymous report
-                </li>
-              </ul>
-              <p className="text-gray-400 text-xs mt-4">
-                Note: This is general information, not legal advice. If you are concerned about
-                legal risks, consult with a lawyer.
-              </p>
             </div>
           </section>
 
           {/* CTA */}
-          <div className="text-center">
-            <Link
-              href="/submit"
-              className="inline-flex items-center px-8 py-4 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors text-lg"
-            >
-              <Upload className="h-5 w-5 mr-2" />
-              Submit Your Leak
-            </Link>
+          <div className="text-center space-y-4">
+            <p className="text-gray-400 mb-6">Ready to get started?</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/upload"
+                className="inline-flex items-center justify-center px-8 py-4 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors text-lg"
+              >
+                <Upload className="h-5 w-5 mr-2" />
+                Sell Your Content
+              </Link>
+              <Link
+                href="/browse"
+                className="inline-flex items-center justify-center px-8 py-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors text-lg"
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Browse Content
+              </Link>
+            </div>
           </div>
         </div>
       </div>

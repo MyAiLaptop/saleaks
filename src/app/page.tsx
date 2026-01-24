@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Globe, ArrowRight, Shield, Radio, AlertTriangle } from 'lucide-react'
+import { Globe, ArrowRight, Shield, Radio, Camera, BadgeCheck, DollarSign } from 'lucide-react'
 import { countries, getEnabledCountries, DEFAULT_COUNTRY } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -82,11 +82,11 @@ export default function GlobalLandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center">
               <Image
-                src="/icons/globecon.png"
+                src="/icons/spillnova_floating.png"
                 alt="SpillNova"
-                width={64}
-                height={64}
-                className="rounded-xl"
+                width={200}
+                height={200}
+                className="drop-shadow-2xl"
                 priority
               />
             </div>
@@ -97,13 +97,17 @@ export default function GlobalLandingPage() {
         <main className="py-12">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             {/* Hero */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-6">
+              <BadgeCheck className="h-4 w-4 text-green-400" />
+              <span className="text-green-400 font-medium text-sm">100% Authentic Content - No AI Fakes</span>
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-              Expose Corruption.<br />
-              <span className="text-accent-gold">Stay Anonymous.</span>
+              Real Content Marketplace.<br />
+              <span className="text-accent-gold">Sell. Buy. Verified.</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              A secure platform for whistleblowers and citizen journalists to report
-              corruption, fraud, and breaking news — without revealing your identity.
+              The marketplace for authentic videos and photos. Creators upload real content,
+              buyers get verified media. Camera-captured only - no AI-generated fakes allowed.
             </p>
 
             {/* Country Selector */}
@@ -121,6 +125,7 @@ export default function GlobalLandingPage() {
                 {Object.entries(enabledCountries).map(([code, config]) => (
                   <button
                     key={code}
+                    type="button"
                     onClick={() => handleCountrySelect(code)}
                     className="flex items-center gap-4 p-4 bg-ink-800 hover:bg-ink-700 rounded-xl border border-ink-600 hover:border-primary-500 transition-all group"
                   >
@@ -163,32 +168,32 @@ export default function GlobalLandingPage() {
             {/* Features Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               <div className="bg-ink-900/60 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <Radio className="h-6 w-6 text-red-400" />
+                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                  <DollarSign className="h-6 w-6 text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Live Billboard</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">Sell Your Content</h3>
                 <p className="text-gray-400 text-sm">
-                  Report breaking news in real-time. Traffic, protests, crime, and more.
+                  Upload videos and photos. Earn 50% when buyers purchase your content.
                 </p>
               </div>
 
               <div className="bg-ink-900/60 backdrop-blur-sm rounded-xl p-6 border border-white/10">
                 <div className="w-12 h-12 bg-primary-500/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <AlertTriangle className="h-6 w-6 text-primary-400" />
+                  <Camera className="h-6 w-6 text-primary-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Anonymous Leaks</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">Browse Content</h3>
                 <p className="text-gray-400 text-sm">
-                  Submit corruption reports with full anonymity protection.
+                  Find authentic videos and photos for your projects or publication.
                 </p>
               </div>
 
               <div className="bg-ink-900/60 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <Shield className="h-6 w-6 text-green-400" />
+                <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                  <Radio className="h-6 w-6 text-red-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Privacy First</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">Live Feed</h3>
                 <p className="text-gray-400 text-sm">
-                  No IP logging, no tracking, metadata stripping on all uploads.
+                  Real-time content from citizen creators capturing what&apos;s happening now.
                 </p>
               </div>
             </div>
@@ -214,14 +219,14 @@ export default function GlobalLandingPage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Image
-                  src="/icons/globecon.png"
+                  src="/icons/spillnova_floating.png"
                   alt="SpillNova"
-                  width={32}
-                  height={32}
-                  className="rounded-lg"
+                  width={48}
+                  height={48}
+                  className="drop-shadow-lg"
                 />
                 <span className="text-gray-400 text-sm">
-                  SpillNova - Anonymous Whistleblowing Platform
+                  SpillNova - Real Content Marketplace
                 </span>
               </div>
               <div className="flex items-center gap-6 text-sm text-gray-500">
@@ -230,9 +235,6 @@ export default function GlobalLandingPage() {
                 </Link>
                 <Link href="/privacy" className="hover:text-white transition-colors">
                   Privacy
-                </Link>
-                <Link href="/canary" className="hover:text-white transition-colors">
-                  Canary
                 </Link>
               </div>
             </div>

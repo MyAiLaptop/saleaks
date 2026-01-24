@@ -1,64 +1,64 @@
-// Default categories for SpillNova
+// Default categories for SpillNova Content Marketplace
 export const DEFAULT_CATEGORIES = [
   {
-    name: 'Government Corruption',
-    slug: 'government-corruption',
-    description: 'Corruption in national, provincial, or local government',
+    name: 'News & Events',
+    slug: 'news-events',
+    description: 'Breaking news, current events, and newsworthy moments',
+    icon: 'Newspaper',
+  },
+  {
+    name: 'Entertainment',
+    slug: 'entertainment',
+    description: 'Concerts, festivals, celebrity sightings, and entertainment events',
+    icon: 'Music',
+  },
+  {
+    name: 'Sports',
+    slug: 'sports',
+    description: 'Sports events, matches, training, and athletic moments',
+    icon: 'Trophy',
+  },
+  {
+    name: 'Weather & Nature',
+    slug: 'weather-nature',
+    description: 'Weather events, storms, natural phenomena, and landscapes',
+    icon: 'Cloud',
+  },
+  {
+    name: 'Traffic & Accidents',
+    slug: 'traffic-accidents',
+    description: 'Road conditions, accidents, and transport-related content',
+    icon: 'Car',
+  },
+  {
+    name: 'Wildlife',
+    slug: 'wildlife',
+    description: 'Animals, wildlife encounters, and nature photography',
+    icon: 'Bird',
+  },
+  {
+    name: 'Community',
+    slug: 'community',
+    description: 'Local events, community gatherings, and neighborhood happenings',
+    icon: 'Users',
+  },
+  {
+    name: 'Infrastructure',
+    slug: 'infrastructure',
+    description: 'Buildings, construction, urban development, and public works',
     icon: 'Building2',
   },
   {
-    name: 'Corporate Fraud',
-    slug: 'corporate-fraud',
-    description: 'Corporate misconduct, fraud, and financial crimes',
-    icon: 'Briefcase',
-  },
-  {
-    name: 'Police Misconduct',
-    slug: 'police-misconduct',
-    description: 'Police brutality, corruption, or abuse of power',
-    icon: 'Shield',
-  },
-  {
-    name: 'State Capture',
-    slug: 'state-capture',
-    description: 'State capture and politically connected corruption',
-    icon: 'Landmark',
-  },
-  {
-    name: 'Tender Fraud',
-    slug: 'tender-fraud',
-    description: 'Irregular tender processes and procurement fraud',
-    icon: 'FileText',
-  },
-  {
-    name: 'Environmental Crimes',
-    slug: 'environmental-crimes',
-    description: 'Illegal dumping, pollution, and environmental violations',
-    icon: 'Leaf',
-  },
-  {
-    name: 'Healthcare',
-    slug: 'healthcare',
-    description: 'Corruption or malpractice in healthcare sector',
-    icon: 'Heart',
-  },
-  {
-    name: 'Education',
-    slug: 'education',
-    description: 'Corruption or misconduct in educational institutions',
-    icon: 'GraduationCap',
-  },
-  {
-    name: 'Human Rights',
-    slug: 'human-rights',
-    description: 'Human rights violations and abuses',
-    icon: 'Users',
+    name: 'Emergency Services',
+    slug: 'emergency-services',
+    description: 'Fire, rescue, medical emergencies, and first responders',
+    icon: 'Siren',
   },
   {
     name: 'Other',
     slug: 'other',
-    description: 'Other wrongdoing not covered by other categories',
-    icon: 'AlertCircle',
+    description: 'Other interesting content not covered by other categories',
+    icon: 'Camera',
   },
 ] as const
 

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export const metadata = {
   title: 'Terms & Conditions | SpillNova',
-  description: 'Terms and conditions for using SpillNova platform',
+  description: 'Terms and conditions for using SpillNova content marketplace',
 }
 
 export default function TermsPage() {
@@ -14,8 +14,8 @@ export default function TermsPage() {
           <Link href="/" className="text-xl font-bold text-white">
             Spill<span className="text-primary-400">Nova</span>
           </Link>
-          <Link href="/live" className="text-gray-400 hover:text-white transition-colors">
-            Back to Live
+          <Link href="/browse" className="text-gray-400 hover:text-white transition-colors">
+            Browse Content
           </Link>
         </div>
       </header>
@@ -31,16 +31,16 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold text-white mb-4">1. Introduction</h2>
             <p className="text-gray-300 leading-relaxed">
               Welcome to SpillNova. By using our platform, you agree to these terms and conditions.
-              SpillNova is an anonymous content sharing platform that allows users to submit and
-              purchase newsworthy content including photos and videos.
+              SpillNova is a content marketplace that allows creators to upload and sell authentic
+              photos and videos, and buyers to purchase verified content.
             </p>
           </section>
 
-          {/* Content Submission - Seller Terms */}
+          {/* Content Upload - Seller Terms */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">2. Content Submission (Seller Terms)</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">2. Content Upload (Seller Terms)</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              By submitting content to SpillNova, you agree to the following:
+              By uploading content to SpillNova, you agree to the following:
             </p>
             <ul className="list-disc pl-6 space-y-3 text-gray-300">
               <li>
@@ -50,22 +50,24 @@ export default function TermsPage() {
               </li>
               <li>
                 <strong className="text-white">Relinquishment of Exclusive Ownership:</strong> You
-                understand and agree that by submitting content, you relinquish any claim to
+                understand and agree that by uploading content, you relinquish any claim to
                 exclusive ownership. The content may be sold to multiple buyers and used by
                 SpillNova for promotional purposes.
               </li>
               <li>
                 <strong className="text-white">Original Content:</strong> You confirm that you are
-                the original creator of the content or have the legal right to submit it.
+                the original creator of the content or have the legal right to upload it. All
+                content must be captured directly from a camera - no AI-generated or manipulated
+                media is permitted.
               </li>
               <li>
                 <strong className="text-white">Revenue Share:</strong> If you opt into revenue
-                sharing by providing your phone number, you will receive 50% of each sale. This
+                sharing by providing your contact details, you will receive 50% of each sale. This
                 does not grant you any additional rights over the content.
               </li>
               <li>
                 <strong className="text-white">No Takedown Rights:</strong> Once content is
-                submitted and approved, you cannot request its removal from the platform or
+                uploaded and approved, you cannot request its removal from the platform or
                 from buyers who have purchased it.
               </li>
             </ul>
@@ -86,7 +88,7 @@ export default function TermsPage() {
               <li>
                 <strong className="text-white">Non-Exclusive License:</strong> Your purchase
                 grants you a non-exclusive license. The same content may be sold to other buyers.
-                You do not receive exclusive rights to the content.
+                You do not receive exclusive rights to the content unless purchased through auction.
               </li>
               <li>
                 <strong className="text-white">No Resale:</strong> You may not resell the content
@@ -94,7 +96,7 @@ export default function TermsPage() {
               </li>
               <li>
                 <strong className="text-white">Attribution:</strong> Attribution to SpillNova or
-                the original submitter is appreciated but not required.
+                the original creator is appreciated but not required.
               </li>
               <li>
                 <strong className="text-white">Download Limit:</strong> Each purchase includes
@@ -108,13 +110,13 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">4. Exclusive Rights Auction</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              All new content on SpillNova goes through a 1-hour auction period where media
-              organizations can bid for exclusive rights:
+              All new content on SpillNova goes through a 1-hour auction period where buyers can
+              bid for exclusive rights:
             </p>
             <ul className="list-disc pl-6 space-y-3 text-gray-300">
               <li>
                 <strong className="text-white">Auction Duration:</strong> All content is available
-                for exclusive bidding for 1 hour after submission. Content is visible to everyone
+                for exclusive bidding for 1 hour after upload. Content is visible to everyone
                 during this period (with watermark).
               </li>
               <li>
@@ -156,6 +158,8 @@ export default function TermsPage() {
               <li>Content inciting violence or hate speech</li>
               <li>Private or intimate content shared without consent</li>
               <li>Content that infringes on intellectual property rights</li>
+              <li>AI-generated images or manipulated media presented as authentic</li>
+              <li>Screenshots or content not captured directly from a camera</li>
             </ul>
             <p className="text-gray-300 leading-relaxed mt-4">
               SpillNova reserves the right to remove any content that violates these guidelines
@@ -163,16 +167,16 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* Anonymity */}
+          {/* Privacy */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">6. Anonymity & Privacy</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">6. Privacy</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              SpillNova is designed to protect the anonymity of content submitters:
+              SpillNova is designed to protect the privacy of content creators:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-gray-300">
-              <li>We do not require registration to submit content</li>
-              <li>Phone numbers provided for revenue sharing are encrypted and never shared</li>
-              <li>We strip metadata from uploaded content</li>
+              <li>We do not require registration to upload content</li>
+              <li>Contact details provided for revenue sharing are encrypted and never shared</li>
+              <li>We strip metadata from uploaded content automatically</li>
               <li>We may be required to disclose information pursuant to valid legal process</li>
             </ul>
           </section>
@@ -189,21 +193,36 @@ export default function TermsPage() {
             </ul>
           </section>
 
+          {/* Intellectual Property */}
+          <section>
+            <h2 className="text-xl font-semibold text-white mb-4">8. Intellectual Property</h2>
+            <p className="text-gray-300 leading-relaxed mb-4">
+              By uploading content to SpillNova:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-gray-300">
+              <li>You warrant that you own the content or have the right to license it</li>
+              <li>You grant SpillNova and buyers a perpetual license as described above</li>
+              <li>You agree to indemnify SpillNova against any intellectual property claims</li>
+              <li>SpillNova may use your content for marketing and promotional purposes</li>
+            </ul>
+          </section>
+
           {/* Disclaimer */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">8. Disclaimer</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">9. Disclaimer</h2>
             <p className="text-gray-300 leading-relaxed">
-              SpillNova acts as a platform connecting content submitters with buyers. We do not
-              verify the accuracy or authenticity of submitted content. Buyers are responsible
-              for their own due diligence before using purchased content. SpillNova is not liable
-              for any claims, damages, or losses arising from the use of content obtained through
+              SpillNova acts as a platform connecting content creators with buyers. While we
+              verify that content is camera-captured and authentic, we do not guarantee the
+              accuracy or truthfulness of the content itself. Buyers are responsible for their
+              own due diligence before using purchased content. SpillNova is not liable for
+              any claims, damages, or losses arising from the use of content obtained through
               the platform.
             </p>
           </section>
 
           {/* Changes */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">9. Changes to Terms</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">10. Changes to Terms</h2>
             <p className="text-gray-300 leading-relaxed">
               SpillNova reserves the right to modify these terms at any time. Continued use of
               the platform after changes constitutes acceptance of the new terms.
@@ -212,7 +231,7 @@ export default function TermsPage() {
 
           {/* Contact */}
           <section>
-            <h2 className="text-xl font-semibold text-white mb-4">10. Contact</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">11. Contact</h2>
             <p className="text-gray-300 leading-relaxed">
               For questions about these terms, contact us through the platform or at the
               contact details provided on our website.

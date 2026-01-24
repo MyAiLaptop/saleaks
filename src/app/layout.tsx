@@ -8,9 +8,9 @@ import { PWAProvider } from '@/components/PWAProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SpillNova - Global Citizen Journalism Platform',
-  description: 'Safely and anonymously report corruption, fraud, and misconduct worldwide. Your identity is protected.',
-  keywords: ['whistleblower', 'corruption', 'anonymous', 'leaks', 'fraud', 'misconduct', 'citizen journalism', 'global'],
+  title: 'SpillNova - Real Content Marketplace',
+  description: 'Buy and sell authentic videos and photos from real people worldwide. Verified real content in a world of AI fakes.',
+  keywords: ['real content', 'authentic video', 'verified photos', 'citizen journalism', 'breaking news', 'user generated content', 'sell footage', 'buy real videos'],
   robots: 'index, follow',
   manifest: '/manifest.json',
   appleWebApp: {
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
     apple: '/icons/globecon.png',
   },
   openGraph: {
-    title: 'SpillNova - Global Citizen Journalism Platform',
-    description: 'Safely and anonymously report corruption, fraud, and misconduct worldwide.',
+    title: 'SpillNova - Real Content Marketplace',
+    description: 'Buy and sell authentic videos and photos from real people worldwide. Real content. Real value.',
     type: 'website',
     locale: 'en_US',
   },

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio, User, Globe, ShoppingBag } from 'lucide-react'
+import { Menu, X, FileText, Search, Upload, Bell, Radio, User, Globe, ShoppingBag } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -35,11 +35,11 @@ export function Header() {
           {/* Logo */}
           <Link href={`/${country}`} className="flex items-center gap-2">
             <Image
-              src="/icons/globecon.png"
+              src="/icons/spillnova_floating.png"
               alt="SpillNova"
-              width={56}
-              height={56}
-              className="rounded-lg"
+              width={48}
+              height={48}
+              className="drop-shadow-lg"
               priority
             />
             <Flag countryCode={config.code} size="md" />
@@ -59,14 +59,14 @@ export function Header() {
               className="flex items-center space-x-1 text-gray-300 hover:text-primary-400 transition-colors"
             >
               <Search className="h-4 w-4" />
-              <span>Browse Leaks</span>
+              <span>Browse</span>
             </Link>
             <Link
-              href={`/${country}/submit`}
+              href={`/${country}/upload`}
               className="flex items-center space-x-1 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors"
             >
-              <AlertTriangle className="h-4 w-4" />
-              <span>Submit a Leak</span>
+              <Upload className="h-4 w-4" />
+              <span>Sell Content</span>
             </Link>
             <Link
               href={`/${country}/how-it-works`}
@@ -134,15 +134,15 @@ export function Header() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Search className="h-5 w-5" />
-                <span>Browse Leaks</span>
+                <span>Browse Content</span>
               </Link>
               <Link
-                href={`/${country}/submit`}
+                href={`/${country}/upload`}
                 className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 w-fit"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <AlertTriangle className="h-5 w-5" />
-                <span>Submit a Leak</span>
+                <Upload className="h-5 w-5" />
+                <span>Sell Content</span>
               </Link>
               <Link
                 href={`/${country}/how-it-works`}
