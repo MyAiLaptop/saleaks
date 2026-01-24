@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Download, ShieldAlert } from 'lucide-react'
 import { DynamicWatermark } from './DynamicWatermark'
+import { GhostShield } from './GhostShield'
 import { useContentProtection, contentProtectionStyles } from '@/hooks/useContentProtection'
 
 interface GalleryImage {
@@ -201,6 +202,15 @@ export function FullscreenImageGallery({
         ...(enableProtection ? { ...protectionStyles, ...contentProtectionStyles } : {}),
       }}
     >
+      {/* GhostShield - Compression Destroyer Layer */}
+      {enableProtection && (
+        <GhostShield
+          enabled={true}
+          preset="stealth"
+          opacity={1}
+        />
+      )}
+
       {/* Dynamic Forensic Watermark */}
       {enableProtection && contentId && (
         <DynamicWatermark

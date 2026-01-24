@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import { X, Volume2, VolumeX, Play, Pause, Send, Heart, ThumbsUp, Flame, Laugh, Angry, Download, ShieldAlert } from 'lucide-react'
 import { DynamicWatermark } from './DynamicWatermark'
+import { GhostShield } from './GhostShield'
 import { useContentProtection, contentProtectionStyles } from '@/hooks/useContentProtection'
 
 interface Comment {
@@ -268,6 +269,15 @@ export function FullscreenVideoPlayer({
           togglePlay()
         }}
       />
+
+      {/* GhostShield - Compression Destroyer Layer */}
+      {enableProtection && (
+        <GhostShield
+          enabled={true}
+          preset="stealth"
+          opacity={1}
+        />
+      )}
 
       {/* Dynamic Forensic Watermark */}
       {enableProtection && (
