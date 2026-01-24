@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import {
   Shield,
   Upload,
@@ -231,6 +232,21 @@ export default function CountryUploadPage() {
     >
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-3xl mx-auto px-4 py-12">
+          {/* Brand Header */}
+          <div className="text-center mb-8">
+            <Image
+              src="/icons/spillnova_floating.png"
+              alt="SpillNova"
+              width={100}
+              height={100}
+              className="mx-auto drop-shadow-2xl mb-4"
+            />
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Sell Your Content
+            </h1>
+            <p className="text-gray-400">Upload authentic videos and photos to earn</p>
+          </div>
+
           {/* Security Notice */}
           <div className="bg-primary-500/20 border border-primary-500/30 rounded-lg p-4 mb-8">
             <div className="flex items-start space-x-3">
@@ -245,10 +261,6 @@ export default function CountryUploadPage() {
               </div>
             </div>
           </div>
-
-          <h1 className="text-3xl font-bold text-white mb-8">
-            Sell Your Content
-          </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Category */}

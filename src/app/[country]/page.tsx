@@ -118,6 +118,17 @@ export default function CountryHomePage() {
         {/* Hero Section */}
         <section className="py-16 md:py-24">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            {/* SpillNova Brand Icon */}
+            <div className="mb-6">
+              <Image
+                src="/icons/spillnova_floating.png"
+                alt="SpillNova"
+                width={140}
+                height={140}
+                className="mx-auto drop-shadow-2xl"
+                priority
+              />
+            </div>
             <div className="flex items-center justify-center gap-2 mb-4">
               <Flag countryCode={config.code} size="xl" />
               <span className="text-gray-400">{config.name}</span>

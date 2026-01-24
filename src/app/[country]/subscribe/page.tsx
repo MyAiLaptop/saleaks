@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Bell, Mail, Check, AlertTriangle, ArrowLeft, Loader2, Shield, CheckCircle, Smartphone } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
 
@@ -149,10 +150,16 @@ export default function CountrySubscribePage() {
 
           <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-white/10">
             <div className="bg-primary-500/30 px-6 py-8 text-white text-center border-b border-white/10">
-              <Bell className="h-12 w-12 mx-auto mb-4" />
+              <Image
+                src="/icons/spillnova_floating.png"
+                alt="SpillNova"
+                width={80}
+                height={80}
+                className="mx-auto drop-shadow-2xl mb-4"
+              />
               <h1 className="text-2xl font-bold mb-2">Stay Informed</h1>
               <p className="text-gray-300">
-                Get anonymous alerts when new leaks are published
+                Get alerts when new content is published
               </p>
             </div>
 

@@ -35,13 +35,15 @@ export function Header() {
           {/* Logo */}
           <Link href={`/${country}`} className="flex items-center gap-2">
             <Image
-              src="/icons/spillnova_floating.png"
+              src="/icons/globecon.png"
               alt="SpillNova"
-              width={48}
-              height={48}
-              className="drop-shadow-lg"
+              width={40}
+              height={40}
               priority
             />
+            <span className="text-xl font-bold text-white">
+              Spill<span className="text-primary-400">Nova</span>
+            </span>
             <Flag countryCode={config.code} size="md" />
           </Link>
 

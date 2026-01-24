@@ -21,6 +21,7 @@ import {
   BadgeCheck,
 } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useCountry } from '@/lib/country-context'
 
 export default function CountryHowItWorksPage() {
@@ -34,6 +35,13 @@ export default function CountryHowItWorksPage() {
       <div className="bg-black/60 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center mb-12">
+            <Image
+              src="/icons/spillnova_floating.png"
+              alt="SpillNova"
+              width={120}
+              height={120}
+              className="mx-auto drop-shadow-2xl mb-4"
+            />
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
               How SpillNova Works
             </h1>
