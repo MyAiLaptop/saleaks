@@ -1,5 +1,5 @@
 /**
- * OTP (One-Time Password) System for SA Leaks
+ * OTP (One-Time Password) System for SpillNova
  *
  * Used for:
  * - Submitter account verification
@@ -177,19 +177,19 @@ export async function sendOtpSms(
   let message: string
   switch (purpose) {
     case 'VERIFY_ACCOUNT':
-      message = `Your SA Leaks verification code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      message = `Your SpillNova verification code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
       break
     case 'LOGIN':
-      message = `Your SA Leaks login code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      message = `Your SpillNova login code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
       break
     case 'WITHDRAW':
-      message = `Your SA Leaks withdrawal confirmation code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      message = `Your SpillNova withdrawal confirmation code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
       break
     case 'BUYER_VERIFY':
-      message = `Your Leakpoint Buyer verification code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      message = `Your SpillNova Buyer verification code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
       break
     case 'BUYER_LOGIN':
-      message = `Your Leakpoint Buyer login code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
+      message = `Your SpillNova Buyer login code is: ${code}. Valid for ${OTP_EXPIRY_MINUTES} minutes.`
       break
   }
 

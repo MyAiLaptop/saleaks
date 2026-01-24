@@ -875,7 +875,7 @@ export default function LiveBillboardPage() {
                             className="h-3.5 w-3.5 text-primary-500"
                           />
                           <Lock className="h-3.5 w-3.5 text-primary-500" />
-                          <span className="text-sm text-gray-300">Stay anonymous (SA Leaks keeps revenue)</span>
+                          <span className="text-sm text-gray-300">Stay anonymous (SpillNova keeps revenue)</span>
                         </label>
                         <label className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition-all ${
                           revenueShareEnabled
@@ -1565,7 +1565,7 @@ export default function LiveBillboardPage() {
               <>
                 <h3 className="text-xl font-semibold text-white text-center mb-2">Allow Camera Access</h3>
                 <p className="text-gray-400 text-center mb-6">
-                  SA Leaks needs access to your camera and microphone to record video. Please tap &quot;Allow&quot; when prompted.
+                  SpillNova needs access to your camera and microphone to record video. Please tap &quot;Allow&quot; when prompted.
                 </p>
                 <div className="flex gap-3">
                   <button

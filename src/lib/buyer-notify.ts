@@ -29,7 +29,7 @@ export async function notifyBuyersOfNewContent(
 
     // TODO: Send SMS notifications
     for (const buyer of buyers) {
-      const message = `New ${category} content on Leakpoint! Auction ends in 1 hour. ${process.env.NEXT_PUBLIC_APP_URL}/live/${postId}`
+      const message = `New ${category} content on SpillNova! Auction ends in 1 hour. ${process.env.NEXT_PUBLIC_APP_URL}/live/${postId}`
       console.log(`[Buyer Notify] SMS to ${buyer.organizationName || buyer.phoneNumber}: ${message}`)
     }
 

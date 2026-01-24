@@ -8,15 +8,15 @@ import { PWAProvider } from '@/components/PWAProvider'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SA Leaks - Anonymous Whistleblower Platform',
-  description: 'Safely and anonymously report corruption, fraud, and misconduct in South Africa. Your identity is protected.',
-  keywords: ['whistleblower', 'corruption', 'south africa', 'anonymous', 'leaks', 'fraud', 'misconduct'],
+  title: 'SpillNova - Global Citizen Journalism Platform',
+  description: 'Safely and anonymously report corruption, fraud, and misconduct worldwide. Your identity is protected.',
+  keywords: ['whistleblower', 'corruption', 'anonymous', 'leaks', 'fraud', 'misconduct', 'citizen journalism', 'global'],
   robots: 'index, follow',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'SA Leaks',
+    title: 'SpillNova',
   },
   icons: {
     icon: [
@@ -27,10 +27,10 @@ export const metadata: Metadata = {
     apple: '/icons/globecon.png',
   },
   openGraph: {
-    title: 'SA Leaks - Anonymous Whistleblower Platform',
-    description: 'Safely and anonymously report corruption, fraud, and misconduct in South Africa.',
+    title: 'SpillNova - Global Citizen Journalism Platform',
+    description: 'Safely and anonymously report corruption, fraud, and misconduct worldwide.',
     type: 'website',
-    locale: 'en_ZA',
+    locale: 'en_US',
   },
 }
 

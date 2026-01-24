@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
         notify_url: `${appUrl}/api/media/payfast-webhook`,
         name_first: 'Media',
         name_last: 'Buyer',
-        email_address: email || 'buyer@leakpoint.co.za', // Fallback email for PayFast
+        email_address: email || 'buyer@spillnova.com', // Fallback email for PayFast
         m_payment_id: purchase.id,
         amount: (price / 100).toFixed(2), // Convert cents to Rands
         item_name: `Watermark-free ${isVideo ? 'Video' : 'Image'}: ${media.originalName.substring(0, 100)}`,

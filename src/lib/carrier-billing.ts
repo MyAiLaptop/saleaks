@@ -1,5 +1,5 @@
 /**
- * Carrier Billing Integration for SA Leaks
+ * Carrier Billing Integration for SpillNova
  *
  * Supports payment via mobile airtime/bill for:
  * - Vodacom

@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
       const payment = createPayFastPayment({
         paymentId,
         amount: creditPackage.price,
-        itemName: `Leakpoint Credits - ${creditPackage.name}`,
+        itemName: `SpillNova Credits - ${creditPackage.name}`,
         itemDescription: `${formatCredits(creditPackage.credits)} credits${creditPackage.bonus > 0 ? ` + ${formatCredits(creditPackage.bonus)} bonus` : ''}`,
         buyerId,
         packageId,

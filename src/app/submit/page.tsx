@@ -459,7 +459,7 @@ export default function SubmitPage() {
                           <span className="font-medium text-white">Stay Fully Anonymous</span>
                         </div>
                         <p className="text-sm text-gray-400 mt-0.5">
-                          SA Leaks keeps 100% of any revenue. Your identity remains completely protected.
+                          SpillNova keeps 100% of any revenue. Your identity remains completely protected.
                         </p>
                       </div>
                     </label>
@@ -483,7 +483,7 @@ export default function SubmitPage() {
                           <span className="font-medium text-white">Share Revenue (50/50 Split)</span>
                         </div>
                         <p className="text-sm text-gray-400 mt-0.5">
-                          SA Leaks will contact you if your content generates revenue to arrange payment.
+                          SpillNova will contact you if your content generates revenue to arrange payment.
                         </p>
                       </div>
                     </label>

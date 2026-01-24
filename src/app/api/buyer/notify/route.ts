@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // In production, send SMS to each buyer
     const notifications: string[] = []
     for (const buyer of buyers) {
-      const message = `New ${category} content available on Leakpoint! 1-hour exclusive auction starting now. View: ${process.env.NEXT_PUBLIC_APP_URL}/live/${postId}`
+      const message = `New ${category} content available on SpillNova! 1-hour exclusive auction starting now. View: ${process.env.NEXT_PUBLIC_APP_URL}/live/${postId}`
 
       // TODO: Integrate with SMS provider (Clickatell, BulkSMS, etc.)
       console.log(`[Buyer Notify] Would SMS ${buyer.phoneNumber}: ${message}`)

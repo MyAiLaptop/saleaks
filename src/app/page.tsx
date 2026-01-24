@@ -83,7 +83,7 @@ export default function GlobalLandingPage() {
             <div className="flex items-center justify-center">
               <Image
                 src="/icons/globecon.png"
-                alt="Leakpoint"
+                alt="SpillNova"
                 width={64}
                 height={64}
                 className="rounded-xl"
@@ -215,13 +215,13 @@ export default function GlobalLandingPage() {
               <div className="flex items-center gap-2">
                 <Image
                   src="/icons/globecon.png"
-                  alt="Leakpoint"
+                  alt="SpillNova"
                   width={32}
                   height={32}
                   className="rounded-lg"
                 />
                 <span className="text-gray-400 text-sm">
-                  Leakpoint - Anonymous Whistleblowing Platform
+                  SpillNova - Anonymous Whistleblowing Platform
                 </span>
               </div>
               <div className="flex items-center gap-6 text-sm text-gray-500">

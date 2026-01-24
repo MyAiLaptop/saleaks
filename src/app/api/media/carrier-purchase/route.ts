@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
     const paymentResult = await initiateCarrierPayment({
       phoneNumber,
       amount: price,
-      description: `SA Leaks - Watermark-free ${isVideo ? 'video' : 'image'}`,
+      description: `SpillNova - Watermark-free ${isVideo ? 'video' : 'image'}`,
       mediaId: media.id,
       mediaType,
       reference: purchase.id,

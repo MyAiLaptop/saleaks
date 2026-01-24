@@ -1,4 +1,4 @@
-// SA Leaks Service Worker
+// SpillNova Service Worker
 const CACHE_NAME = 'saleaks-v2'
 const OFFLINE_URL = '/offline'
 
@@ -110,7 +110,7 @@ self.addEventListener('push', (event) => {
   const data = event.data.json()
 
   const options = {
-    body: data.body || 'New update on SA Leaks',
+    body: data.body || 'New update on SpillNova',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/badge-72x72.png',
     vibrate: [100, 50, 100],
@@ -141,7 +141,7 @@ self.addEventListener('push', (event) => {
   }
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'SA Leaks', options)
+    self.registration.showNotification(data.title || 'SpillNova', options)
   )
 })
 

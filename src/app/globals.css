@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ========================================
-   SA LEAKS BRAND TOKENS
+   SPILLNOVA BRAND TOKENS
    ======================================== */
 
 :root {
@@ -14,7 +14,7 @@
   --brand-blue: #002395;
   --brand-orange: #F35B1F;
 
-  /* UI tokens - Dark mode as default for SA Leaks */
+  /* UI tokens - Dark mode as default for SpillNova */
   --bg: #0F131A;
   --bg-card: #1A1F29;
   --bg-elevated: #2A3141;
@@ -252,7 +252,7 @@ header {
     page-break-inside: avoid;
   }
 
-  /* Add SA Leaks branding for print */
+  /* Add SpillNova branding for print */
   .print-header {
     display: block !important;
     text-align: center;

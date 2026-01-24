@@ -1,5 +1,5 @@
 /**
- * Content Moderation System for SA Leaks
+ * Content Moderation System for SpillNova
  *
  * Multi-layered approach:
  * 1. Text content filtering (profanity, spam patterns)

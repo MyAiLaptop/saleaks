@@ -797,7 +797,7 @@ export default function CountryHomePage() {
           <div className="bg-gradient-to-br from-red-900/30 to-orange-900/30 backdrop-blur-sm rounded-2xl p-8 md:p-12 border border-red-500/30">
             <Image
               src="/icons/globecon.png"
-              alt="Leakpoint"
+              alt="SpillNova"
               width={120}
               height={120}
               className="mx-auto mb-6 rounded-2xl"

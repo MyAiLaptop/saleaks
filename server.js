@@ -96,7 +96,7 @@ async function startServer() {
       console.log(`
 ╔════════════════════════════════════════════════════════════╗
 ║                                                            ║
-║   SA Leaks - Whistleblower Platform                        ║
+║   SpillNova - Whistleblower Platform                       ║
 ║                                                            ║
 ║   Server running at: ${url}                       ║
 ║                                                            ║

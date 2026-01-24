@@ -153,14 +153,14 @@ export function PWAProvider() {
             <div className="flex-shrink-0">
               <Image
                 src="/icons/globecon.png"
-                alt="SA Leaks"
+                alt="SpillNova"
                 width={56}
                 height={56}
                 className="rounded-lg"
               />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="font-semibold">Add SA Leaks to your home screen</p>
+              <p className="font-semibold">Add SpillNova to your home screen</p>
               <p className="text-sm text-primary-100">
                 {isIOS
                   ? 'Tap the share button and select "Add to Home Screen"'
@@ -196,7 +196,7 @@ export function PWAProvider() {
             <div className="flex-shrink-0">
               <Image
                 src="/icons/globecon.png"
-                alt="SA Leaks"
+                alt="SpillNova"
                 width={56}
                 height={56}
                 className="rounded-lg"
@@ -207,7 +207,7 @@ export function PWAProvider() {
                 Stay Updated
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Get notified about breaking news and important updates from SA Leaks
+                Get notified about breaking news and important updates from SpillNova
               </p>
               <div className="flex gap-2 mt-3">
                 <button

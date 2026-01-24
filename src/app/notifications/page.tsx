@@ -240,7 +240,7 @@ export default function NotificationsPage() {
                 Notifications Blocked
               </h2>
               <p className="text-red-300 text-sm mb-4">
-                You&apos;ve blocked notifications from SA Leaks.
+                You&apos;ve blocked notifications from SpillNova.
                 To enable them, update your browser settings.
               </p>
               <p className="text-xs text-red-400">

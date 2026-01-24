@@ -170,7 +170,7 @@ export default function MessagesPage() {
                     className="w-full px-4 py-3 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    Found in the URL of your leak (e.g., saleaks.co.za/leak/<strong className="text-gray-300">abc123xyz</strong>)
+                    Found in the URL of your leak (e.g., spillnova.com/leak/<strong className="text-gray-300">abc123xyz</strong>)
                   </p>
                 </div>
 

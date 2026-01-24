@@ -230,7 +230,7 @@ export default function CountryNotificationsPage() {
                 Notifications Blocked
               </h2>
               <p className="text-red-300 text-sm mb-4">
-                You&apos;ve blocked notifications from Leakpoint.
+                You&apos;ve blocked notifications from SpillNova.
                 To enable them, update your browser settings.
               </p>
               <p className="text-xs text-red-400">

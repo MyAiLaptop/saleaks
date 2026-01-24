@@ -85,7 +85,7 @@ export default function JournalistsPage() {
                     For Journalists
                   </h1>
                   <p className="text-gray-400">
-                    Get verified access to SA Leaks
+                    Get verified access to SpillNova
                   </p>
                 </div>
               </div>

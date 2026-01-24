@@ -75,7 +75,7 @@ export default function EmbedPage() {
           <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
-          <span className="text-white font-semibold text-sm">SA Leaks</span>
+          <span className="text-white font-semibold text-sm">SpillNova</span>
         </div>
         <a
           href={`${baseUrl}/leak/${data.publicId}`}
@@ -173,7 +173,7 @@ export default function EmbedPage() {
           rel="noopener noreferrer"
           className="text-xs text-gray-500 hover:text-[#007749]"
         >
-          Powered by SA Leaks - Anonymous Whistleblowing Platform
+          Powered by SpillNova - Anonymous Whistleblowing Platform
         </a>
       </div>
     </div>

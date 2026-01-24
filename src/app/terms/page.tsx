@@ -1,8 +1,8 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Terms & Conditions | SA Leaks',
-  description: 'Terms and conditions for using SA Leaks platform',
+  title: 'Terms & Conditions | SpillNova',
+  description: 'Terms and conditions for using SpillNova platform',
 }
 
 export default function TermsPage() {
@@ -12,7 +12,7 @@ export default function TermsPage() {
       <header className="border-b border-ink-800">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-white">
-            SA<span className="text-primary-400">Leaks</span>
+            Spill<span className="text-primary-400">Nova</span>
           </Link>
           <Link href="/live" className="text-gray-400 hover:text-white transition-colors">
             Back to Live
@@ -30,8 +30,8 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">1. Introduction</h2>
             <p className="text-gray-300 leading-relaxed">
-              Welcome to SA Leaks. By using our platform, you agree to these terms and conditions.
-              SA Leaks is an anonymous content sharing platform that allows users to submit and
+              Welcome to SpillNova. By using our platform, you agree to these terms and conditions.
+              SpillNova is an anonymous content sharing platform that allows users to submit and
               purchase newsworthy content including photos and videos.
             </p>
           </section>
@@ -40,11 +40,11 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">2. Content Submission (Seller Terms)</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              By submitting content to SA Leaks, you agree to the following:
+              By submitting content to SpillNova, you agree to the following:
             </p>
             <ul className="list-disc pl-6 space-y-3 text-gray-300">
               <li>
-                <strong className="text-white">Transfer of Rights:</strong> You grant SA Leaks and
+                <strong className="text-white">Transfer of Rights:</strong> You grant SpillNova and
                 all purchasers a perpetual, worldwide, non-exclusive, royalty-free license to use,
                 reproduce, modify, publish, distribute, and display the content in any media.
               </li>
@@ -52,7 +52,7 @@ export default function TermsPage() {
                 <strong className="text-white">Relinquishment of Exclusive Ownership:</strong> You
                 understand and agree that by submitting content, you relinquish any claim to
                 exclusive ownership. The content may be sold to multiple buyers and used by
-                SA Leaks for promotional purposes.
+                SpillNova for promotional purposes.
               </li>
               <li>
                 <strong className="text-white">Original Content:</strong> You confirm that you are
@@ -75,7 +75,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">3. Content Purchase (Buyer Terms)</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              By purchasing content from SA Leaks, you agree to the following:
+              By purchasing content from SpillNova, you agree to the following:
             </p>
             <ul className="list-disc pl-6 space-y-3 text-gray-300">
               <li>
@@ -93,7 +93,7 @@ export default function TermsPage() {
                 or sublicense it to third parties as a standalone product.
               </li>
               <li>
-                <strong className="text-white">Attribution:</strong> Attribution to SA Leaks or
+                <strong className="text-white">Attribution:</strong> Attribution to SpillNova or
                 the original submitter is appreciated but not required.
               </li>
               <li>
@@ -108,7 +108,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">4. Exclusive Rights Auction</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              All new content on SA Leaks goes through a 1-hour auction period where media
+              All new content on SpillNova goes through a 1-hour auction period where media
               organizations can bid for exclusive rights:
             </p>
             <ul className="list-disc pl-6 space-y-3 text-gray-300">
@@ -158,7 +158,7 @@ export default function TermsPage() {
               <li>Content that infringes on intellectual property rights</li>
             </ul>
             <p className="text-gray-300 leading-relaxed mt-4">
-              SA Leaks reserves the right to remove any content that violates these guidelines
+              SpillNova reserves the right to remove any content that violates these guidelines
               and to ban users who repeatedly violate them.
             </p>
           </section>
@@ -167,7 +167,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">6. Anonymity & Privacy</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              SA Leaks is designed to protect the anonymity of content submitters:
+              SpillNova is designed to protect the anonymity of content submitters:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-gray-300">
               <li>We do not require registration to submit content</li>
@@ -193,9 +193,9 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">8. Disclaimer</h2>
             <p className="text-gray-300 leading-relaxed">
-              SA Leaks acts as a platform connecting content submitters with buyers. We do not
+              SpillNova acts as a platform connecting content submitters with buyers. We do not
               verify the accuracy or authenticity of submitted content. Buyers are responsible
-              for their own due diligence before using purchased content. SA Leaks is not liable
+              for their own due diligence before using purchased content. SpillNova is not liable
               for any claims, damages, or losses arising from the use of content obtained through
               the platform.
             </p>
@@ -205,7 +205,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold text-white mb-4">9. Changes to Terms</h2>
             <p className="text-gray-300 leading-relaxed">
-              SA Leaks reserves the right to modify these terms at any time. Continued use of
+              SpillNova reserves the right to modify these terms at any time. Continued use of
               the platform after changes constitutes acceptance of the new terms.
             </p>
           </section>

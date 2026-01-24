@@ -70,7 +70,7 @@ export default function CountryPricingPage() {
         { text: 'Team collaboration tools', included: true },
       ],
       cta: 'Contact Sales',
-      ctaLink: 'mailto:newsroom@leakpoint.com',
+      ctaLink: 'mailto:newsroom@spillnova.com',
       highlighted: false,
     },
   ]
@@ -280,7 +280,7 @@ export default function CountryPricingPage() {
               Have questions about our plans?
             </p>
             <a
-              href="mailto:support@leakpoint.com"
+              href="mailto:support@spillnova.com"
               className="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium"
             >
               <Building2 className="h-4 w-4 mr-2" />

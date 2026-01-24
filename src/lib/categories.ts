@@ -1,4 +1,4 @@
-// Default categories for SA Leaks
+// Default categories for SpillNova
 export const DEFAULT_CATEGORIES = [
   {
     name: 'Government Corruption',

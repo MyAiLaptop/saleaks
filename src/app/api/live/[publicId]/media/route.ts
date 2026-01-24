@@ -310,8 +310,8 @@ export async function POST(
           await prisma.scheduledPublish.create({
             data: {
               liveMediaId: media.id,
-              title: `SA Leaks: ${post.category} - ${post.content.substring(0, 50)}...`,
-              description: `${post.content}\n\nOriginal footage from SA Leaks - South Africa's citizen journalism platform.\n\n#SALeaks #SouthAfrica #${post.category}`,
+              title: `SpillNova: ${post.category} - ${post.content.substring(0, 50)}...`,
+              description: `${post.content}\n\nOriginal footage from SpillNova - South Africa's citizen journalism platform.\n\n#SpillNova #SouthAfrica #${post.category}`,
               r2Key: r2OriginalKey,
               mimeType: baseMimeType, // Use clean MIME type without codec info
               scheduledFor: new Date(Date.now() + SOCIAL_PUBLISH_DELAY_MS),

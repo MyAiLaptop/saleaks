@@ -231,7 +231,7 @@ export default function DownloadPage() {
         {/* Back link */}
         <div className="text-center mt-6">
           <Link href="/" className="text-gray-400 hover:text-white text-sm transition-colors">
-            Return to SA Leaks
+            Return to SpillNova
           </Link>
         </div>
       </div>

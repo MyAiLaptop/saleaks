@@ -1,4 +1,4 @@
-# Setting Up Tor Hidden Service for SA Leaks
+# Setting Up Tor Hidden Service for SpillNova
 
 This guide explains how to set up a .onion address for maximum anonymity.
 

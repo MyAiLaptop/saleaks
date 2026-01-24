@@ -12,14 +12,14 @@ export function Footer() {
             <div className="mb-4">
               <Image
                 src="/icons/globecon.png"
-                alt="SA Leaks"
+                alt="SpillNova"
                 width={80}
                 height={80}
                 className="rounded-xl"
               />
             </div>
             <p className="text-sm text-ink-400 mb-4">
-              A platform for South Africans to anonymously expose corruption, fraud, and misconduct.
+              A global platform to anonymously expose corruption, fraud, and misconduct.
               Your identity is protected - we do not log IP addresses or require any personal information.
             </p>
             <div className="flex space-x-4">
