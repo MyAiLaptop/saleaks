@@ -355,10 +355,10 @@ export default function CountrySubmitPage() {
               />
             </div>
 
-            {/* File Upload */}
+            {/* File Upload - Media Bundle */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Evidence Files
+                Media Bundle
               </label>
               <div className="border-2 border-dashed border-white/20 rounded-lg p-6 relative bg-black/20">
                 <div className="text-center">
@@ -367,10 +367,15 @@ export default function CountrySubmitPage() {
                     Drag & drop files or click to browse
                   </p>
                   <p className="text-xs text-gray-400">
-                    Images, PDFs, videos, documents (max 50MB each, 10 files total)
+                    Videos and images (max 50MB each, up to 10 files)
                   </p>
-                  <p className="text-xs text-green-400 mt-1">
-                    All metadata will be automatically removed
+                  <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-primary-500/20 rounded-full">
+                    <span className="text-xs text-primary-400 font-medium">
+                      Bundle multiple files together for auction
+                    </span>
+                  </div>
+                  <p className="text-xs text-green-400 mt-2">
+                    All metadata automatically removed for your protection
                   </p>
                 </div>
                 <input

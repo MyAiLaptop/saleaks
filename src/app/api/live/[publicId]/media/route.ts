@@ -12,7 +12,7 @@ import { moderateImageContent, moderateVideoContent, type ModerationResult } fro
 export const maxDuration = 300
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB for videos
-const MAX_FILES = 4
+const MAX_FILES = 10 // Allow media bundles (mixed videos and images)
 // Base MIME types (without codec info)
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
 const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-matroska']

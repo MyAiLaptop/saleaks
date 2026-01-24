@@ -755,8 +755,16 @@ export default function CountryLiveBillboardPage() {
                 {/* Media Capture - Camera Only */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Photos & Videos (Optional)
+                    Media Bundle (Optional)
                   </label>
+
+                  {/* Bundle promotion notice */}
+                  <div className="bg-primary-500/10 border border-primary-500/30 rounded-lg p-2 mb-3">
+                    <p className="text-xs text-primary-400 flex items-center gap-1">
+                      <VideoIcon className="h-3 w-3" />
+                      Add up to 10 videos & photos - sell as one bundle at auction
+                    </p>
+                  </div>
 
                   {/* Camera-only notice */}
                   <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2 mb-3">
@@ -766,7 +774,7 @@ export default function CountryLiveBillboardPage() {
                     </p>
                   </div>
 
-                  {selectedFiles.length < 4 && (
+                  {selectedFiles.length < 10 && (
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <button
                         type="button"
@@ -893,8 +901,8 @@ export default function CountryLiveBillboardPage() {
                     <div>
                       <p className="text-blue-200 font-medium">
                         {selectedFiles.some(f => f.type.startsWith('video/'))
-                          ? 'Uploading and processing video...'
-                          : 'Uploading media...'}
+                          ? `Uploading ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} and processing video...`
+                          : `Uploading ${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''}...`}
                       </p>
                       <p className="text-blue-400 text-sm">
                         {selectedFiles.some(f => f.type.startsWith('video/'))
