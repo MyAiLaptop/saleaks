@@ -21,10 +21,10 @@ import {
   CheckCircle,
   Camera,
   MapPin,
-  DollarSign,
   BadgeCheck,
   ShoppingCart,
-  Upload
+  Play,
+  X
 } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
 import { Flag } from '@/components/Flag'
@@ -55,6 +55,7 @@ export default function CountryHomePage() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [livePosts, setLivePosts] = useState<LivePost[]>([])
   const [isReady, setIsReady] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
 
   useEffect(() => {
     // Mark as ready after hydration
@@ -118,17 +119,66 @@ export default function CountryHomePage() {
         {/* Hero Section */}
         <section className="py-16 md:py-24">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            {/* SpillNova Brand Icon */}
+            {/* SpillNova Brand Icon - Click to play video */}
             <div className="mb-6">
-              <Image
-                src="/icons/spillnova_floating.png"
-                alt="SpillNova"
-                width={140}
-                height={140}
-                className="mx-auto drop-shadow-2xl"
-                priority
-              />
+              <button
+                type="button"
+                onClick={() => setShowVideo(true)}
+                className="relative group cursor-pointer mx-auto block"
+                aria-label="Watch SpillNova video"
+              >
+                <Image
+                  src="/icons/spillnova_floating.png"
+                  alt="SpillNova"
+                  width={200}
+                  height={200}
+                  className="drop-shadow-2xl transition-transform group-hover:scale-105"
+                  priority
+                />
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 group-hover:bg-white/30 transition-all group-hover:scale-110">
+                    <Play className="h-8 w-8 text-white fill-white" />
+                  </div>
+                </div>
+                {/* Watch video text */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
+                  Watch Video
+                </div>
+              </button>
             </div>
+
+            {/* Video Modal */}
+            {showVideo && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+                onClick={() => setShowVideo(false)}
+              >
+                <div
+                  className="relative w-full max-w-2xl mx-4"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setShowVideo(false)}
+                    className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+                    aria-label="Close video"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                  <div className="aspect-video">
+                    <video
+                      src="https://media.saleaks.co.za/SpillNova.mp4"
+                      controls
+                      autoPlay
+                      className="w-full h-full rounded-lg shadow-2xl"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex items-center justify-center gap-2 mb-4">
               <Flag countryCode={config.code} size="xl" />
               <span className="text-gray-400">{config.name}</span>
@@ -142,8 +192,8 @@ export default function CountryHomePage() {
               <span className="text-accent-gold">Sell. Buy. Verified.</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-200 mb-4 max-w-2xl mx-auto">
-              {config.name}&apos;s marketplace for authentic videos and photos. Creators upload real content,
-              buyers get verified media. Earn 50% when your content sells.
+              {config.name}&apos;s marketplace for authentic videos and photos. Real-time camera capture only,
+              buyers get verified media. No uploads - guaranteed authentic.
             </p>
             <p className="text-sm text-gray-400 mb-8 flex items-center justify-center gap-2">
               <BadgeCheck className="h-4 w-4 text-primary-400" />

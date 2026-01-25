@@ -7,7 +7,6 @@ const DEFAULT_COUNTRY = 'sa'
 // Routes that should be redirected to country-specific versions
 const COUNTRY_ROUTES = [
   '/live',
-  '/upload',
   '/browse',
   '/account',
   '/subscribe',

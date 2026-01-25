@@ -32,10 +32,10 @@
       "icons": [{ "src": "/icons/spillnova-icon.png", "sizes": "96x96" }]
     },
     {
-      "name": "Sell Content",
-      "short_name": "Sell",
-      "description": "Upload and sell your content",
-      "url": "/upload",
+      "name": "Browse Content",
+      "short_name": "Browse",
+      "description": "Browse authentic videos and photos",
+      "url": "/browse",
       "icons": [{ "src": "/icons/spillnova-icon.png", "sizes": "96x96" }]
     }
   ]

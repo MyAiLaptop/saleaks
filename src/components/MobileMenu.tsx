@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Menu, X, FileText, Search, Upload, Bell, Radio, ShoppingCart } from 'lucide-react'
+import { Menu, X, FileText, Bell, Radio, ShoppingCart } from 'lucide-react'
 
 export function MobileMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -39,14 +39,6 @@ export function MobileMenu() {
               >
                 <ShoppingCart className="h-5 w-5" />
                 <span>Browse Content</span>
-              </Link>
-              <Link
-                href="/upload"
-                className="flex items-center space-x-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-fit"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Upload className="h-5 w-5" />
-                <span>Sell Content</span>
               </Link>
               <Link
                 href="/how-it-works"

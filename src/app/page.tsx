@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Globe, ArrowRight, Shield, Radio, Camera, BadgeCheck, DollarSign, Play, X } from 'lucide-react'
+import { Globe, ArrowRight, Radio, Camera, BadgeCheck, Play, X } from 'lucide-react'
 import { countries, getEnabledCountries, DEFAULT_COUNTRY } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -156,8 +156,8 @@ export default function GlobalLandingPage() {
               <span className="text-accent-gold">Sell. Buy. Verified.</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-              The marketplace for authentic videos and photos. Creators upload real content,
-              buyers get verified media. Camera-captured only - no AI-generated fakes allowed.
+              The marketplace for authentic videos and photos. Real-time camera capture only,
+              buyers get verified media. No uploads allowed - prevents AI-generated fakes.
             </p>
 
             {/* Country Selector */}
@@ -219,11 +219,11 @@ export default function GlobalLandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               <div className="bg-ink-900/60 backdrop-blur-sm rounded-xl p-6 border border-white/10">
                 <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <DollarSign className="h-6 w-6 text-green-400" />
+                  <BadgeCheck className="h-6 w-6 text-green-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">Sell Your Content</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">100% Authentic</h3>
                 <p className="text-gray-400 text-sm">
-                  Upload videos and photos. Earn 50% when buyers purchase your content.
+                  Real-time camera capture only. No uploads allowed - guaranteed authentic content.
                 </p>
               </div>
 
