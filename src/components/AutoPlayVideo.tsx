@@ -1,17 +1,18 @@
 'use client'
 
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { Volume2, VolumeX, Play, Pause, Share2, Check } from 'lucide-react'
+import { Volume2, VolumeX, Play, Pause, Share2, Check, Download, Loader2 } from 'lucide-react'
 
 interface AutoPlayVideoProps {
   src: string
+  watermarkedSrc?: string
   className?: string
   poster?: string
   postId?: string
   country?: string
 }
 
-export function AutoPlayVideo({ src, className = '', poster, postId, country = 'sa' }: AutoPlayVideoProps) {
+export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, postId, country = 'sa' }: AutoPlayVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const progressBarRef = useRef<HTMLDivElement>(null)
@@ -24,6 +25,7 @@ export function AutoPlayVideo({ src, className = '', poster, postId, country = '
   const [isDragging, setIsDragging] = useState(false)
   const [showControls, setShowControls] = useState(true)
   const [showShareCopied, setShowShareCopied] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Format time as mm:ss
@@ -223,7 +225,7 @@ export function AutoPlayVideo({ src, className = '', poster, postId, country = '
     e.stopPropagation()
     if (!postId) return
 
-    const shareUrl = `https://spillnova.com/${country}/post/${postId}`
+    const shareUrl = `https://spillnova.com/${country}/live/${postId}`
 
     try {
       if (navigator.share) {
@@ -245,6 +247,35 @@ export function AutoPlayVideo({ src, className = '', poster, postId, country = '
       } catch {
         // Silent fail
       }
+    }
+  }
+
+  // Download video
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isDownloading) return
+
+    setIsDownloading(true)
+    const downloadUrl = watermarkedSrc || src
+
+    try {
+      const response = await fetch(downloadUrl)
+      const blob = await response.blob()
+      const blobUrl = URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = `spillnova-video-${postId || Date.now()}.mp4`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      URL.revokeObjectURL(blobUrl)
+    } catch (error) {
+      console.error('Download failed:', error)
+      window.open(downloadUrl, '_blank')
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -281,10 +312,23 @@ export function AutoPlayVideo({ src, className = '', poster, postId, country = '
         </div>
       )}
 
-      {/* Top controls - Mute and Share */}
+      {/* Top controls - Download, Share, Mute */}
       <div className={`absolute top-3 right-3 flex items-center gap-2 z-10 transition-opacity duration-200 ${
         showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
       }`}>
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={isDownloading}
+          className="p-2 bg-black/60 rounded-full text-white hover:bg-black/80 transition-colors disabled:opacity-50"
+          title="Download"
+        >
+          {isDownloading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+        </button>
         {postId && (
           <button
             type="button"

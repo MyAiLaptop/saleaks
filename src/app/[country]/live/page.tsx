@@ -1194,6 +1194,7 @@ export default function CountryLiveBillboardPage() {
                             ) : media.mimeType.startsWith('video/') ? (
                               <AutoPlayVideo
                                 src={getMediaUrl(media.path)}
+                                watermarkedSrc={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
                                 className="w-full h-full"
                                 postId={post.publicId}
                                 country={country}
@@ -1302,6 +1303,21 @@ export default function CountryLiveBillboardPage() {
                             >
                               <ThumbsDown className={`h-4 w-4 ${userVote === -1 ? 'fill-current' : ''}`} />
                             </button>
+                          </div>
+
+                          {/* Emoji Reactions */}
+                          <div className="flex items-center gap-0.5">
+                            {['❤️', '😂', '😮', '🔥'].map((emoji) => (
+                              <button
+                                key={emoji}
+                                type="button"
+                                onClick={() => handleVote(post.publicId, 1)}
+                                className="p-1.5 rounded-lg hover:bg-white/10 text-lg transition-transform hover:scale-125 active:scale-95"
+                                title={`React with ${emoji}`}
+                              >
+                                {emoji}
+                              </button>
+                            ))}
                           </div>
 
                           {/* Views */}

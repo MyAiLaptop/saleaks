@@ -97,6 +97,34 @@ export default function CountryLivePostPage() {
   const [voteCount, setVoteCount] = useState({ upvotes: 0, downvotes: 0 })
 
   const [copied, setCopied] = useState(false)
+  const [downloading, setDownloading] = useState<string | null>(null)
+
+  // Download file properly (handles cross-origin)
+  const handleDownload = async (url: string, filename: string, mediaId: string) => {
+    if (downloading) return
+    setDownloading(mediaId)
+
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      URL.revokeObjectURL(blobUrl)
+    } catch (error) {
+      console.error('Download failed:', error)
+      // Fallback: open in new tab
+      window.open(url, '_blank')
+    } finally {
+      setDownloading(null)
+    }
+  }
 
   // Fetch post
   useEffect(() => {
@@ -268,15 +296,24 @@ export default function CountryLivePostPage() {
                     ) : null}
                     {/* Download/Purchase options overlay */}
                     <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                      <a
-                        href={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                        download={media.originalName}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-black/70 text-white text-sm rounded-lg hover:bg-black/90 transition-colors backdrop-blur-sm"
+                      <button
+                        type="button"
+                        onClick={() => handleDownload(
+                          getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path),
+                          media.originalName,
+                          media.id
+                        )}
+                        disabled={downloading === media.id}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-black/70 text-white text-sm rounded-lg hover:bg-black/90 transition-colors backdrop-blur-sm disabled:opacity-50"
                         title="Download with watermark (free)"
                       >
-                        <Download className="h-4 w-4" />
+                        {downloading === media.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Download className="h-4 w-4" />
+                        )}
                         Free Download
-                      </a>
+                      </button>
                       {media.forSale !== false && (
                         <PurchaseButton
                           mediaId={media.id}
