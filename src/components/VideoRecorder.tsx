@@ -277,7 +277,7 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   // Error state
   if (error) {
     return (
-      <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
         <div className="bg-ink-800 rounded-2xl p-6 max-w-md w-full text-center">
           <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Camera className="h-8 w-8 text-red-400" />
@@ -306,7 +306,7 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   // Loading state
   if (isInitializing) {
     return (
-      <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+      <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white">Initializing camera...</p>
@@ -316,149 +316,162 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Video Preview / Playback */}
-      <div className="flex-1 relative">
-        {recordedUrl ? (
-          // Playback recorded video
-          <video
-            src={recordedUrl}
-            className="w-full h-full object-contain"
-            controls
-            autoPlay
-            loop
-          />
-        ) : (
-          // Live camera preview
-          <video
-            ref={videoRef}
-            className="w-full h-full object-cover"
-            playsInline
-            autoPlay
-            muted
-            // @ts-ignore - webkit attribute for iOS
-            webkit-playsinline="true"
-            x-webkit-airplay="deny"
-          />
-        )}
+    <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-0 md:p-8">
+      {/* Desktop: YouTube-style frame / Mobile: Fullscreen */}
+      <div className="w-full h-full md:max-w-4xl md:h-auto md:max-h-[90vh] bg-black md:rounded-2xl overflow-hidden flex flex-col shadow-2xl">
+        {/* Video Preview / Playback */}
+        <div className="flex-1 relative md:aspect-video">
+          {recordedUrl ? (
+            // Playback recorded video
+            <video
+              src={recordedUrl}
+              className="w-full h-full object-contain bg-black"
+              controls
+              autoPlay
+              loop
+            />
+          ) : (
+            // Live camera preview
+            <video
+              ref={videoRef}
+              className="w-full h-full object-cover md:object-contain"
+              playsInline
+              autoPlay
+              muted
+              // @ts-ignore - webkit attribute for iOS
+              webkit-playsinline="true"
+              x-webkit-airplay="deny"
+            />
+          )}
 
-        {/* Recording indicator */}
-        {isRecording && (
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
-            <div className="flex items-center gap-2 bg-black/50 px-3 py-1.5 rounded-full">
-              <span className={`w-3 h-3 rounded-full ${isPaused ? 'bg-yellow-500' : 'bg-red-500 animate-pulse'}`} />
-              <span className="text-white font-medium">{formatDuration(duration)}</span>
-              <span className="text-gray-400">/ {formatDuration(maxDuration)}</span>
-            </div>
-            {/* Desktop keyboard hint */}
-            {isDesktop && (
-              <div className="bg-black/50 px-3 py-1.5 rounded-full text-xs text-gray-300">
-                Press <kbd className="px-1.5 py-0.5 bg-white/20 rounded mx-1">SPACE</kbd> to stop
+          {/* Recording indicator */}
+          {isRecording && (
+            <div className="absolute top-4 left-4 flex flex-col gap-2">
+              <div className="flex items-center gap-2 bg-black/70 px-3 py-1.5 rounded-full">
+                <span className={`w-3 h-3 rounded-full ${isPaused ? 'bg-yellow-500' : 'bg-red-500 animate-pulse'}`} />
+                <span className="text-white font-medium">{formatDuration(duration)}</span>
+                <span className="text-gray-400">/ {formatDuration(maxDuration)}</span>
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Close button */}
-        <button
-          onClick={onCancel}
-          className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
-        >
-          <X className="h-5 w-5" />
-        </button>
-
-        {/* Camera controls (only when not recording and no recorded video) */}
-        {!isRecording && !recordedUrl && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2">
-            <button
-              onClick={switchCamera}
-              className="w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
-              title="Switch camera"
-            >
-              <SwitchCamera className="h-5 w-5" />
-            </button>
-            <button
-              onClick={toggleMute}
-              className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ${isMuted ? 'bg-red-500/50 hover:bg-red-500/70' : 'bg-black/50 hover:bg-black/70'}`}
-              title={isMuted ? 'Unmute' : 'Mute'}
-            >
-              {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Controls */}
-      <div className="bg-ink-900 p-6 safe-area-bottom">
-        {recordedUrl ? (
-          // Post-recording controls
-          <div className="flex items-center justify-center gap-6">
-            <button
-              type="button"
-              onClick={retake}
-              className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
-            >
-              <div className="w-14 h-14 bg-ink-700 rounded-full flex items-center justify-center">
-                <RotateCcw className="h-6 w-6" />
-              </div>
-              <span className="text-xs">Retake</span>
-            </button>
-            <button
-              type="button"
-              onClick={confirmRecording}
-              disabled={!recordedBlob}
-              className="flex flex-col items-center gap-1 text-white disabled:opacity-50"
-            >
-              <div className="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
-                <Check className="h-8 w-8" />
-              </div>
-              <span className="text-xs">Use Video</span>
-            </button>
-          </div>
-        ) : (
-          // Recording controls
-          <div className="flex items-center justify-center gap-6">
-            {isRecording ? (
-              <>
-                <button
-                  onClick={togglePause}
-                  className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
-                >
-                  <div className="w-14 h-14 bg-ink-700 rounded-full flex items-center justify-center">
-                    {isPaused ? <Play className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
-                  </div>
-                  <span className="text-xs">{isPaused ? 'Resume' : 'Pause'}</span>
-                </button>
-                <button
-                  onClick={stopRecording}
-                  className="flex flex-col items-center gap-1 text-white"
-                >
-                  <div className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg shadow-red-500/50 ring-4 ring-red-400/30">
-                    <Square className="h-10 w-10 fill-current" />
-                  </div>
-                  <span className="text-sm font-medium">STOP</span>
-                </button>
-              </>
-            ) : (
-              <button
-                onClick={startRecording}
-                className="flex flex-col items-center gap-1 text-white"
-              >
-                <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
-                  <div className="w-14 h-14 bg-red-500 rounded-full hover:bg-red-600 transition-colors" />
+              {/* Desktop keyboard hint */}
+              {isDesktop && (
+                <div className="bg-black/70 px-3 py-1.5 rounded-full text-xs text-gray-300">
+                  Press <kbd className="px-1.5 py-0.5 bg-white/20 rounded mx-1">SPACE</kbd> to stop
                 </div>
-                <span className="text-sm mt-1">Tap to record</span>
-              </button>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
-        {/* Duration hint */}
-        {!isRecording && !recordedUrl && (
-          <p className="text-center text-gray-500 text-xs mt-4">
-            Maximum recording: {formatDuration(maxDuration)}
-          </p>
-        )}
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={onCancel}
+            className="absolute top-4 right-4 w-10 h-10 bg-black/70 rounded-full flex items-center justify-center text-white hover:bg-black/90 transition-colors"
+            title="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {/* Camera controls (only when not recording and no recorded video) */}
+          {!isRecording && !recordedUrl && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2">
+              <button
+                type="button"
+                onClick={switchCamera}
+                className="w-10 h-10 bg-black/70 rounded-full flex items-center justify-center text-white hover:bg-black/90 transition-colors"
+                title="Switch camera"
+              >
+                <SwitchCamera className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={toggleMute}
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ${isMuted ? 'bg-red-500/70 hover:bg-red-500/90' : 'bg-black/70 hover:bg-black/90'}`}
+                title={isMuted ? 'Unmute' : 'Mute'}
+              >
+                {isMuted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="bg-ink-900 p-4 md:p-6 safe-area-bottom md:rounded-b-2xl">
+          {recordedUrl ? (
+            // Post-recording controls
+            <div className="flex items-center justify-center gap-6">
+              <button
+                type="button"
+                onClick={retake}
+                className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+              >
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-ink-700 rounded-full flex items-center justify-center">
+                  <RotateCcw className="h-5 w-5 md:h-6 md:w-6" />
+                </div>
+                <span className="text-xs">Retake</span>
+              </button>
+              <button
+                type="button"
+                onClick={confirmRecording}
+                disabled={!recordedBlob}
+                className="flex flex-col items-center gap-1 text-white disabled:opacity-50"
+              >
+                <div className="w-14 h-14 md:w-16 md:h-16 bg-primary-500 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
+                  <Check className="h-7 w-7 md:h-8 md:w-8" />
+                </div>
+                <span className="text-xs">Use Video</span>
+              </button>
+            </div>
+          ) : (
+            // Recording controls
+            <div className="flex items-center justify-center gap-6">
+              {isRecording ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={togglePause}
+                    className="flex flex-col items-center gap-1 text-gray-400 hover:text-white transition-colors"
+                    title={isPaused ? 'Resume recording' : 'Pause recording'}
+                  >
+                    <div className="w-12 h-12 md:w-14 md:h-14 bg-ink-700 rounded-full flex items-center justify-center">
+                      {isPaused ? <Play className="h-5 w-5 md:h-6 md:w-6" /> : <Pause className="h-5 w-5 md:h-6 md:w-6" />}
+                    </div>
+                    <span className="text-xs">{isPaused ? 'Resume' : 'Pause'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={stopRecording}
+                    className="flex flex-col items-center gap-1 text-white"
+                    title="Stop recording"
+                  >
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg shadow-red-500/50 ring-4 ring-red-400/30">
+                      <Square className="h-8 w-8 md:h-10 md:w-10 fill-current" />
+                    </div>
+                    <span className="text-sm font-medium">STOP</span>
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startRecording}
+                  className="flex flex-col items-center gap-1 text-white"
+                  title="Start recording"
+                >
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-white flex items-center justify-center">
+                    <div className="w-12 h-12 md:w-14 md:h-14 bg-red-500 rounded-full hover:bg-red-600 transition-colors" />
+                  </div>
+                  <span className="text-sm mt-1">Tap to record</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Duration hint */}
+          {!isRecording && !recordedUrl && (
+            <p className="text-center text-gray-500 text-xs mt-3 md:mt-4">
+              Maximum recording: {formatDuration(maxDuration)}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   )
