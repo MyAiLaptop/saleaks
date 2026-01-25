@@ -147,7 +147,7 @@ export default function BuyerDashboardPage() {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href={`/${country}`} className="text-xl font-bold text-white flex items-center gap-2">
             <Flag countryCode={config.code} size="md" />
-            Leak<span className="text-primary-400">point</span>
+            Spill<span className="text-primary-400">Nova</span>
             <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full ml-2">Buyer</span>
           </Link>
           <Link href={`/${country}/live`} className="text-gray-400 hover:text-white transition-colors">
