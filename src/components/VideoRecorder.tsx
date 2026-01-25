@@ -62,12 +62,21 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.muted = true // Mute preview to avoid feedback
-        // Try to play immediately - onCanPlay will fire when ready
+        // Try to play immediately
         try {
           await videoRef.current.play()
+          // Play succeeded - camera is ready
+          setIsCameraReady(true)
+          setIsInitializing(false)
         } catch (playErr) {
           console.error('Video play error:', playErr)
-          // Even if play fails, the onCanPlay event should still fire
+          // Fallback: check if video has dimensions (meaning it's receiving frames)
+          setTimeout(() => {
+            if (videoRef.current && videoRef.current.videoWidth > 0) {
+              setIsCameraReady(true)
+              setIsInitializing(false)
+            }
+          }, 500)
         }
       }
     } catch (err) {
