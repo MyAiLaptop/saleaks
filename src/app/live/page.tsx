@@ -1558,6 +1558,7 @@ export default function LiveBillboardPage() {
           poster={fullscreenVideo.poster}
           postId={fullscreenVideo.postId}
           onClose={() => setFullscreenVideo(null)}
+          country="sa"
         />
       )}
 

@@ -1607,6 +1607,7 @@ export default function CountryLiveBillboardPage() {
           poster={fullscreenVideo.poster}
           postId={fullscreenVideo.postId}
           onClose={() => setFullscreenVideo(null)}
+          country={country}
         />
       )}
 
