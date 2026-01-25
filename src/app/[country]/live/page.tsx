@@ -38,7 +38,6 @@ import { VideoRecorder } from '@/components/VideoRecorder'
 import { PhotoCapture } from '@/components/PhotoCapture'
 import { Flag } from '@/components/Flag'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
-import { FullscreenVideoPlayer } from '@/components/FullscreenVideoPlayer'
 import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
 import { useCountry } from '@/lib/country-context'
 
@@ -167,15 +166,6 @@ export default function CountryLiveBillboardPage() {
   const [reportDescription, setReportDescription] = useState<string>('')
   const [submittingReport, setSubmittingReport] = useState(false)
   const [reportSuccess, setReportSuccess] = useState(false)
-
-  // Fullscreen video state
-  const [fullscreenVideo, setFullscreenVideo] = useState<{
-    isOpen: boolean
-    src: string
-    watermarkedSrc: string
-    poster?: string
-    postId: string
-  } | null>(null)
 
   // Fullscreen image gallery state
   const [imageGallery, setImageGallery] = useState<{
@@ -457,10 +447,6 @@ export default function CountryLiveBillboardPage() {
         return next
       })
     }
-  }
-
-  const openFullscreenVideo = (src: string, postId: string, poster?: string, watermarkedSrc?: string) => {
-    setFullscreenVideo({ isOpen: true, src, postId, poster, watermarkedSrc: watermarkedSrc || src })
   }
 
   const handleSubmitReport = async () => {
@@ -1206,24 +1192,12 @@ export default function CountryLiveBillboardPage() {
                                 )}
                               </div>
                             ) : media.mimeType.startsWith('video/') ? (
-                              <div
-                                className="w-full h-full cursor-pointer"
-                                onClick={() => openFullscreenVideo(
-                                  getMediaUrl(media.path),
-                                  post.publicId,
-                                  undefined,
-                                  getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)
-                                )}
-                              >
-                                <AutoPlayVideo
-                                  src={getMediaUrl(media.path)}
-                                  className="w-full h-full pointer-events-none"
-                                />
-                                <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 rounded text-white text-xs flex items-center gap-1">
-                                  <VideoIcon className="h-3 w-3" />
-                                  Tap to expand
-                                </div>
-                              </div>
+                              <AutoPlayVideo
+                                src={getMediaUrl(media.path)}
+                                className="w-full h-full"
+                                postId={post.publicId}
+                                country={country}
+                              />
                             ) : null}
                           </div>
                         ))}
@@ -1597,18 +1571,6 @@ export default function CountryLiveBillboardPage() {
             )}
           </div>
         </div>
-      )}
-
-      {/* Fullscreen Video Player */}
-      {fullscreenVideo?.isOpen && (
-        <FullscreenVideoPlayer
-          src={fullscreenVideo.src}
-          watermarkedSrc={fullscreenVideo.watermarkedSrc}
-          poster={fullscreenVideo.poster}
-          postId={fullscreenVideo.postId}
-          onClose={() => setFullscreenVideo(null)}
-          country={country}
-        />
       )}
 
       {/* Fullscreen Image Gallery */}
