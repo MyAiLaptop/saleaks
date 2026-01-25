@@ -67,7 +67,7 @@ const plans = [
       { text: 'Team collaboration tools', included: true },
     ],
     cta: 'Contact Sales',
-    ctaLink: 'mailto:newsroom@saleaks.co.za',
+    ctaLink: 'mailto:newsroom@spillnova.com',
     highlighted: false,
   },
 ]
@@ -278,7 +278,7 @@ export default function PricingPage() {
               Have questions about our plans?
             </p>
             <a
-              href="mailto:support@saleaks.co.za"
+              href="mailto:support@spillnova.com"
               className="inline-flex items-center text-primary-400 hover:text-primary-300 font-medium"
             >
               <Building2 className="h-4 w-4 mr-2" />

@@ -65,7 +65,7 @@ export default function EmbedPage() {
     )
   }
 
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://saleaks.co.za'
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://spillnova.com'
 
   return (
     <div className="font-sans bg-white rounded-lg border border-gray-200 overflow-hidden max-w-md">

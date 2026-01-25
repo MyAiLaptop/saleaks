@@ -241,7 +241,7 @@ export default function LeakPage() {
   }
 
   const getEmbedCode = () => {
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://saleaks.co.za'
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://spillnova.com'
     return `<iframe src="${baseUrl}/embed/${params.publicId}" width="400" height="300" frameborder="0" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></iframe>`
   }
 

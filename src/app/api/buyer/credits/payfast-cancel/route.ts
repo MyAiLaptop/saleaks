@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const country = countryMatch ? countryMatch[1] : 'za'
 
   // Use NEXT_PUBLIC_BASE_URL for redirects (not request.url which is internal on Render)
-  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://saleaks.co.za').trim()
+  const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://spillnova.com').trim()
 
   // Redirect to buyer dashboard with cancelled message
   const redirectUrl = new URL(`/${country}/buyer`, baseUrl)

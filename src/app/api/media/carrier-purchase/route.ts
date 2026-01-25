@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
     // Create purchase record
     const purchase = await prisma.mediaPurchase.create({
       data: {
-        email: `${phoneNumber}@carrier.saleaks.co.za`, // Store phone as pseudo-email
+        email: `${phoneNumber}@carrier.spillnova.com`, // Store phone as pseudo-email
         fileId: mediaType === 'file' ? mediaId : null,
         liveMediaId: mediaType === 'live' ? mediaId : null,
         amount: price,

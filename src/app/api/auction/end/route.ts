@@ -211,7 +211,7 @@ async function processSingleAuction(postId: string) {
     // Create a purchase record for tracking
     const purchase = await prisma.mediaPurchase.create({
       data: {
-        email: winningBid.bidderEmail || buyer.email || 'auction@saleaks.co.za',
+        email: winningBid.bidderEmail || buyer.email || 'auction@spillnova.com',
         amount: winningBid.amount,
         submitterShare,
         platformShare: winningBid.amount - submitterShare,
