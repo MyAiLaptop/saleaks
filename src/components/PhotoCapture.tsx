@@ -15,15 +15,23 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
+  const [isCameraReady, setIsCameraReady] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
 
+  // Handle video ready event - camera preview is now visible
+  const handleVideoCanPlay = useCallback(() => {
+    setIsCameraReady(true)
+    setIsInitializing(false)
+  }, [])
+
   // Initialize camera
   const initCamera = useCallback(async () => {
     setIsInitializing(true)
+    setIsCameraReady(false)
     setError(null)
 
     try {
@@ -47,19 +55,18 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream
-        setTimeout(async () => {
-          try {
-            if (videoRef.current) {
-              await videoRef.current.play()
-            }
-          } catch (playErr) {
-            console.error('Video play error:', playErr)
-          }
-        }, 100)
+        // Try to play immediately - onCanPlay will fire when ready
+        try {
+          await videoRef.current.play()
+        } catch (playErr) {
+          console.error('Video play error:', playErr)
+          // Even if play fails, the onCanPlay event should still fire
+        }
       }
     } catch (err) {
       console.error('Camera access error:', err)
       setHasPermission(false)
+      setIsInitializing(false)
       if (err instanceof DOMException) {
         if (err.name === 'NotAllowedError') {
           setError('Camera access denied. Please allow camera access in your browser settings.')
@@ -73,8 +80,6 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
       } else {
         setError('Failed to access camera. Please try again.')
       }
-    } finally {
-      setIsInitializing(false)
     }
   }, [facingMode])
 
@@ -173,6 +178,7 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
     }
     setCapturedImage(null)
     setCapturedBlob(null)
+    setIsCameraReady(false)
     initCamera()
   }, [capturedImage, initCamera])
 
@@ -214,13 +220,15 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
     )
   }
 
-  // Loading state
-  if (isInitializing) {
+  // Loading state - show while getting permission OR waiting for camera preview
+  if (isInitializing || (!isCameraReady && !capturedImage && !error)) {
     return (
       <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white">Initializing camera...</p>
+          <p className="text-white">
+            {hasPermission === null ? 'Requesting camera access...' : 'Starting camera preview...'}
+          </p>
         </div>
       </div>
     )
@@ -248,6 +256,11 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
             playsInline
             autoPlay
             muted
+            onCanPlay={handleVideoCanPlay}
+            onLoadedMetadata={handleVideoCanPlay}
+            // @ts-ignore - webkit attribute for iOS
+            webkit-playsinline="true"
+            x-webkit-airplay="deny"
           />
         )}
 

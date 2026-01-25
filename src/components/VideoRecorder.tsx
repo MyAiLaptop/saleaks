@@ -20,6 +20,7 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   const [isMuted, setIsMuted] = useState(false)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
+  const [isCameraReady, setIsCameraReady] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -27,9 +28,16 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Handle video ready event - camera preview is now visible
+  const handleVideoCanPlay = useCallback(() => {
+    setIsCameraReady(true)
+    setIsInitializing(false)
+  }, [])
+
   // Initialize camera
   const initCamera = useCallback(async () => {
     setIsInitializing(true)
+    setIsCameraReady(false)
     setError(null)
 
     try {
@@ -54,20 +62,18 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.muted = true // Mute preview to avoid feedback
-        // Ensure video plays with a small delay for DOM to settle
-        setTimeout(async () => {
-          try {
-            if (videoRef.current) {
-              await videoRef.current.play()
-            }
-          } catch (playErr) {
-            console.error('Video play error:', playErr)
-          }
-        }, 100)
+        // Try to play immediately - onCanPlay will fire when ready
+        try {
+          await videoRef.current.play()
+        } catch (playErr) {
+          console.error('Video play error:', playErr)
+          // Even if play fails, the onCanPlay event should still fire
+        }
       }
     } catch (err) {
       console.error('Camera access error:', err)
       setHasPermission(false)
+      setIsInitializing(false)
       if (err instanceof DOMException) {
         if (err.name === 'NotAllowedError') {
           setError('Camera access denied. Please allow camera access in your browser settings.')
@@ -81,8 +87,6 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
       } else {
         setError('Failed to access camera. Please try again.')
       }
-    } finally {
-      setIsInitializing(false)
     }
   }, [facingMode, isMuted])
 
@@ -255,6 +259,7 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
     setRecordedBlob(null)
     setRecordedUrl(null)
     setDuration(0)
+    setIsCameraReady(false)
     initCamera()
   }, [recordedUrl, initCamera])
 
@@ -303,13 +308,15 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
     )
   }
 
-  // Loading state
-  if (isInitializing) {
+  // Loading state - show while getting permission OR waiting for camera preview
+  if (isInitializing || (!isCameraReady && !recordedUrl && !error)) {
     return (
       <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white">Initializing camera...</p>
+          <p className="text-white">
+            {hasPermission === null ? 'Requesting camera access...' : 'Starting camera preview...'}
+          </p>
         </div>
       </div>
     )
@@ -318,9 +325,9 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-0 md:p-8">
       {/* Desktop: YouTube-style frame / Mobile: Fullscreen */}
-      <div className="w-full h-full md:max-w-4xl md:h-auto md:max-h-[90vh] bg-black md:rounded-2xl overflow-hidden flex flex-col shadow-2xl">
+      <div className="w-full h-full md:max-w-4xl md:h-auto md:max-h-[90vh] bg-black md:rounded-2xl md:overflow-visible overflow-hidden flex flex-col shadow-2xl">
         {/* Video Preview / Playback */}
-        <div className="flex-1 relative md:aspect-video">
+        <div className="flex-1 relative min-h-0 md:flex-none md:aspect-video">
           {recordedUrl ? (
             // Playback recorded video
             <video
@@ -338,6 +345,8 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
               playsInline
               autoPlay
               muted
+              onCanPlay={handleVideoCanPlay}
+              onLoadedMetadata={handleVideoCanPlay}
               // @ts-ignore - webkit attribute for iOS
               webkit-playsinline="true"
               x-webkit-airplay="deny"
@@ -394,8 +403,8 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
           )}
         </div>
 
-        {/* Controls */}
-        <div className="bg-ink-900 p-4 md:p-6 safe-area-bottom md:rounded-b-2xl">
+        {/* Controls - always visible */}
+        <div className="flex-shrink-0 bg-ink-900 p-4 md:p-6 safe-area-bottom md:rounded-b-2xl">
           {recordedUrl ? (
             // Post-recording controls
             <div className="flex items-center justify-center gap-6">

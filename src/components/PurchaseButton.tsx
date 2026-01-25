@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ShoppingCart, X, Loader2, CreditCard, Smartphone, Check } from 'lucide-react'
+import { ShoppingCart, X, Loader2, CreditCard, Smartphone, Check, Globe } from 'lucide-react'
 
-type PaymentMethod = 'payfast' | 'carrier'
+type PaymentMethod = 'payfast' | 'carrier' | 'flutterwave'
 
 interface PurchaseButtonProps {
   mediaId: string
@@ -14,7 +14,7 @@ interface PurchaseButtonProps {
 
 export function PurchaseButton({ mediaId, mediaType, price, className = '' }: PurchaseButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('carrier') // Default to carrier billing
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('flutterwave') // Default to Flutterwave for Africa
   const [email, setEmail] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
@@ -30,7 +30,53 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
     setError(null)
     setCarrierMessage(null)
 
-    if (paymentMethod === 'payfast') {
+    if (paymentMethod === 'flutterwave') {
+      // Flutterwave payment - requires email
+      if (!email || !email.includes('@')) {
+        setError('Please enter a valid email address')
+        return
+      }
+
+      setLoading(true)
+
+      try {
+        const res = await fetch('/api/payments/flutterwave/initialize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            phoneNumber: phoneNumber || undefined,
+            mediaType,
+            mediaId,
+            countryCode: 'ZA', // Default to South Africa
+          })
+        })
+
+        const data = await res.json()
+
+        if (!data.success) {
+          throw new Error(data.error || 'Purchase failed')
+        }
+
+        // Check if this is an owner download (free)
+        if (data.data.isOwnerDownload) {
+          window.location.href = `/download/${data.data.downloadToken}?success=true`
+          return
+        }
+
+        // Redirect to Flutterwave payment page
+        if (data.data.paymentUrl) {
+          window.location.href = data.data.paymentUrl
+        } else {
+          throw new Error('Payment URL not received')
+        }
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to initiate purchase'
+        setError(errorMessage)
+      } finally {
+        setLoading(false)
+      }
+    } else if (paymentMethod === 'payfast') {
       // PayFast payment - requires email
       if (!email || !email.includes('@')) {
         setError('Please enter a valid email address')
@@ -74,8 +120,9 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
           alert(`Demo mode: Your download token is ${data.data.downloadToken}\n\nIn production, you would be redirected to PayFast to complete payment.`)
           setIsOpen(false)
         }
-      } catch (err: any) {
-        setError(err.message || 'Failed to initiate purchase')
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to initiate purchase'
+        setError(errorMessage)
       } finally {
         setLoading(false)
       }
@@ -111,8 +158,9 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
           // Payment completed immediately (rare)
           window.location.href = `/download/${data.data.downloadToken}`
         }
-      } catch (err: any) {
-        setError(err.message || 'Failed to initiate purchase')
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to initiate purchase'
+        setError(errorMessage)
       } finally {
         setLoading(false)
       }
@@ -189,7 +237,25 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
               <label className="block text-sm text-gray-400 mb-2">
                 Payment method
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('flutterwave')}
+                  className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                    paymentMethod === 'flutterwave'
+                      ? 'border-primary-500 bg-primary-500/20'
+                      : 'border-ink-600 bg-ink-700 hover:border-ink-500'
+                  }`}
+                >
+                  <Globe className="h-5 w-5 text-primary-400" />
+                  <div className="text-left flex-1">
+                    <div className="text-white text-sm font-medium">Card/Mobile</div>
+                    <div className="text-gray-500 text-xs">Flutterwave</div>
+                  </div>
+                  {paymentMethod === 'flutterwave' && (
+                    <Check className="h-4 w-4 text-primary-400" />
+                  )}
+                </button>
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('carrier')}
@@ -200,12 +266,12 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
                   }`}
                 >
                   <Smartphone className="h-5 w-5 text-primary-400" />
-                  <div className="text-left">
-                    <div className="text-white text-sm font-medium">Airtime/Bill</div>
-                    <div className="text-gray-500 text-xs">Pay with phone</div>
+                  <div className="text-left flex-1">
+                    <div className="text-white text-sm font-medium">Airtime</div>
+                    <div className="text-gray-500 text-xs">Phone bill</div>
                   </div>
                   {paymentMethod === 'carrier' && (
-                    <Check className="h-4 w-4 text-primary-400 ml-auto" />
+                    <Check className="h-4 w-4 text-primary-400" />
                   )}
                 </button>
                 <button
@@ -218,12 +284,12 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
                   }`}
                 >
                   <CreditCard className="h-5 w-5 text-primary-400" />
-                  <div className="text-left">
+                  <div className="text-left flex-1">
                     <div className="text-white text-sm font-medium">Card/EFT</div>
                     <div className="text-gray-500 text-xs">PayFast</div>
                   </div>
                   {paymentMethod === 'payfast' && (
-                    <Check className="h-4 w-4 text-primary-400 ml-auto" />
+                    <Check className="h-4 w-4 text-primary-400" />
                   )}
                 </button>
               </div>
@@ -248,17 +314,34 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
                 </p>
               </div>
             ) : (
-              <div className="mb-4">
-                <label className="block text-sm text-gray-400 mb-2">
-                  Email address (for download link)
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-4 py-3 bg-ink-700 border border-ink-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
-                />
+              <div className="mb-4 space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Email address (for download link)
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 bg-ink-700 border border-ink-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+                  />
+                </div>
+                {paymentMethod === 'flutterwave' && (
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">
+                      Phone number (optional - for mobile money)
+                    </label>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                      placeholder="0821234567"
+                      maxLength={12}
+                      className="w-full px-4 py-3 bg-ink-700 border border-ink-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -298,10 +381,15 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
                     <Smartphone className="h-5 w-5" />
                     Pay with Airtime/Bill
                   </>
+                ) : paymentMethod === 'flutterwave' ? (
+                  <>
+                    <Globe className="h-5 w-5" />
+                    Pay with Flutterwave
+                  </>
                 ) : (
                   <>
                     <ShoppingCart className="h-5 w-5" />
-                    Proceed to Payment
+                    Proceed to PayFast
                   </>
                 )}
               </button>
@@ -320,6 +408,8 @@ export function PurchaseButton({ mediaId, mediaType, price, className = '' }: Pu
             <p className="text-xs text-gray-500 text-center mt-4">
               {paymentMethod === 'carrier'
                 ? 'Payment via your mobile carrier. Confirm via SMS to complete purchase.'
+                : paymentMethod === 'flutterwave'
+                ? 'Secure payment via Flutterwave. Card, bank transfer, or mobile money accepted.'
                 : 'Secure payment via PayFast. You\'ll receive a download link via email.'
               }
             </p>

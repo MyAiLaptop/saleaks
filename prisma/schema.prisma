@@ -611,9 +611,14 @@ model MediaPurchase {
   // Is this a free owner download (owner reclaiming their own content)
   isOwnerDownload Boolean @default(false)
 
-  // Payment provider data (PayFast)
-  paymentId       String?  // PayFast pf_payment_id
-  paymentProvider String   @default("payfast")
+  // Payment provider data
+  paymentId       String?  // PayFast pf_payment_id or Flutterwave tx_ref
+  paymentProvider String   @default("payfast") // payfast, flutterwave, carrier, owner
+
+  // Flutterwave specific fields
+  flutterwaveRef         String?  // flw_ref from Flutterwave
+  flutterwaveTransactionId String?  // transaction_id from Flutterwave
+  completedAt            DateTime? // When payment was confirmed
 
   // Download token (single-use or limited)
   downloadToken String   @unique
@@ -889,8 +894,15 @@ model CreditTransaction {
   balanceAfter  Int      // Balance after transaction
 
   // Reference (what the transaction was for)
-  referenceType String?  // PAYFAST, CARRIER, AUCTION, ADMIN
+  referenceType String?  // PAYFAST, FLUTTERWAVE, CARRIER, AUCTION, ADMIN
   referenceId   String?  // Payment ID or auction ID
+
+  // Payment tracking (for credit purchases)
+  paymentId     String?  // tx_ref for tracking
+  status        String   @default("COMPLETED") // PENDING, COMPLETED, FAILED
+  credits       Int?     // Number of credits being purchased (for PURCHASE type)
+  flutterwaveRef String?  // flw_ref from Flutterwave
+  completedAt   DateTime? // When payment was confirmed
 
   // Description
   description   String?  // Human-readable description
