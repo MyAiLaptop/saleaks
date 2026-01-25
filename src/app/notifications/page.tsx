@@ -195,7 +195,7 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div
-        className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
+        className="min-h-screen bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
       >
         <div className="bg-black/60 min-h-screen flex items-center justify-center">
@@ -207,7 +207,7 @@ export default function NotificationsPage() {
 
   return (
     <div
-      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
+      className="min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
     >
       <div className="bg-black/60 min-h-screen">

@@ -73,7 +73,7 @@ export default function GlobalLandingPage() {
 
   return (
     <div
-      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
+      className="min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
     >
       <div className="bg-black/70 min-h-screen">
@@ -84,8 +84,8 @@ export default function GlobalLandingPage() {
               <Image
                 src="/icons/spillnova_floating.png"
                 alt="SpillNova"
-                width={200}
-                height={200}
+                width={280}
+                height={280}
                 className="drop-shadow-2xl"
                 priority
               />
