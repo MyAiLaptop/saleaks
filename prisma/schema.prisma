@@ -1008,7 +1008,7 @@ model Topic {
 
   // Relations
   responses         TopicResponse[]
-  reactions         TopicReaction[]
+  reactionRecords   TopicReaction[]
   introVideo        TopicMedia?
 
   @@index([category, createdAt])
@@ -1049,7 +1049,7 @@ model TopicResponse {
 
   // Relations
   media             TopicResponseMedia?
-  reactions         TopicResponseReaction[]
+  reactionRecords   TopicResponseReaction[]
 
   @@index([topicId, createdAt])
   @@index([parentId])
