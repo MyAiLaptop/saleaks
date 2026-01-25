@@ -15,23 +15,15 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
-  const [isCameraReady, setIsCameraReady] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
 
-  // Handle video ready event - camera preview is now visible
-  const handleVideoCanPlay = useCallback(() => {
-    setIsCameraReady(true)
-    setIsInitializing(false)
-  }, [])
-
   // Initialize camera
   const initCamera = useCallback(async () => {
     setIsInitializing(true)
-    setIsCameraReady(false)
     setError(null)
 
     try {
@@ -59,18 +51,26 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
         try {
           await videoRef.current.play()
           // Play succeeded - camera is ready
-          setIsCameraReady(true)
           setIsInitializing(false)
         } catch (playErr) {
           console.error('Video play error:', playErr)
-          // Fallback: check if video has dimensions (meaning it's receiving frames)
+          // Fallback: mark as ready after short delay
           setTimeout(() => {
-            if (videoRef.current && videoRef.current.videoWidth > 0) {
-              setIsCameraReady(true)
-              setIsInitializing(false)
-            }
-          }, 500)
+            setIsInitializing(false)
+          }, 300)
         }
+      } else {
+        // videoRef not ready yet, retry after a short delay
+        setTimeout(() => {
+          if (videoRef.current && streamRef.current) {
+            videoRef.current.srcObject = streamRef.current
+            videoRef.current.play().then(() => {
+              setIsInitializing(false)
+            }).catch(() => {
+              setIsInitializing(false)
+            })
+          }
+        }, 100)
       }
     } catch (err) {
       console.error('Camera access error:', err)
@@ -187,7 +187,6 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
     }
     setCapturedImage(null)
     setCapturedBlob(null)
-    setIsCameraReady(false)
     initCamera()
   }, [capturedImage, initCamera])
 
@@ -229,20 +228,6 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
     )
   }
 
-  // Loading state - show while getting permission OR waiting for camera preview
-  if (isInitializing || (!isCameraReady && !capturedImage && !error)) {
-    return (
-      <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white">
-            {hasPermission === null ? 'Requesting camera access...' : 'Starting camera preview...'}
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col">
       {/* Hidden canvas for photo capture */}
@@ -258,31 +243,41 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
             className="w-full h-full object-contain"
           />
         ) : (
-          // Live camera preview
+          // Live camera preview - always rendered so ref is available
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
             playsInline
             autoPlay
             muted
-            onCanPlay={handleVideoCanPlay}
-            onLoadedMetadata={handleVideoCanPlay}
             // @ts-ignore - webkit attribute for iOS
             webkit-playsinline="true"
             x-webkit-airplay="deny"
           />
         )}
 
+        {/* Loading overlay - shown on top of video while initializing */}
+        {isInitializing && !capturedImage && (
+          <div className="absolute inset-0 bg-black flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p className="text-white">
+                {hasPermission === null ? 'Requesting camera access...' : 'Starting camera preview...'}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Close button */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
+          className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
         >
           <X className="h-5 w-5" />
         </button>
 
-        {/* Camera controls (only when not captured) */}
-        {!capturedImage && (
+        {/* Camera controls (only when not captured and not initializing) */}
+        {!capturedImage && !isInitializing && (
           <div className="absolute top-4 left-1/2 -translate-x-1/2">
             <button
               onClick={switchCamera}
@@ -332,7 +327,7 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
           <div className="flex items-center justify-center">
             <button
               onClick={capturePhoto}
-              disabled={isCapturing}
+              disabled={isCapturing || isInitializing}
               className="flex flex-col items-center gap-1 text-white disabled:opacity-50"
             >
               <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Video, Square, Play, Pause, RotateCcw, Check, X, Camera, SwitchCamera, Mic, MicOff } from 'lucide-react'
+import { Square, Play, Pause, RotateCcw, Check, X, Camera, SwitchCamera, Mic, MicOff } from 'lucide-react'
 
 interface VideoRecorderProps {
   onRecordingComplete: (file: File) => void
@@ -20,7 +20,6 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   const [isMuted, setIsMuted] = useState(false)
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [isInitializing, setIsInitializing] = useState(true)
-  const [isCameraReady, setIsCameraReady] = useState(false)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -28,16 +27,9 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Handle video ready event - camera preview is now visible
-  const handleVideoCanPlay = useCallback(() => {
-    setIsCameraReady(true)
-    setIsInitializing(false)
-  }, [])
-
   // Initialize camera
   const initCamera = useCallback(async () => {
     setIsInitializing(true)
-    setIsCameraReady(false)
     setError(null)
 
     try {
@@ -66,18 +58,27 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
         try {
           await videoRef.current.play()
           // Play succeeded - camera is ready
-          setIsCameraReady(true)
           setIsInitializing(false)
         } catch (playErr) {
           console.error('Video play error:', playErr)
-          // Fallback: check if video has dimensions (meaning it's receiving frames)
+          // Fallback: mark as ready after short delay
           setTimeout(() => {
-            if (videoRef.current && videoRef.current.videoWidth > 0) {
-              setIsCameraReady(true)
-              setIsInitializing(false)
-            }
-          }, 500)
+            setIsInitializing(false)
+          }, 300)
         }
+      } else {
+        // videoRef not ready yet, retry after a short delay
+        setTimeout(() => {
+          if (videoRef.current && streamRef.current) {
+            videoRef.current.srcObject = streamRef.current
+            videoRef.current.muted = true
+            videoRef.current.play().then(() => {
+              setIsInitializing(false)
+            }).catch(() => {
+              setIsInitializing(false)
+            })
+          }
+        }, 100)
       }
     } catch (err) {
       console.error('Camera access error:', err)
@@ -268,7 +269,6 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
     setRecordedBlob(null)
     setRecordedUrl(null)
     setDuration(0)
-    setIsCameraReady(false)
     initCamera()
   }, [recordedUrl, initCamera])
 
@@ -317,20 +317,6 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
     )
   }
 
-  // Loading state - show while getting permission OR waiting for camera preview
-  if (isInitializing || (!isCameraReady && !recordedUrl && !error)) {
-    return (
-      <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white">
-            {hasPermission === null ? 'Requesting camera access...' : 'Starting camera preview...'}
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-0 md:p-8">
       {/* Desktop: YouTube-style frame / Mobile: Fullscreen */}
@@ -347,19 +333,29 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
               loop
             />
           ) : (
-            // Live camera preview
+            // Live camera preview - always rendered so ref is available
             <video
               ref={videoRef}
               className="w-full h-full object-cover md:object-contain"
               playsInline
               autoPlay
               muted
-              onCanPlay={handleVideoCanPlay}
-              onLoadedMetadata={handleVideoCanPlay}
               // @ts-ignore - webkit attribute for iOS
               webkit-playsinline="true"
               x-webkit-airplay="deny"
             />
+          )}
+
+          {/* Loading overlay - shown on top of video while initializing */}
+          {isInitializing && !recordedUrl && (
+            <div className="absolute inset-0 bg-black flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-white">
+                  {hasPermission === null ? 'Requesting camera access...' : 'Starting camera preview...'}
+                </p>
+              </div>
+            </div>
           )}
 
           {/* Recording indicator */}
@@ -383,14 +379,14 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
           <button
             type="button"
             onClick={onCancel}
-            className="absolute top-4 right-4 w-10 h-10 bg-black/70 rounded-full flex items-center justify-center text-white hover:bg-black/90 transition-colors"
+            className="absolute top-4 right-4 w-10 h-10 bg-black/70 rounded-full flex items-center justify-center text-white hover:bg-black/90 transition-colors z-10"
             title="Close"
           >
             <X className="h-5 w-5" />
           </button>
 
-          {/* Camera controls (only when not recording and no recorded video) */}
-          {!isRecording && !recordedUrl && (
+          {/* Camera controls (only when not recording, no recorded video, and not initializing) */}
+          {!isRecording && !recordedUrl && !isInitializing && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2">
               <button
                 type="button"
@@ -471,7 +467,8 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
                 <button
                   type="button"
                   onClick={startRecording}
-                  className="flex flex-col items-center gap-1 text-white"
+                  disabled={isInitializing}
+                  className="flex flex-col items-center gap-1 text-white disabled:opacity-50"
                   title="Start recording"
                 >
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-white flex items-center justify-center">
