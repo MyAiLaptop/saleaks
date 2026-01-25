@@ -113,24 +113,32 @@ export default function GlobalLandingPage() {
 
         {/* Video Modal */}
         {showVideo && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-            <div className="relative w-full max-w-4xl mx-4">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
+            onClick={() => setShowVideo(false)}
+          >
+            <div
+              className="relative w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 type="button"
                 onClick={() => setShowVideo(false)}
-                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+                className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
                 aria-label="Close video"
               >
-                <X className="h-8 w-8" />
+                <X className="h-6 w-6" />
               </button>
-              <video
-                src="https://media.saleaks.co.za/SpillNova.mp4"
-                controls
-                autoPlay
-                className="w-full rounded-xl shadow-2xl"
-              >
-                Your browser does not support the video tag.
-              </video>
+              <div className="aspect-video">
+                <video
+                  src="https://media.saleaks.co.za/SpillNova.mp4"
+                  controls
+                  autoPlay
+                  className="w-full h-full rounded-lg shadow-2xl"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
             </div>
           </div>
         )}
