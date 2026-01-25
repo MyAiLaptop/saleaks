@@ -135,6 +135,7 @@ export default function CountryLiveBillboardPage() {
 
   // Create post
   const [showCreateForm, setShowCreateForm] = useState(false)
+  const [showCaptureChoice, setShowCaptureChoice] = useState(false) // New: capture-first flow
   const [newPost, setNewPost] = useState({ content: '', category: 'OTHER', province: '', city: '' })
   const [creating, setCreating] = useState(false)
   const [sessionToken, setSessionToken] = useState<string | null>(null)
@@ -277,11 +278,17 @@ export default function CountryLiveBillboardPage() {
   const handleVideoRecordingComplete = (file: File) => {
     setSelectedFiles(prev => [...prev, file].slice(0, 4))
     setShowVideoRecorder(false)
+    // After capture, show the details form
+    setShowCaptureChoice(false)
+    setShowCreateForm(true)
   }
 
   const handlePhotoCaptureComplete = (file: File) => {
     setSelectedFiles(prev => [...prev, file].slice(0, 4))
     setShowPhotoCapture(false)
+    // After capture, show the details form
+    setShowCaptureChoice(false)
+    setShowCreateForm(true)
   }
 
   const requestPhotoPermission = async () => {
@@ -650,15 +657,50 @@ export default function CountryLiveBillboardPage() {
             </button>
           )}
 
-          {/* Create Post Button */}
+          {/* Report Now Button - Opens Camera First */}
           <button
             type="button"
-            onClick={() => setShowCreateForm(!showCreateForm)}
+            onClick={() => {
+              setShowCaptureChoice(!showCaptureChoice)
+              setShowCreateForm(false)
+            }}
             className="w-full mb-4 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl hover:from-red-600 hover:to-orange-600 transition-all flex items-center justify-center gap-2 font-medium shadow-lg"
           >
             <Plus className="h-5 w-5" />
             Report Something Happening Now
           </button>
+
+          {/* Capture Choice - Video or Photo First */}
+          {showCaptureChoice && (
+            <div className="bg-black/60 backdrop-blur-md rounded-xl shadow-lg p-4 mb-4 border border-white/20">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-semibold text-white mb-1">Capture First</h3>
+                <p className="text-sm text-gray-400">Record what&apos;s happening - add details after</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={requestCameraPermission}
+                  className="py-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl hover:from-red-600 hover:to-pink-600 transition-all flex flex-col items-center justify-center gap-2 font-medium shadow-lg"
+                >
+                  <Video className="h-8 w-8" />
+                  <span>Record Video</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={requestPhotoPermission}
+                  className="py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all flex flex-col items-center justify-center gap-2 font-medium shadow-lg"
+                >
+                  <Camera className="h-8 w-8" />
+                  <span>Take Photo</span>
+                </button>
+              </div>
+              <p className="text-xs text-green-400 text-center mt-3 flex items-center justify-center gap-1">
+                <CheckCircle className="h-3 w-3" />
+                Camera-only capture ensures authentic, AI-free content
+              </p>
+            </div>
+          )}
 
           {/* Section Tabs */}
           <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
@@ -699,14 +741,28 @@ export default function CountryLiveBillboardPage() {
           {showCreateForm && (
             <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg p-4 mb-6 border border-white/10">
               <form onSubmit={handleCreatePost} className="space-y-4">
+                {/* Show captured media at top if coming from capture-first flow */}
+                {selectedFiles.length > 0 && (
+                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <span className="text-sm font-medium text-green-400">
+                        {selectedFiles.length} {selectedFiles.length === 1 ? 'file' : 'files'} captured
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400">Now add details about what&apos;s happening</p>
+                  </div>
+                )}
+
                 <div>
                   <textarea
                     value={newPost.content}
                     onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                    placeholder="What's happening? Report it live..."
+                    placeholder="Describe what's happening..."
                     rows={3}
                     maxLength={1000}
                     className="w-full px-4 py-3 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-400 resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    autoFocus={selectedFiles.length > 0}
                   />
                   <div className="text-xs text-gray-400 text-right mt-1">{newPost.content.length}/1000</div>
                 </div>
@@ -755,16 +811,18 @@ export default function CountryLiveBillboardPage() {
                 {/* Media Capture - Camera Only */}
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Media Bundle (Optional)
+                    {selectedFiles.length > 0 ? 'Add More Media (Optional)' : 'Media Bundle (Optional)'}
                   </label>
 
-                  {/* Bundle promotion notice */}
-                  <div className="bg-primary-500/10 border border-primary-500/30 rounded-lg p-2 mb-3">
-                    <p className="text-xs text-primary-400 flex items-center gap-1">
-                      <VideoIcon className="h-3 w-3" />
-                      Add up to 10 videos & photos - sell as one bundle at auction
-                    </p>
-                  </div>
+                  {/* Bundle promotion notice - only show if no files yet */}
+                  {selectedFiles.length === 0 && (
+                    <div className="bg-primary-500/10 border border-primary-500/30 rounded-lg p-2 mb-3">
+                      <p className="text-xs text-primary-400 flex items-center gap-1">
+                        <VideoIcon className="h-3 w-3" />
+                        Add up to 10 videos & photos - sell as one bundle at auction
+                      </p>
+                    </div>
+                  )}
 
                   {/* Camera-only notice */}
                   <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-2 mb-3">
