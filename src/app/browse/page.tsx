@@ -375,13 +375,13 @@ export default function BrowsePage() {
           ) : posts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-gray-300 text-lg">
-                No leaks found matching your criteria.
+                No content found matching your criteria.
               </p>
               <Link
-                href="/submit"
+                href="/upload"
                 className="inline-block mt-4 text-primary-400 hover:text-primary-300"
               >
-                Be the first to submit one
+                Be the first to upload content
               </Link>
             </div>
           ) : (
@@ -389,7 +389,7 @@ export default function BrowsePage() {
               {posts.map((post) => (
                 <Link
                   key={post.publicId}
-                  href={`/leak/${post.publicId}`}
+                  href={`/za/live/${post.publicId}`}
                   className="block bg-black/40 backdrop-blur-sm rounded-lg shadow hover:bg-black/50 transition-all border border-white/10"
                 >
               <div className="p-6">

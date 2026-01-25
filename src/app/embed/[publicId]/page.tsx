@@ -78,12 +78,12 @@ export default function EmbedPage() {
           <span className="text-white font-semibold text-sm">SpillNova</span>
         </div>
         <a
-          href={`${baseUrl}/leak/${data.publicId}`}
+          href={`${baseUrl}/za/live/${data.publicId}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-white/80 hover:text-white text-xs flex items-center gap-1"
         >
-          View Full Report
+          View Content
           <ExternalLink className="h-3 w-3" />
         </a>
       </div>
@@ -115,7 +115,7 @@ export default function EmbedPage() {
 
         {/* Title */}
         <a
-          href={`${baseUrl}/leak/${data.publicId}`}
+          href={`${baseUrl}/za/live/${data.publicId}`}
           target="_blank"
           rel="noopener noreferrer"
           className="block"

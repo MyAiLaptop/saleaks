@@ -7,14 +7,13 @@ const DEFAULT_COUNTRY = 'sa'
 // Routes that should be redirected to country-specific versions
 const COUNTRY_ROUTES = [
   '/live',
-  '/submit',
+  '/upload',
   '/browse',
   '/account',
   '/subscribe',
   '/how-it-works',
   '/pricing',
-  '/journalists',
-  '/messages',
+  '/buyer',
   '/notifications',
 ]
 
@@ -25,7 +24,6 @@ const GLOBAL_ROUTES = [
   '/canary',
   '/download',
   '/embed',
-  '/leak',
   '/admin',
   '/api',
   '/_next',

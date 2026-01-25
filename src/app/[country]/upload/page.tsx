@@ -194,7 +194,7 @@ export default function CountryUploadPage() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={() => router.push(`/leak/${publicId}`)}
+                  onClick={() => router.push(`/${country}/live/${publicId}`)}
                   className="flex-1 bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium"
                 >
                   View Your Listing
