@@ -76,6 +76,29 @@ export async function uploadToR2(
 }
 
 /**
+ * Simple upload to R2 with a custom key path (for discussions, etc.)
+ */
+export async function uploadToR2Raw(
+  key: string,
+  buffer: Buffer,
+  mimeType: string
+): Promise<{ key: string; url: string }> {
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET_NAME,
+    Key: key,
+    Body: buffer,
+    ContentType: mimeType,
+    CacheControl: 'public, max-age=31536000',
+  })
+
+  await r2Client.send(command)
+
+  const url = R2_PUBLIC_URL ? `${R2_PUBLIC_URL}/${key}` : key
+
+  return { key, url }
+}
+
+/**
  * Get a signed URL for private content (original files for purchases)
  */
 export async function getSignedDownloadUrl(

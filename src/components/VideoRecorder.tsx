@@ -197,6 +197,21 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
     }
   }, [isRecording])
 
+  // Keyboard shortcut to stop recording (Space or Enter on desktop)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (isRecording && (e.code === 'Space' || e.code === 'Enter')) {
+        e.preventDefault()
+        stopRecording()
+      }
+    }
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [isRecording, stopRecording])
+
+  // Detect if on desktop for showing keyboard hint
+  const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
+
   // Pause/Resume recording
   const togglePause = useCallback(() => {
     if (!mediaRecorderRef.current) return
@@ -329,10 +344,18 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
 
         {/* Recording indicator */}
         {isRecording && (
-          <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/50 px-3 py-1.5 rounded-full">
-            <span className={`w-3 h-3 rounded-full ${isPaused ? 'bg-yellow-500' : 'bg-red-500 animate-pulse'}`} />
-            <span className="text-white font-medium">{formatDuration(duration)}</span>
-            <span className="text-gray-400">/ {formatDuration(maxDuration)}</span>
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <div className="flex items-center gap-2 bg-black/50 px-3 py-1.5 rounded-full">
+              <span className={`w-3 h-3 rounded-full ${isPaused ? 'bg-yellow-500' : 'bg-red-500 animate-pulse'}`} />
+              <span className="text-white font-medium">{formatDuration(duration)}</span>
+              <span className="text-gray-400">/ {formatDuration(maxDuration)}</span>
+            </div>
+            {/* Desktop keyboard hint */}
+            {isDesktop && (
+              <div className="bg-black/50 px-3 py-1.5 rounded-full text-xs text-gray-300">
+                Press <kbd className="px-1.5 py-0.5 bg-white/20 rounded mx-1">SPACE</kbd> to stop
+              </div>
+            )}
           </div>
         )}
 
@@ -410,10 +433,10 @@ export function VideoRecorder({ onRecordingComplete, onCancel, maxDuration = 300
                   onClick={stopRecording}
                   className="flex flex-col items-center gap-1 text-white"
                 >
-                  <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
-                    <Square className="h-8 w-8 fill-current" />
+                  <div className="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg shadow-red-500/50 ring-4 ring-red-400/30">
+                    <Square className="h-10 w-10 fill-current" />
                   </div>
-                  <span className="text-xs">Stop</span>
+                  <span className="text-sm font-medium">STOP</span>
                 </button>
               </>
             ) : (

@@ -968,3 +968,157 @@ model BuyerPurchase {
   @@index([buyerId])
   @@index([downloadToken])
 }
+
+// ============================================
+// DISCUSSIONS - Video-based debate platform
+// ============================================
+
+// Discussion Topics - users create topics about real issues
+model Topic {
+  id                String   @id @default(cuid())
+  publicId          String   @unique
+
+  // Content
+  title             String
+  description       String
+  category          String   // POLITICS, CORRUPTION, COMMUNITY, HEALTH, EDUCATION, etc.
+
+  // Location
+  country           String   @default("sa")
+  province          String?
+  city              String?
+
+  // Creator (anonymous)
+  creatorName       String
+  creatorToken      String
+
+  // Engagement
+  responseCount     Int      @default(0)
+  viewCount         Int      @default(0)
+  // Emoji reaction counts stored as JSON: {"LIKE": 5, "DISLIKE": 2, "LAUGH": 3, ...}
+  reactions         String   @default("{}")
+
+  // Status
+  status            String   @default("ACTIVE")  // ACTIVE, CLOSED, REMOVED
+  moderationStatus  String   @default("APPROVED") // Publish immediately
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  responses         TopicResponse[]
+  reactions         TopicReaction[]
+  introVideo        TopicMedia?
+
+  @@index([category, createdAt])
+  @@index([country, createdAt])
+  @@index([status])
+  @@index([creatorToken])
+}
+
+// Video Responses to Topics (camera-captured only, no text comments)
+model TopicResponse {
+  id                String   @id @default(cuid())
+  publicId          String   @unique
+
+  // Parent references
+  topicId           String
+  topic             Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  parentId          String?  // For threaded replies to other responses
+  parent            TopicResponse? @relation("ResponseThread", fields: [parentId], references: [id])
+  replies           TopicResponse[] @relation("ResponseThread")
+
+  // Creator
+  creatorName       String
+  creatorToken      String
+
+  // Content
+  title             String?
+  description       String?
+
+  // Engagement - emoji reaction counts stored as JSON
+  reactions         String   @default("{}")
+
+  // Status
+  status            String   @default("ACTIVE")
+  moderationStatus  String   @default("APPROVED") // Publish immediately
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+
+  // Relations
+  media             TopicResponseMedia?
+  reactions         TopicResponseReaction[]
+
+  @@index([topicId, createdAt])
+  @@index([parentId])
+  @@index([creatorToken])
+  @@index([status])
+}
+
+// Media for Topic Intro Video (optional)
+model TopicMedia {
+  id                String   @id @default(cuid())
+  topicId           String   @unique
+  topic             Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  filename          String
+  mimeType          String
+  size              Int
+  duration          Int?
+  path              String
+  watermarkedPath   String?
+  thumbnailPath     String?
+  r2OriginalKey     String?
+  r2WatermarkedKey  String?
+  storageType       String   @default("local")
+  moderationStatus  String   @default("APPROVED")
+
+  createdAt         DateTime @default(now())
+}
+
+// Media for Video Responses
+model TopicResponseMedia {
+  id                String   @id @default(cuid())
+  responseId        String   @unique
+  response          TopicResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+
+  filename          String
+  mimeType          String
+  size              Int
+  duration          Int?
+  path              String
+  watermarkedPath   String?
+  thumbnailPath     String?
+  r2OriginalKey     String?
+  r2WatermarkedKey  String?
+  storageType       String   @default("local")
+  moderationStatus  String   @default("APPROVED")
+
+  createdAt         DateTime @default(now())
+}
+
+// Emoji Reactions on Topics
+model TopicReaction {
+  id          String   @id @default(cuid())
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  fingerprint String
+  emoji       String   // LIKE, DISLIKE, LAUGH, WOW, SAD, ANGRY
+  createdAt   DateTime @default(now())
+
+  @@unique([topicId, fingerprint])
+}
+
+// Emoji Reactions on Responses
+model TopicResponseReaction {
+  id          String   @id @default(cuid())
+  responseId  String
+  response    TopicResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  fingerprint String
+  emoji       String   // LIKE, DISLIKE, LAUGH, WOW, SAD, ANGRY
+  createdAt   DateTime @default(now())
+
+  @@unique([responseId, fingerprint])
+}

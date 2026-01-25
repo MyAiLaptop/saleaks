@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag } from 'lucide-react'
+import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -62,6 +62,13 @@ export function Header() {
             >
               <Search className="h-4 w-4" />
               <span>Browse</span>
+            </Link>
+            <Link
+              href={`/${country}/discussions`}
+              className="flex items-center space-x-1 text-amber-400 hover:text-amber-300 transition-colors font-medium"
+            >
+              <MessageSquare className="h-4 w-4" />
+              <span>Discussions</span>
             </Link>
             <Link
               href={`/${country}/how-it-works`}
@@ -130,6 +137,14 @@ export function Header() {
               >
                 <Search className="h-5 w-5" />
                 <span>Browse Content</span>
+              </Link>
+              <Link
+                href={`/${country}/discussions`}
+                className="flex items-center space-x-2 text-amber-400 hover:text-amber-300 font-medium"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <MessageSquare className="h-5 w-5" />
+                <span>Discussions</span>
               </Link>
               <Link
                 href={`/${country}/how-it-works`}
