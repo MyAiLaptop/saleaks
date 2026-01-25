@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Menu, X, FileText, Search, AlertTriangle, Bell, Radio } from 'lucide-react'
+import { Menu, X, FileText, Search, Upload, Bell, Radio, ShoppingCart } from 'lucide-react'
 
 export function MobileMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -37,16 +37,16 @@ export function MobileMenu() {
                 className="flex items-center space-x-2 text-gray-300 hover:text-primary-400"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Search className="h-5 w-5" />
-                <span>Browse Leaks</span>
+                <ShoppingCart className="h-5 w-5" />
+                <span>Browse Content</span>
               </Link>
               <Link
-                href="/submit"
-                className="flex items-center space-x-2 bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 w-fit"
+                href="/upload"
+                className="flex items-center space-x-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 w-fit"
                 onClick={() => setIsMenuOpen(false)}
               >
-                <AlertTriangle className="h-5 w-5" />
-                <span>Submit a Leak</span>
+                <Upload className="h-5 w-5" />
+                <span>Sell Content</span>
               </Link>
               <Link
                 href="/how-it-works"

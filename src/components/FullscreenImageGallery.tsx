@@ -163,7 +163,7 @@ export function FullscreenImageGallery({
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = currentImage.alt || `saleaks-image-${currentIndex + 1}.jpg`
+      a.download = currentImage.alt || `spillnova-image-${currentIndex + 1}.jpg`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
