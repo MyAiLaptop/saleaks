@@ -8,7 +8,6 @@ import {
   Clock,
   ThumbsUp,
   ThumbsDown,
-  MessageCircle,
   Eye,
   Video,
   Send,
@@ -161,12 +160,6 @@ export default function CountryLiveBillboardPage() {
   const [userVotes, setUserVotes] = useState<Record<string, number | null>>({})
   const [endingPosts, setEndingPosts] = useState<Set<string>>(new Set())
 
-  // Inline comments state
-  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set())
-  const [postComments, setPostComments] = useState<Record<string, { id?: string; displayName: string; content: string; createdAt: string }[]>>({})
-  const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set())
-  const [newComments, setNewComments] = useState<Record<string, string>>({})
-  const [postingComment, setPostingComment] = useState<Set<string>>(new Set())
 
   // Report content state
   const [reportModal, setReportModal] = useState<{ postId: string | null; isOpen: boolean }>({ postId: null, isOpen: false })
@@ -466,87 +459,7 @@ export default function CountryLiveBillboardPage() {
     }
   }
 
-  const toggleComments = async (publicId: string) => {
-    if (expandedComments.has(publicId)) {
-      setExpandedComments(prev => {
-        const next = new Set(prev)
-        next.delete(publicId)
-        return next
-      })
-    } else {
-      setExpandedComments(prev => new Set(prev).add(publicId))
-
-      if (!postComments[publicId]) {
-        setLoadingComments(prev => new Set(prev).add(publicId))
-        try {
-          const res = await fetch(`/api/live/${publicId}`)
-          const data = await res.json()
-          if (data.success && data.data.comments) {
-            setPostComments(prev => ({ ...prev, [publicId]: data.data.comments }))
-          }
-        } catch {
-          // Ignore errors
-        } finally {
-          setLoadingComments(prev => {
-            const next = new Set(prev)
-            next.delete(publicId)
-            return next
-          })
-        }
-      }
-    }
-  }
-
-  const handlePostComment = async (publicId: string) => {
-    const content = newComments[publicId]?.trim()
-    if (!content || postingComment.has(publicId)) return
-
-    setPostingComment(prev => new Set(prev).add(publicId))
-    try {
-      const res = await fetch(`/api/live/${publicId}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      })
-      const data = await res.json()
-
-      if (data.success) {
-        setPostComments(prev => ({
-          ...prev,
-          [publicId]: [...(prev[publicId] || []), data.data.comment]
-        }))
-        setNewComments(prev => ({ ...prev, [publicId]: '' }))
-        setPosts(prev =>
-          prev.map(p =>
-            p.publicId === publicId
-              ? { ...p, commentCount: (p.commentCount || 0) + 1 }
-              : p
-          )
-        )
-      }
-    } catch {
-      // Ignore errors
-    } finally {
-      setPostingComment(prev => {
-        const next = new Set(prev)
-        next.delete(publicId)
-        return next
-      })
-    }
-  }
-
-  const openFullscreenVideo = async (src: string, postId: string, poster?: string, watermarkedSrc?: string) => {
-    if (!postComments[postId]) {
-      try {
-        const res = await fetch(`/api/live/${postId}`)
-        const data = await res.json()
-        if (data.success && data.data.comments) {
-          setPostComments(prev => ({ ...prev, [postId]: data.data.comments }))
-        }
-      } catch {
-        // Ignore errors
-      }
-    }
+  const openFullscreenVideo = (src: string, postId: string, poster?: string, watermarkedSrc?: string) => {
     setFullscreenVideo({ isOpen: true, src, postId, poster, watermarkedSrc: watermarkedSrc || src })
   }
 
@@ -1417,20 +1330,6 @@ export default function CountryLiveBillboardPage() {
                             </button>
                           </div>
 
-                          {/* Comments toggle */}
-                          <button
-                            type="button"
-                            onClick={() => toggleComments(post.publicId)}
-                            className={`flex items-center gap-1 transition-colors ${
-                              expandedComments.has(post.publicId)
-                                ? 'text-primary-400'
-                                : 'text-gray-400 hover:text-primary-400'
-                            }`}
-                          >
-                            <MessageCircle className={`h-4 w-4 ${expandedComments.has(post.publicId) ? 'fill-current' : ''}`} />
-                            <span className="text-sm">{post.commentCount}</span>
-                          </button>
-
                           {/* Views */}
                           <span className="flex items-center gap-1 text-gray-400 text-sm">
                             <Eye className="h-4 w-4" />
@@ -1463,60 +1362,6 @@ export default function CountryLiveBillboardPage() {
                         </div>
                       </div>
 
-                      {/* Inline Comments Section */}
-                      {expandedComments.has(post.publicId) && (
-                        <div className="mt-4 pt-4 border-t border-white/10">
-                          <div className="flex gap-2 mb-4">
-                            <input
-                              type="text"
-                              value={newComments[post.publicId] || ''}
-                              onChange={(e) => setNewComments(prev => ({ ...prev, [post.publicId]: e.target.value }))}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault()
-                                  handlePostComment(post.publicId)
-                                }
-                              }}
-                              placeholder="Write a comment..."
-                              className="flex-1 px-3 py-2 bg-white/10 rounded-full text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => handlePostComment(post.publicId)}
-                              disabled={!newComments[post.publicId]?.trim() || postingComment.has(post.publicId)}
-                              className="px-4 py-2 bg-primary-500 text-white rounded-full text-sm hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            >
-                              {postingComment.has(post.publicId) ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Send className="h-4 w-4" />
-                              )}
-                            </button>
-                          </div>
-
-                          {loadingComments.has(post.publicId) ? (
-                            <div className="flex justify-center py-4">
-                              <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-                            </div>
-                          ) : postComments[post.publicId]?.length ? (
-                            <div className="space-y-3 max-h-60 overflow-y-auto">
-                              {postComments[post.publicId].map((comment, idx) => (
-                                <div key={idx} className="flex gap-2">
-                                  <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center flex-shrink-0">
-                                    <span className="text-xs text-gray-400">{comment.displayName.charAt(0).toUpperCase()}</span>
-                                  </div>
-                                  <div className="flex-1 bg-white/5 rounded-xl px-3 py-2">
-                                    <p className="text-xs font-medium text-gray-300">{comment.displayName}</p>
-                                    <p className="text-sm text-gray-200">{comment.content}</p>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="text-center text-gray-500 text-sm py-4">No comments yet. Be the first!</p>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </article>
                 )
@@ -1761,30 +1606,7 @@ export default function CountryLiveBillboardPage() {
           watermarkedSrc={fullscreenVideo.watermarkedSrc}
           poster={fullscreenVideo.poster}
           postId={fullscreenVideo.postId}
-          comments={postComments[fullscreenVideo.postId] || []}
           onClose={() => setFullscreenVideo(null)}
-          onAddComment={async (content) => {
-            const publicId = fullscreenVideo.postId
-            try {
-              const res = await fetch(`/api/live/${publicId}/comments`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  content,
-                  sessionToken,
-                }),
-              })
-              const data = await res.json()
-              if (data.success) {
-                setPostComments(prev => ({
-                  ...prev,
-                  [publicId]: [...(prev[publicId] || []), data.data.comment],
-                }))
-              }
-            } catch {
-              console.error('Failed to post comment')
-            }
-          }}
         />
       )}
 

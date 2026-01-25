@@ -1,26 +1,10 @@
 'use client'
 
 import { useRef, useEffect, useState, useCallback } from 'react'
-import { X, Volume2, VolumeX, Play, Pause, Send, Heart, ThumbsUp, Flame, Laugh, Angry, Download, ShieldAlert } from 'lucide-react'
+import { X, Volume2, VolumeX, Play, Pause, Heart, ThumbsUp, Flame, Laugh, Angry, Download, ShieldAlert } from 'lucide-react'
 import { DynamicWatermark } from './DynamicWatermark'
 import { GhostShield } from './GhostShield'
 import { useContentProtection, contentProtectionStyles } from '@/hooks/useContentProtection'
-
-interface Comment {
-  id?: string
-  displayName: string
-  content: string
-  createdAt: string
-}
-
-interface FloatingComment {
-  id: string
-  displayName: string
-  content: string
-  top: number // Starting position (percentage from bottom)
-  opacity: number
-  createdAt: number
-}
 
 interface EmojiReaction {
   id: string
@@ -34,9 +18,7 @@ interface FullscreenVideoPlayerProps {
   watermarkedSrc?: string // For downloads
   poster?: string
   postId: string
-  comments: Comment[]
   onClose: () => void
-  onAddComment: (content: string) => Promise<void>
   userId?: string // For forensic watermarking
   enableProtection?: boolean // Enable content protection features
 }
@@ -54,9 +36,7 @@ export function FullscreenVideoPlayer({
   watermarkedSrc,
   poster,
   postId,
-  comments,
   onClose,
-  onAddComment,
   userId,
   enableProtection = true,
 }: FullscreenVideoPlayerProps) {
@@ -64,13 +44,9 @@ export function FullscreenVideoPlayer({
   const downloadSrc = watermarkedSrc || src
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const commentInputRef = useRef<HTMLInputElement>(null)
 
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(false)
-  const [newComment, setNewComment] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [floatingComments, setFloatingComments] = useState<FloatingComment[]>([])
   const [emojiReactions, setEmojiReactions] = useState<EmojiReaction[]>([])
   const [showControls, setShowControls] = useState(true)
   const [showProtectionWarning, setShowProtectionWarning] = useState(false)
@@ -87,39 +63,6 @@ export function FullscreenVideoPlayer({
       setTimeout(() => setShowProtectionWarning(false), 3000)
     },
   })
-
-  // Initialize floating comments from existing comments
-  useEffect(() => {
-    // Show last 5 comments as floating initially
-    const recentComments = comments.slice(-5)
-    const initial: FloatingComment[] = recentComments.map((c, i) => ({
-      id: c.id || `comment-${i}-${Date.now()}`,
-      displayName: c.displayName,
-      content: c.content,
-      top: 20 + (i * 12), // Stagger from bottom
-      opacity: 1,
-      createdAt: Date.now() - (5 - i) * 1000,
-    }))
-    setFloatingComments(initial)
-  }, [comments])
-
-  // Animate floating comments upward and fade out
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFloatingComments(prev => {
-        const now = Date.now()
-        return prev
-          .map(c => ({
-            ...c,
-            top: c.top + 0.5, // Move up
-            opacity: Math.max(0, 1 - (now - c.createdAt) / 8000), // Fade over 8 seconds
-          }))
-          .filter(c => c.opacity > 0 && c.top < 90) // Remove when faded or off screen
-      })
-    }, 50)
-
-    return () => clearInterval(interval)
-  }, [])
 
   // Clean up old emoji reactions
   useEffect(() => {
@@ -191,30 +134,6 @@ export function FullscreenVideoPlayer({
       setIsMuted(!isMuted)
     }
   }, [isMuted])
-
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newComment.trim() || isSubmitting) return
-
-    setIsSubmitting(true)
-    try {
-      await onAddComment(newComment.trim())
-
-      // Add to floating comments immediately
-      const floatingComment: FloatingComment = {
-        id: `temp-${Date.now()}`,
-        displayName: 'You',
-        content: newComment.trim(),
-        top: 15,
-        opacity: 1,
-        createdAt: Date.now(),
-      }
-      setFloatingComments(prev => [...prev, floatingComment])
-      setNewComment('')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
 
   const handleEmojiClick = (emoji: string) => {
     // Add floating emoji reaction
@@ -378,27 +297,6 @@ export function FullscreenVideoPlayer({
         </button>
       </div>
 
-      {/* Floating comments overlay */}
-      <div className="absolute left-4 right-24 bottom-32 top-20 overflow-hidden pointer-events-none">
-        {floatingComments.map((comment) => (
-          <div
-            key={comment.id}
-            className="absolute left-0 max-w-[70%] transition-all duration-100"
-            style={{
-              bottom: `${comment.top}%`,
-              opacity: comment.opacity,
-            }}
-          >
-            <div className="bg-black/40 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-2">
-              <span className="text-primary-400 font-semibold text-sm truncate max-w-[80px]">
-                {comment.displayName}
-              </span>
-              <span className="text-white text-sm">{comment.content}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Floating emoji reactions */}
       <div className="absolute right-4 bottom-32 top-20 w-20 overflow-hidden pointer-events-none">
         {emojiReactions.map((reaction) => (
@@ -433,33 +331,6 @@ export function FullscreenVideoPlayer({
           </button>
         ))}
       </div>
-
-      {/* Comment input (bottom) */}
-      <form
-        onSubmit={handleSubmitComment}
-        onClick={(e) => e.stopPropagation()}
-        className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent"
-      >
-        <div className="flex gap-2 items-center max-w-lg mx-auto">
-          <input
-            ref={commentInputRef}
-            type="text"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Add a comment..."
-            maxLength={200}
-            className="flex-1 px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-          />
-          <button
-            type="submit"
-            disabled={!newComment.trim() || isSubmitting}
-            className="p-3 bg-primary-500 rounded-full text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary-600 transition-colors"
-            title="Send comment"
-          >
-            <Send className="h-5 w-5" />
-          </button>
-        </div>
-      </form>
 
       {/* CSS for floating animation */}
       <style jsx global>{`

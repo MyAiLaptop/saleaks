@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -10,9 +10,7 @@ import {
   Clock,
   ThumbsUp,
   ThumbsDown,
-  MessageCircle,
   Eye,
-  Send,
   Loader2,
   AlertTriangle,
   Car,
@@ -24,7 +22,6 @@ import {
   MoreHorizontal,
   Copy,
   Check,
-  User,
   Download,
 } from 'lucide-react'
 import { PurchaseButton } from '@/components/PurchaseButton'
@@ -58,14 +55,6 @@ function getMediaUrl(path: string | null | undefined): string {
   return `${R2_PUBLIC_URL}/${path}`
 }
 
-interface Comment {
-  id: string
-  displayName: string
-  content: string
-  parentId: string | null
-  createdAt: string
-}
-
 interface LivePost {
   id: string
   publicId: string
@@ -82,7 +71,6 @@ interface LivePost {
   status: string
   createdAt: string
   media: Media[]
-  comments: Comment[]
 }
 
 const CATEGORIES = [
@@ -96,27 +84,19 @@ const CATEGORIES = [
   { id: 'OTHER', label: 'Other', icon: MoreHorizontal, color: 'text-gray-500 bg-gray-100 dark:bg-gray-700' },
 ]
 
-const POLL_INTERVAL = 5000
-
 export default function CountryLivePostPage() {
   const { country } = useCountry()
   const params = useParams<{ publicId: string }>()
   const [post, setPost] = useState<LivePost | null>(null)
-  const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [newComment, setNewComment] = useState('')
-  const [sendingComment, setSendingComment] = useState(false)
-  const [sessionToken, setSessionToken] = useState<string | null>(null)
-  const [displayName, setDisplayName] = useState<string | null>(null)
 
   const [userVote, setUserVote] = useState<number | null>(null)
   const [voting, setVoting] = useState(false)
   const [voteCount, setVoteCount] = useState({ upvotes: 0, downvotes: 0 })
 
   const [copied, setCopied] = useState(false)
-  const [lastCommentFetch, setLastCommentFetch] = useState<string | null>(null)
 
   // Fetch post
   useEffect(() => {
@@ -127,7 +107,6 @@ export default function CountryLivePostPage() {
       .then((data) => {
         if (data.success) {
           setPost(data.data)
-          setComments(data.data.comments || [])
           setVoteCount({ upvotes: data.data.upvotes, downvotes: data.data.downvotes })
         } else {
           setError(data.error || 'Post not found')
@@ -147,31 +126,6 @@ export default function CountryLivePostPage() {
       .catch(() => {})
   }, [params.publicId])
 
-  // Poll for new comments
-  const fetchNewComments = useCallback(async () => {
-    if (!params.publicId || !lastCommentFetch) return
-
-    try {
-      const res = await fetch(`/api/live/${params.publicId}/comments?since=${encodeURIComponent(lastCommentFetch)}`)
-      const data = await res.json()
-
-      if (data.success && data.data.comments.length > 0) {
-        setComments(prev => [...prev, ...data.data.comments])
-        setLastCommentFetch(data.data.serverTime)
-      }
-    } catch {
-      // Ignore
-    }
-  }, [params.publicId, lastCommentFetch])
-
-  useEffect(() => {
-    if (comments.length > 0 && !lastCommentFetch) {
-      setLastCommentFetch(new Date().toISOString())
-    }
-
-    const interval = setInterval(fetchNewComments, POLL_INTERVAL)
-    return () => clearInterval(interval)
-  }, [fetchNewComments, comments.length, lastCommentFetch])
 
   // Handle vote
   const handleVote = async (value: 1 | -1) => {
@@ -197,37 +151,6 @@ export default function CountryLivePostPage() {
     }
   }
 
-  // Handle comment
-  const handleComment = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newComment.trim() || sendingComment || !params.publicId) return
-
-    setSendingComment(true)
-    try {
-      const res = await fetch(`/api/live/${params.publicId}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: newComment,
-          sessionToken,
-          displayName,
-        }),
-      })
-      const data = await res.json()
-
-      if (data.success) {
-        setComments(prev => [...prev, data.data.comment])
-        setSessionToken(data.data.sessionToken)
-        setDisplayName(data.data.displayName)
-        setNewComment('')
-        setLastCommentFetch(new Date().toISOString())
-      }
-    } catch {
-      // Ignore
-    } finally {
-      setSendingComment(false)
-    }
-  }
 
   // Copy link
   const copyLink = async () => {
@@ -455,11 +378,6 @@ export default function CountryLivePostPage() {
                     </span>
                   </div>
 
-                  {/* Comments count */}
-                  <span className="flex items-center gap-1 text-gray-400">
-                    <MessageCircle className="h-4 w-4" />
-                    {comments.length}
-                  </span>
                 </div>
 
                 {/* Share */}
@@ -484,89 +402,6 @@ export default function CountryLivePostPage() {
             </div>
           </article>
 
-          {/* Comments Section */}
-          <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden border border-white/10">
-            <div className="p-4 border-b border-white/10">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <MessageCircle className="h-5 w-5 text-primary-500" />
-                Comments ({comments.length})
-              </h2>
-            </div>
-
-            {/* Comment Form */}
-            <form onSubmit={handleComment} className="p-4 border-b border-white/10">
-              <div className="flex gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <div className="flex-1">
-                  <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Add a comment..."
-                    rows={2}
-                    maxLength={500}
-                    className="w-full px-3 py-2 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-500 resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  />
-                  <div className="flex items-center justify-between mt-2">
-                    <p className="text-xs text-gray-500">
-                      {displayName ? `Commenting as ${displayName}` : 'Anonymous comment'}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{newComment.length}/500</span>
-                      <button
-                        type="submit"
-                        disabled={!newComment.trim() || sendingComment}
-                        className="px-4 py-1.5 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1 text-sm"
-                      >
-                        {sendingComment ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <>
-                            <Send className="h-4 w-4" />
-                            Post
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </form>
-
-            {/* Comments List */}
-            <div className="divide-y divide-white/10">
-              {comments.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">
-                  <MessageCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No comments yet. Be the first!</p>
-                </div>
-              ) : (
-                comments.map((comment) => (
-                  <div key={comment.id} className="p-4">
-                    <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <User className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-medium text-gray-200">
-                            {comment.displayName}
-                          </span>
-                          <span className="text-xs text-gray-500">
-                            {formatTimeAgo(comment.createdAt)}
-                          </span>
-                        </div>
-                        <p className="text-gray-300 text-sm whitespace-pre-wrap">
-                          {comment.content}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </div>
