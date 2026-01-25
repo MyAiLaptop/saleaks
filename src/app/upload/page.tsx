@@ -363,7 +363,10 @@ export default function UploadPage() {
                     Drag & drop files or click to browse
                   </p>
                   <p className="text-xs text-gray-400">
-                    Images, videos, documents (max 50MB each, 10 files total)
+                    Images and documents only (max 50MB each, 10 files total)
+                  </p>
+                  <p className="text-xs text-amber-400 mt-1">
+                    For video content, use the Live Feed to capture in real-time
                   </p>
                   <p className="text-xs text-green-400 mt-1">
                     All metadata will be automatically removed
@@ -374,7 +377,7 @@ export default function UploadPage() {
                   multiple
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  accept="image/*,application/pdf,video/*,.doc,.docx,.xls,.xlsx"
+                  accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
                   title="Upload your content files"
                   aria-label="Upload your content files"
                 />

@@ -378,11 +378,11 @@ export default function CountryUploadPage() {
                     Drag & drop files or click to browse
                   </p>
                   <p className="text-xs text-gray-400">
-                    Videos and images (max 50MB each, up to 10 files)
+                    Images and documents only (max 50MB each, up to 10 files)
                   </p>
-                  <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-primary-500/20 rounded-full">
-                    <span className="text-xs text-primary-400 font-medium">
-                      Bundle multiple files together for auction
+                  <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-amber-500/20 rounded-full">
+                    <span className="text-xs text-amber-400 font-medium">
+                      For video content, use the Live Feed to capture in real-time
                     </span>
                   </div>
                   <p className="text-xs text-green-400 mt-2">
@@ -394,7 +394,7 @@ export default function CountryUploadPage() {
                   multiple
                   onChange={handleFileChange}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  accept="image/*,application/pdf,video/*,.doc,.docx,.xls,.xlsx"
+                  accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
                   title="Upload your content files"
                   aria-label="Upload your content files"
                 />

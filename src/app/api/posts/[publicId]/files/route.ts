@@ -50,6 +50,15 @@ export async function POST(
       )
     }
 
+    // Reject video files - videos must be captured through Live Feed for authenticity
+    const videoFile = files.find(f => f.type.startsWith('video/'))
+    if (videoFile) {
+      return NextResponse.json(
+        { success: false, error: 'Video uploads are not allowed here. Use the Live Feed to capture video content in real-time for authenticity verification.' },
+        { status: 400 }
+      )
+    }
+
     const uploadedFiles = []
 
     for (const file of files) {
