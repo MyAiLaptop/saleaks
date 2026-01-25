@@ -79,7 +79,7 @@ export default function GlobalLandingPage() {
     >
       <div className="bg-black/70 min-h-screen">
         {/* Header */}
-        <header className="py-6">
+        <header className="py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center">
               <button
@@ -91,15 +91,15 @@ export default function GlobalLandingPage() {
                 <Image
                   src="/icons/spillnova_floating.png"
                   alt="SpillNova"
-                  width={350}
-                  height={350}
+                  width={180}
+                  height={180}
                   className="drop-shadow-2xl transition-transform group-hover:scale-105"
                   priority
                 />
                 {/* Play button overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 group-hover:bg-white/30 transition-all group-hover:scale-110">
-                    <Play className="h-12 w-12 text-white fill-white" />
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 group-hover:bg-white/30 transition-all group-hover:scale-110">
+                    <Play className="h-8 w-8 text-white fill-white" />
                   </div>
                 </div>
                 {/* Watch video text */}
