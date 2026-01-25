@@ -53,8 +53,12 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
 # Create directories for temporary files (video processing)
-RUN mkdir -p /app/tmp && chown nextjs:nodejs /app/tmp
+RUN mkdir -p /app/tmp
+
+# Fix permissions for nextjs user (cache writes, prisma client)
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
@@ -67,5 +71,5 @@ ENV HOSTNAME="0.0.0.0"
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
-# Run database migrations and start the server
-CMD ["sh", "-c", "node node_modules/prisma/build/index.js db push && node server.js"]
+# Run database migrations (skip generate since client is already built) and start the server
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js db push --skip-generate && node server.js"]
