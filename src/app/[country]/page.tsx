@@ -110,7 +110,7 @@ export default function CountryHomePage() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat"
+      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url('${backgroundUrl}')` }}
     >
       {/* Dark overlay for readability */}

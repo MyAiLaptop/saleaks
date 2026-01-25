@@ -5,7 +5,7 @@ import { WifiOff, RefreshCw } from 'lucide-react'
 export default function OfflinePage() {
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center"
+      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat flex items-center justify-center"
       style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
     >
       <div className="bg-black/60 absolute inset-0" />

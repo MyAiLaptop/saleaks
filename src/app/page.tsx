@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Globe, ArrowRight, Shield, Radio, Camera, BadgeCheck, DollarSign } from 'lucide-react'
+import { Globe, ArrowRight, Shield, Radio, Camera, BadgeCheck, DollarSign, Play, X } from 'lucide-react'
 import { countries, getEnabledCountries, DEFAULT_COUNTRY } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -12,6 +12,7 @@ export default function GlobalLandingPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isReady, setIsReady] = useState(false)
+  const [showVideo, setShowVideo] = useState(false)
   const enabledCountries = getEnabledCountries()
 
   // Check if user is explicitly changing region
@@ -73,7 +74,7 @@ export default function GlobalLandingPage() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat"
+      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
     >
       <div className="bg-black/70 min-h-screen">
@@ -81,17 +82,58 @@ export default function GlobalLandingPage() {
         <header className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-center">
-              <Image
-                src="/icons/spillnova_floating.png"
-                alt="SpillNova"
-                width={280}
-                height={280}
-                className="drop-shadow-2xl"
-                priority
-              />
+              <button
+                type="button"
+                onClick={() => setShowVideo(true)}
+                className="relative group cursor-pointer"
+                aria-label="Watch SpillNova video"
+              >
+                <Image
+                  src="/icons/spillnova_floating.png"
+                  alt="SpillNova"
+                  width={350}
+                  height={350}
+                  className="drop-shadow-2xl transition-transform group-hover:scale-105"
+                  priority
+                />
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 group-hover:bg-white/30 transition-all group-hover:scale-110">
+                    <Play className="h-12 w-12 text-white fill-white" />
+                  </div>
+                </div>
+                {/* Watch video text */}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-primary-500 text-white text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
+                  Watch Video
+                </div>
+              </button>
             </div>
           </div>
         </header>
+
+        {/* Video Modal */}
+        {showVideo && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
+            <div className="relative w-full max-w-4xl mx-4">
+              <button
+                type="button"
+                onClick={() => setShowVideo(false)}
+                className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
+                aria-label="Close video"
+              >
+                <X className="h-8 w-8" />
+              </button>
+              <video
+                src="https://media.saleaks.co.za/SpillNova.mp4"
+                controls
+                autoPlay
+                className="w-full rounded-xl shadow-2xl"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <main className="py-12">
