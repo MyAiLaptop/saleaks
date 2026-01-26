@@ -93,6 +93,8 @@ export default function CreateBusinessProfilePage() {
   const [website, setWebsite] = useState('')
   const [province, setProvince] = useState('')
   const [city, setCity] = useState('')
+  const [serviceAreas, setServiceAreas] = useState<string[]>([])
+  const [newServiceArea, setNewServiceArea] = useState('')
   const [categories, setCategories] = useState<string[]>([])
   const [facebook, setFacebook] = useState('')
   const [instagram, setInstagram] = useState('')
@@ -275,6 +277,7 @@ export default function CreateBusinessProfilePage() {
           website: website.trim() || null,
           province: province || null,
           city: city.trim() || null,
+          serviceAreas: serviceAreas.length > 0 ? serviceAreas : null,
           categories: categories.length > 0 ? categories : null,
           facebook: facebook.trim() || null,
           instagram: instagram.trim() || null,
@@ -743,7 +746,11 @@ export default function CreateBusinessProfilePage() {
               Service Area
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <p className="text-sm text-gray-400 mb-4">
+              Your ads will only be shown to users in these areas - no wasted impressions!
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Province</label>
                 <select
@@ -761,7 +768,7 @@ export default function CreateBusinessProfilePage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">City/Area</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Main City/Area</label>
                 <input
                   type="text"
                   value={city}
@@ -770,6 +777,67 @@ export default function CreateBusinessProfilePage() {
                   className="w-full px-4 py-3 bg-black/40 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
                 />
               </div>
+            </div>
+
+            {/* Additional Service Areas */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Additional Areas You Serve (ads will target users in these areas)
+              </label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={newServiceArea}
+                  onChange={(e) => setNewServiceArea(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (newServiceArea.trim() && !serviceAreas.includes(newServiceArea.trim())) {
+                        setServiceAreas([...serviceAreas, newServiceArea.trim()])
+                        setNewServiceArea('')
+                      }
+                    }
+                  }}
+                  placeholder="e.g. Brakpan, Springs, Benoni..."
+                  className="flex-1 px-4 py-3 bg-black/40 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-primary-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newServiceArea.trim() && !serviceAreas.includes(newServiceArea.trim())) {
+                      setServiceAreas([...serviceAreas, newServiceArea.trim()])
+                      setNewServiceArea('')
+                    }
+                  }}
+                  className="px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors"
+                  aria-label="Add service area"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Service Areas Tags */}
+              {serviceAreas.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {serviceAreas.map((area, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-600/20 border border-primary-500/30 text-primary-400 rounded-full text-sm"
+                    >
+                      <MapPin className="w-3 h-3" />
+                      {area}
+                      <button
+                        type="button"
+                        onClick={() => setServiceAreas(serviceAreas.filter((_, i) => i !== index))}
+                        className="ml-1 hover:text-white"
+                        aria-label={`Remove ${area}`}
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 

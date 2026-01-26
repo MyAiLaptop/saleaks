@@ -1443,6 +1443,40 @@ model VideoAd {
   @@index([status, expiresAt])
 }
 
+// Anonymous user profile for ad targeting
+// Stores location and preferences to match with relevant local businesses
+model UserProfile {
+  id              String   @id @default(cuid())
+  deviceId        String   @unique  // Anonymous device identifier from localStorage
+
+  // Location data for matching with local businesses
+  country         String   @default("sa")
+  province        String?
+  city            String?  // e.g., "Brakpan", "Cape Town"
+  suburb          String?
+
+  // Demographics (optional, asked gradually)
+  ageRange        String?  // "18-24", "25-34", "35-44", "45-54", "55+"
+  gender          String?  // "male", "female", "other", "prefer_not_to_say"
+
+  // Interests/needs (for better ad matching)
+  homeowner       Boolean?
+  hasVehicle      Boolean?
+  interests       String?  // JSON array of interest categories
+
+  // Question tracking
+  questionsAsked    Int      @default(0)
+  lastQuestionAt    DateTime?
+  nextQuestionAt    DateTime?  // When to show next question
+
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([country, province, city])
+  @@index([nextQuestionAt])
+}
+
 // Credit transactions for advertisers
 model AdvertiserCreditTransaction {
   id            String   @id @default(cuid())

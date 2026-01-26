@@ -15,6 +15,7 @@ type AdDuration = keyof typeof AD_PRICING
 /**
  * GET /api/ads
  * Get ads for a specific post or all ads for an advertiser
+ * Supports location-based targeting via deviceId
  */
 export async function GET(request: NextRequest) {
   try {
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
     const postId = searchParams.get('postId')
     const advertiserId = searchParams.get('advertiserId')
     const businessId = searchParams.get('businessId')
+    const deviceId = searchParams.get('deviceId') // For location-based targeting
 
     // Get active ad for a specific post (for display)
     if (postId) {
@@ -37,7 +39,22 @@ export async function GET(request: NextRequest) {
         )
       }
 
-      const activeAd = await prisma.videoAd.findFirst({
+      // Get user location if deviceId provided
+      let userCity: string | null = null
+      let userProvince: string | null = null
+      if (deviceId) {
+        const userProfile = await prisma.userProfile.findUnique({
+          where: { deviceId },
+          select: { city: true, province: true },
+        })
+        if (userProfile) {
+          userCity = userProfile.city?.toLowerCase() || null
+          userProvince = userProfile.province || null
+        }
+      }
+
+      // Get all active ads for this post
+      const activeAds = await prisma.videoAd.findMany({
         where: {
           postId: post.id,
           status: 'ACTIVE',
@@ -52,10 +69,50 @@ export async function GET(request: NextRequest) {
               logo: true,
               phone: true,
               whatsapp: true,
+              city: true,
+              province: true,
+              serviceAreas: true,
             },
           },
         },
       })
+
+      // Find the best matching ad based on location
+      let activeAd = null
+      for (const ad of activeAds) {
+        const business = ad.business
+
+        // If user has location and business has service areas, check for match
+        if (userCity && business.serviceAreas) {
+          const serviceAreas: string[] = JSON.parse(business.serviceAreas)
+          const normalizedAreas = serviceAreas.map(a => a.toLowerCase())
+
+          // Check if user's city matches any service area or business city
+          const businessCity = business.city?.toLowerCase()
+          if (
+            normalizedAreas.includes(userCity) ||
+            businessCity === userCity
+          ) {
+            activeAd = ad
+            break // Prioritize location-matched ads
+          }
+        } else if (userProvince && business.province) {
+          // Fall back to province matching
+          if (business.province === userProvince) {
+            activeAd = ad
+            break
+          }
+        } else {
+          // No location data - show any ad
+          activeAd = ad
+        }
+      }
+
+      // If no location match found but there are ads, show the first one
+      // (for users without location data)
+      if (!activeAd && activeAds.length > 0 && !userCity) {
+        activeAd = activeAds[0]
+      }
 
       // Increment impression count if ad exists
       if (activeAd) {
@@ -72,6 +129,12 @@ export async function GET(request: NextRequest) {
           hasAd: !!activeAd,
           // Show "advertise here" pricing if no ad
           pricing: !activeAd ? AD_PRICING : null,
+          // Debug info (can be removed in production)
+          targeting: {
+            userCity,
+            userProvince,
+            adsAvailable: activeAds.length,
+          },
         },
       })
     }

@@ -49,7 +49,10 @@ export function VideoAdBanner({ postId, country }: VideoAdBannerProps) {
   useEffect(() => {
     const fetchAd = async () => {
       try {
-        const response = await fetch(`/api/ads?postId=${postId}`)
+        // Get device ID for location-based ad targeting
+        const deviceId = localStorage.getItem('sp_device_id') || ''
+        const url = `/api/ads?postId=${postId}${deviceId ? `&deviceId=${encodeURIComponent(deviceId)}` : ''}`
+        const response = await fetch(url)
         const data = await response.json()
 
         if (data.success) {

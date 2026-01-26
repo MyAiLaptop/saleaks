@@ -48,6 +48,7 @@ import { VideoRecorder } from '@/components/VideoRecorder'
 import { PhotoCapture } from '@/components/PhotoCapture'
 import { MobilePostWizard } from '@/components/MobilePostWizard'
 import { Flag } from '@/components/Flag'
+import UserProfilePopup from '@/components/UserProfilePopup'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
 import { VideoAdBanner } from '@/components/VideoAdBanner'
@@ -1792,6 +1793,9 @@ export default function CountryLiveBillboardPage() {
           onClose={() => setImageGallery(null)}
         />
       )}
+
+      {/* User Profile Popup - asks users about their location for better ad targeting */}
+      <UserProfilePopup />
     </div>
   )
 }
