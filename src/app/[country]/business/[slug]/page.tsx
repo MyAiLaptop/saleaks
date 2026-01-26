@@ -16,8 +16,18 @@ import {
   Clock,
   Eye,
   Loader2,
+  Play,
+  Video,
+  Image as ImageIcon,
+  X,
 } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
+
+interface GalleryItem {
+  type: 'image' | 'video'
+  path: string
+  caption?: string
+}
 
 interface BusinessProfile {
   id: string
@@ -25,6 +35,9 @@ interface BusinessProfile {
   name: string
   description: string | null
   logo: string | null
+  coverImage: string | null
+  introVideo: string | null
+  gallery: string | null
   phone: string | null
   whatsapp: string | null
   email: string | null
@@ -61,6 +74,7 @@ export default function BusinessProfilePage() {
   const [business, setBusiness] = useState<BusinessProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [viewingMedia, setViewingMedia] = useState<GalleryItem | null>(null)
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -113,6 +127,7 @@ export default function BusinessProfilePage() {
 
   const serviceAreas = business.serviceAreas ? JSON.parse(business.serviceAreas) : []
   const categories = business.categories ? JSON.parse(business.categories) : []
+  const galleryItems: GalleryItem[] = business.gallery ? JSON.parse(business.gallery) : []
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -167,10 +182,81 @@ export default function BusinessProfilePage() {
           </div>
         </div>
 
+        {/* Cover Image */}
+        {business.coverImage && (
+          <div className="mb-6 -mx-4 sm:mx-0">
+            <div className="relative aspect-[2/1] sm:rounded-xl overflow-hidden bg-gray-800">
+              <Image
+                src={getMediaUrl(business.coverImage)}
+                alt={`${business.name} cover`}
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Description */}
         {business.description && (
           <div className="mb-6">
             <p className="text-gray-300 leading-relaxed">{business.description}</p>
+          </div>
+        )}
+
+        {/* Introduction Video */}
+        {business.introVideo && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+              <Video className="w-4 h-4" />
+              Meet the Business
+            </h3>
+            <div className="relative rounded-xl overflow-hidden bg-gray-800">
+              <video
+                src={getMediaUrl(business.introVideo)}
+                controls
+                poster={business.coverImage ? getMediaUrl(business.coverImage) : undefined}
+                className="w-full aspect-video"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Photo & Video Gallery */}
+        {galleryItems.length > 0 && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              Gallery ({galleryItems.length})
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {galleryItems.map((item, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setViewingMedia(item)}
+                  className="relative aspect-square rounded-lg overflow-hidden bg-gray-800 hover:opacity-90 transition-opacity"
+                >
+                  {item.type === 'image' ? (
+                    <Image
+                      src={getMediaUrl(item.path)}
+                      alt={item.caption || `Gallery ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <>
+                      <video
+                        src={getMediaUrl(item.path)}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <Play className="w-8 h-8 text-white" fill="white" />
+                      </div>
+                    </>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -322,6 +408,47 @@ export default function BusinessProfilePage() {
           })}
         </div>
       </main>
+
+      {/* Media Viewer Modal */}
+      {viewingMedia && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+          onClick={() => setViewingMedia(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setViewingMedia(null)}
+            className="absolute top-4 right-4 p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+            aria-label="Close media viewer"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div
+            className="max-w-4xl max-h-[90vh] w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {viewingMedia.type === 'image' ? (
+              <Image
+                src={getMediaUrl(viewingMedia.path)}
+                alt={viewingMedia.caption || 'Gallery image'}
+                width={1200}
+                height={800}
+                className="w-full h-auto max-h-[90vh] object-contain rounded-lg"
+              />
+            ) : (
+              <video
+                src={getMediaUrl(viewingMedia.path)}
+                controls
+                autoPlay
+                className="w-full max-h-[90vh] rounded-lg"
+              />
+            )}
+            {viewingMedia.caption && (
+              <p className="text-white text-center mt-3">{viewingMedia.caption}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

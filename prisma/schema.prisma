@@ -1357,6 +1357,8 @@ model BusinessProfile {
   description   String?
   logo          String?  // R2 key for logo image
   coverImage    String?  // R2 key for cover image
+  introVideo    String?  // R2 key for intro video (30-60 sec business intro)
+  gallery       String?  // JSON array of media items [{type: 'image'|'video', url: string, caption?: string}]
 
   // Contact info
   phone         String?
