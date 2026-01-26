@@ -1191,59 +1191,78 @@ export default function CountryLiveBillboardPage() {
                   >
                     {/* Media */}
                     {post.media && post.media.length > 0 && (
-                      <div className={`${post.media.length === 1 ? '' : 'grid grid-cols-2 gap-0.5'}`}>
-                        {post.media.map((media) => (
-                          <div
-                            key={media.id}
-                            className={`relative bg-black ${
-                              post.media.length === 1
-                                ? 'aspect-[4/5] sm:aspect-[16/9]'
-                                : 'aspect-square'
-                            }`}
-                          >
-                            {media.mimeType.startsWith('image/') ? (
-                              <div
-                                className="w-full h-full cursor-pointer"
-                                onClick={() => {
-                                  const postImages = post.media
-                                    .filter(m => m.mimeType.startsWith('image/'))
-                                    .map(m => ({
-                                      id: m.id,
-                                      src: getMediaUrl(m.path),
-                                      watermarkedSrc: getMediaUrl(m.watermarkedPath) || getMediaUrl(m.path),
-                                      alt: m.originalName,
-                                    }))
-                                  const clickedIndex = postImages.findIndex(img => img.id === media.id)
-                                  setImageGallery({
-                                    isOpen: true,
-                                    images: postImages,
-                                    initialIndex: clickedIndex >= 0 ? clickedIndex : 0,
-                                  })
-                                }}
-                              >
-                                <img
+                      <div className="relative">
+                        <div className={`${post.media.length === 1 ? '' : 'grid grid-cols-2 gap-0.5'}`}>
+                          {post.media.map((media) => (
+                            <div
+                              key={media.id}
+                              className={`relative bg-black ${
+                                post.media.length === 1
+                                  ? 'aspect-[4/5] sm:aspect-[16/9]'
+                                  : 'aspect-square'
+                              }`}
+                            >
+                              {media.mimeType.startsWith('image/') ? (
+                                <div
+                                  className="w-full h-full cursor-pointer"
+                                  onClick={() => {
+                                    const postImages = post.media
+                                      .filter(m => m.mimeType.startsWith('image/'))
+                                      .map(m => ({
+                                        id: m.id,
+                                        src: getMediaUrl(m.path),
+                                        watermarkedSrc: getMediaUrl(m.watermarkedPath) || getMediaUrl(m.path),
+                                        alt: m.originalName,
+                                      }))
+                                    const clickedIndex = postImages.findIndex(img => img.id === media.id)
+                                    setImageGallery({
+                                      isOpen: true,
+                                      images: postImages,
+                                      initialIndex: clickedIndex >= 0 ? clickedIndex : 0,
+                                    })
+                                  }}
+                                >
+                                  <img
+                                    src={getMediaUrl(media.path)}
+                                    alt={media.originalName}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                  />
+                                  {post.media.filter(m => m.mimeType.startsWith('image/')).length > 1 && (
+                                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 rounded text-white text-xs">
+                                      {post.media.filter(m => m.mimeType.startsWith('image/')).length} photos
+                                    </div>
+                                  )}
+                                </div>
+                              ) : media.mimeType.startsWith('video/') ? (
+                                <AutoPlayVideo
                                   src={getMediaUrl(media.path)}
-                                  alt={media.originalName}
-                                  className="w-full h-full object-cover"
-                                  loading="lazy"
+                                  watermarkedSrc={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
+                                  className="w-full h-full"
+                                  postId={post.publicId}
+                                  country={country}
                                 />
-                                {post.media.filter(m => m.mimeType.startsWith('image/')).length > 1 && (
-                                  <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/60 rounded text-white text-xs">
-                                    {post.media.filter(m => m.mimeType.startsWith('image/')).length} photos
-                                  </div>
-                                )}
-                              </div>
-                            ) : media.mimeType.startsWith('video/') ? (
-                              <AutoPlayVideo
-                                src={getMediaUrl(media.path)}
-                                watermarkedSrc={getMediaUrl(media.watermarkedPath) || getMediaUrl(media.path)}
-                                className="w-full h-full"
-                                postId={post.publicId}
-                                country={country}
-                              />
-                            ) : null}
-                          </div>
-                        ))}
+                              ) : null}
+                            </div>
+                          ))}
+                        </div>
+                        {/* Emoji Reactions Overlay - Right Side */}
+                        <div className="absolute right-3 bottom-16 flex flex-col items-center gap-2 z-10">
+                          {['❤️', '😂', '😮', '🔥'].map((emoji) => (
+                            <button
+                              key={emoji}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleVote(post.publicId, 1)
+                              }}
+                              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-xl transition-transform hover:scale-125 active:scale-95 hover:bg-black/60"
+                              title={`React with ${emoji}`}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
 
@@ -1345,21 +1364,6 @@ export default function CountryLiveBillboardPage() {
                             >
                               <ThumbsDown className={`h-4 w-4 ${userVote === -1 ? 'fill-current' : ''}`} />
                             </button>
-                          </div>
-
-                          {/* Emoji Reactions */}
-                          <div className="flex items-center gap-0.5">
-                            {['❤️', '😂', '😮', '🔥'].map((emoji) => (
-                              <button
-                                key={emoji}
-                                type="button"
-                                onClick={() => handleVote(post.publicId, 1)}
-                                className="p-1.5 rounded-lg hover:bg-white/10 text-lg transition-transform hover:scale-125 active:scale-95"
-                                title={`React with ${emoji}`}
-                              >
-                                {emoji}
-                              </button>
-                            ))}
                           </div>
 
                           {/* Views */}

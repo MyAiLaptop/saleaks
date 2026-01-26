@@ -312,43 +312,6 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
         </div>
       )}
 
-      {/* Top controls - Download, Share, Mute */}
-      <div className={`absolute top-3 right-3 flex items-center gap-2 z-10 transition-opacity duration-200 ${
-        showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
-      }`}>
-        <button
-          type="button"
-          onClick={handleDownload}
-          disabled={isDownloading}
-          className="p-2 bg-black/60 rounded-full text-white hover:bg-black/80 transition-colors disabled:opacity-50"
-          title="Download"
-        >
-          {isDownloading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
-          )}
-        </button>
-        {postId && (
-          <button
-            type="button"
-            onClick={handleShare}
-            className="p-2 bg-black/60 rounded-full text-white hover:bg-black/80 transition-colors"
-            title="Share"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-        )}
-        <button
-          type="button"
-          onClick={toggleMute}
-          className="p-2 bg-black/60 rounded-full text-white hover:bg-black/80 transition-colors"
-          title={isMuted ? 'Unmute' : 'Mute'}
-        >
-          {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-        </button>
-      </div>
-
       {/* Center play/pause button when paused */}
       {!isPlaying && (
         <button
@@ -394,25 +357,63 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
 
         {/* Time and controls row */}
         <div className="flex items-center justify-between px-3 pb-3">
-          {/* Play/Pause button */}
-          <button
-            type="button"
-            onClick={togglePlay}
-            className="p-1 text-white hover:bg-white/10 rounded transition-colors"
-            title={isPlaying ? 'Pause' : 'Play'}
-          >
-            {isPlaying ? (
-              <Pause className="h-5 w-5" />
-            ) : (
-              <Play className="h-5 w-5 fill-white" />
-            )}
-          </button>
+          {/* Left side - Play/Pause and time */}
+          <div className="flex items-center gap-2">
+            {/* Play/Pause button */}
+            <button
+              type="button"
+              onClick={togglePlay}
+              className="p-1 text-white hover:bg-white/10 rounded transition-colors"
+              title={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? (
+                <Pause className="h-5 w-5" />
+              ) : (
+                <Play className="h-5 w-5 fill-white" />
+              )}
+            </button>
 
-          {/* Time display */}
-          <div className="text-white text-xs font-medium">
-            <span>{formatTime(currentTime)}</span>
-            <span className="text-white/60 mx-1">/</span>
-            <span className="text-white/60">{formatTime(duration)}</span>
+            {/* Time display */}
+            <div className="text-white text-xs font-medium">
+              <span>{formatTime(currentTime)}</span>
+              <span className="text-white/60 mx-1">/</span>
+              <span className="text-white/60">{formatTime(duration)}</span>
+            </div>
+          </div>
+
+          {/* Right side - Download, Share, Mute */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="p-1.5 text-white hover:bg-white/10 rounded transition-colors disabled:opacity-50"
+              title="Download"
+            >
+              {isDownloading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
+            </button>
+            {postId && (
+              <button
+                type="button"
+                onClick={handleShare}
+                className="p-1.5 text-white hover:bg-white/10 rounded transition-colors"
+                title="Share"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={toggleMute}
+              className="p-1.5 text-white hover:bg-white/10 rounded transition-colors"
+              title={isMuted ? 'Unmute' : 'Mute'}
+            >
+              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
           </div>
         </div>
       </div>
