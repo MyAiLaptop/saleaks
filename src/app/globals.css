@@ -41,6 +41,20 @@ body {
 }
 
 /* ========================================
+   TEXT INPUT DIRECTION FIX
+   Ensures all text inputs use LTR direction
+   (fixes backwards cursor on some mobile devices)
+   ======================================== */
+
+input,
+textarea,
+[contenteditable="true"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: plaintext;
+}
+
+/* ========================================
    HEADER FIXED POSITIONING
    Ensures header stays fixed on scroll
    ======================================== */
