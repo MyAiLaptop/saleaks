@@ -33,6 +33,16 @@ import {
   DollarSign,
   Lock,
   VideoIcon,
+  // New category icons
+  Swords,
+  Ghost,
+  Drama,
+  Laugh,
+  Music,
+  PawPrint,
+  Sparkles,
+  Landmark,
+  Heart,
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { PhotoCapture } from '@/components/PhotoCapture'
@@ -92,6 +102,7 @@ export default function CountryLiveBillboardPage() {
 
   // Use country-specific categories and provinces
   const CATEGORIES = [
+    // News categories
     { id: 'BREAKING', label: 'Breaking News', icon: AlertTriangle, color: 'text-red-500 bg-red-100 dark:bg-red-900/30' },
     { id: 'TRAFFIC', label: 'Traffic', icon: Car, color: 'text-orange-500 bg-orange-100 dark:bg-orange-900/30' },
     { id: 'CRIME', label: 'Crime', icon: Shield, color: 'text-purple-500 bg-purple-100 dark:bg-purple-900/30' },
@@ -100,6 +111,23 @@ export default function CountryLiveBillboardPage() {
     { id: 'WEATHER', label: 'Weather', icon: Cloud, color: 'text-blue-500 bg-blue-100 dark:bg-blue-900/30' },
     { id: 'COMMUNITY', label: 'Community', icon: Users, color: 'text-green-500 bg-green-100 dark:bg-green-900/30' },
     { id: 'OTHER', label: 'Other', icon: MoreHorizontal, color: 'text-gray-500 bg-gray-100 dark:bg-gray-700' },
+    // Viral/Entertainment categories
+    { id: 'FIGHTING', label: 'Fighting', icon: Swords, color: 'text-red-600 bg-red-100 dark:bg-red-900/30' },
+    { id: 'PARANORMAL', label: 'Paranormal', icon: Ghost, color: 'text-violet-500 bg-violet-100 dark:bg-violet-900/30' },
+    { id: 'DRAMA', label: 'Drama', icon: Drama, color: 'text-pink-500 bg-pink-100 dark:bg-pink-900/30' },
+    { id: 'FUNNY', label: 'Funny', icon: Laugh, color: 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30' },
+    { id: 'MUSIC', label: 'Music', icon: Music, color: 'text-indigo-500 bg-indigo-100 dark:bg-indigo-900/30' },
+    { id: 'ANIMALS', label: 'Animals', icon: PawPrint, color: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30' },
+    { id: 'STUNTS', label: 'Stunts', icon: Sparkles, color: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30' },
+    // Culture categories
+    { id: 'CULTURE_BLACK', label: 'Black Culture', icon: Heart, color: 'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30' },
+    { id: 'CULTURE_WHITE', label: 'White Culture', icon: Heart, color: 'text-sky-500 bg-sky-100 dark:bg-sky-900/30' },
+    { id: 'CULTURE_INDIAN', label: 'Indian Culture', icon: Heart, color: 'text-orange-500 bg-orange-100 dark:bg-orange-900/30' },
+    { id: 'CULTURE_COLOURED', label: 'Coloured Culture', icon: Heart, color: 'text-teal-500 bg-teal-100 dark:bg-teal-900/30' },
+    { id: 'CULTURE_ZULU', label: 'Zulu Culture', icon: Landmark, color: 'text-green-600 bg-green-100 dark:bg-green-900/30' },
+    { id: 'CULTURE_XHOSA', label: 'Xhosa Culture', icon: Landmark, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30' },
+    { id: 'CULTURE_AFRIKAANS', label: 'Afrikaans Culture', icon: Landmark, color: 'text-red-500 bg-red-100 dark:bg-red-900/30' },
+    { id: 'CULTURE_OTHER', label: 'Other Culture', icon: Landmark, color: 'text-purple-500 bg-purple-100 dark:bg-purple-900/30' },
   ]
 
   // Feed sections
@@ -107,6 +135,8 @@ export default function CountryLiveBillboardPage() {
     { id: 'news', label: 'News', description: 'Breaking, Crime, Protest', color: 'from-red-500 to-orange-500' },
     { id: 'local', label: 'Local', description: 'Traffic, Weather, Loadshedding', color: 'from-blue-500 to-cyan-500' },
     { id: 'social', label: 'Social', description: 'Community & Other', color: 'from-green-500 to-emerald-500' },
+    { id: 'viral', label: 'Viral', description: 'Fighting, Drama, Funny', color: 'from-pink-500 to-rose-500' },
+    { id: 'culture', label: 'Culture', description: 'Heritage & Traditions', color: 'from-amber-500 to-yellow-500' },
   ]
 
   const PROVINCES = config.provinces || []
@@ -152,7 +182,7 @@ export default function CountryLiveBillboardPage() {
   // Stats
   const [happeningNowCount, setHappeningNowCount] = useState(0)
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
-  const [sectionCounts, setSectionCounts] = useState<Record<string, number>>({ news: 0, local: 0, social: 0 })
+  const [sectionCounts, setSectionCounts] = useState<Record<string, number>>({ news: 0, local: 0, social: 0, viral: 0, culture: 0 })
 
   // Voting state
   const [votingPosts, setVotingPosts] = useState<Set<string>>(new Set())
@@ -211,7 +241,7 @@ export default function CountryLiveBillboardPage() {
         setLastFetch(data.data.serverTime)
         setHappeningNowCount(data.data.filters.happeningNowCount)
         setCategoryCounts(data.data.filters.categoryCounts)
-        setSectionCounts(data.data.filters.sectionCounts || { news: 0, local: 0, social: 0 })
+        setSectionCounts(data.data.filters.sectionCounts || { news: 0, local: 0, social: 0, viral: 0, culture: 0 })
         setArchiveCount(data.data.filters.archiveCount || 0)
         setError('')
       }

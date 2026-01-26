@@ -8,6 +8,7 @@ import { isValidSAPhoneNumber, formatPhoneNumber, detectCarrier } from '@/lib/ca
 
 // Billboard categories
 const BILLBOARD_CATEGORIES = [
+  // News categories
   'BREAKING',
   'TRAFFIC',
   'CRIME',
@@ -16,6 +17,23 @@ const BILLBOARD_CATEGORIES = [
   'WEATHER',
   'COMMUNITY',
   'OTHER',
+  // Viral/Entertainment categories
+  'FIGHTING',
+  'PARANORMAL',
+  'DRAMA',
+  'FUNNY',
+  'MUSIC',
+  'ANIMALS',
+  'STUNTS',
+  // Culture categories
+  'CULTURE_BLACK',
+  'CULTURE_WHITE',
+  'CULTURE_INDIAN',
+  'CULTURE_COLOURED',
+  'CULTURE_ZULU',
+  'CULTURE_XHOSA',
+  'CULTURE_AFRIKAANS',
+  'CULTURE_OTHER',
 ] as const
 
 // Feed sections - maps to multiple categories
@@ -23,6 +41,8 @@ const FEED_SECTIONS = {
   news: ['BREAKING', 'CRIME', 'PROTEST'],           // Main news: serious/newsworthy content
   local: ['TRAFFIC', 'LOADSHEDDING', 'WEATHER'],    // Local updates: utility info
   social: ['COMMUNITY', 'OTHER'],                    // Social: community/casual content
+  viral: ['FIGHTING', 'PARANORMAL', 'DRAMA', 'FUNNY', 'MUSIC', 'ANIMALS', 'STUNTS'], // Entertainment/viral
+  culture: ['CULTURE_BLACK', 'CULTURE_WHITE', 'CULTURE_INDIAN', 'CULTURE_COLOURED', 'CULTURE_ZULU', 'CULTURE_XHOSA', 'CULTURE_AFRIKAANS', 'CULTURE_OTHER'], // Culture content
 } as const
 
 // Generate anonymous reporter name
@@ -212,6 +232,8 @@ export async function GET(request: NextRequest) {
       news: (categoryCountMap['BREAKING'] || 0) + (categoryCountMap['CRIME'] || 0) + (categoryCountMap['PROTEST'] || 0),
       local: (categoryCountMap['TRAFFIC'] || 0) + (categoryCountMap['LOADSHEDDING'] || 0) + (categoryCountMap['WEATHER'] || 0),
       social: (categoryCountMap['COMMUNITY'] || 0) + (categoryCountMap['OTHER'] || 0),
+      viral: (categoryCountMap['FIGHTING'] || 0) + (categoryCountMap['PARANORMAL'] || 0) + (categoryCountMap['DRAMA'] || 0) + (categoryCountMap['FUNNY'] || 0) + (categoryCountMap['MUSIC'] || 0) + (categoryCountMap['ANIMALS'] || 0) + (categoryCountMap['STUNTS'] || 0),
+      culture: (categoryCountMap['CULTURE_BLACK'] || 0) + (categoryCountMap['CULTURE_WHITE'] || 0) + (categoryCountMap['CULTURE_INDIAN'] || 0) + (categoryCountMap['CULTURE_COLOURED'] || 0) + (categoryCountMap['CULTURE_ZULU'] || 0) + (categoryCountMap['CULTURE_XHOSA'] || 0) + (categoryCountMap['CULTURE_AFRIKAANS'] || 0) + (categoryCountMap['CULTURE_OTHER'] || 0),
     }
 
     // Get "Happening Now" count (filtered by country)
