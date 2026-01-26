@@ -10,6 +10,7 @@ import { nanoid } from 'nanoid'
 // Rate limiting constants
 const MAX_LOGIN_ATTEMPTS = 5
 const LOCKOUT_DURATION_MINUTES = 15
+const SESSION_DURATION_DAYS = 30
 
 /**
  * POST /api/advertiser/login
@@ -40,12 +41,6 @@ export async function POST(request: NextRequest) {
     // Find the account
     const account = await prisma.advertiserAccount.findUnique({
       where: { phoneNumber: normalizedPhone },
-      include: {
-        businessProfiles: {
-          where: { status: 'ACTIVE' },
-          take: 1,
-        },
-      },
     })
 
     if (!account) {
@@ -122,32 +117,51 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Success - reset login attempts and update last login
-    await prisma.advertiserAccount.update({
+    // Generate session token and expiry
+    const sessionToken = nanoid(32)
+    const sessionExpiresAt = new Date(Date.now() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000)
+
+    // Update account with session token and reset login attempts
+    const updatedAccount = await prisma.advertiserAccount.update({
       where: { id: account.id },
       data: {
         loginAttempts: 0,
         lockedUntil: null,
         lastLoginAt: new Date(),
+        sessionToken,
+        sessionExpiresAt,
+      },
+      include: {
+        businessProfiles: {
+          where: { status: 'ACTIVE' },
+          select: {
+            id: true,
+            publicId: true,
+            name: true,
+            description: true,
+            logo: true,
+            phone: true,
+            whatsapp: true,
+            status: true,
+          },
+        },
       },
     })
-
-    // Generate session token
-    const sessionToken = nanoid(32)
 
     return NextResponse.json({
       success: true,
       data: {
-        accountId: account.id,
-        phoneNumber: account.phoneNumber,
-        businessName: account.businessName,
-        email: account.email,
-        creditBalance: account.creditBalance,
-        totalSpent: account.totalSpent,
-        verified: account.verified,
         sessionToken,
-        // Include first business profile if exists
-        businessProfile: account.businessProfiles[0] || null,
+        advertiser: {
+          id: updatedAccount.id,
+          phoneNumber: updatedAccount.phoneNumber,
+          businessName: updatedAccount.businessName,
+          email: updatedAccount.email,
+          creditBalance: updatedAccount.creditBalance,
+          totalSpent: updatedAccount.totalSpent,
+          verified: updatedAccount.verified,
+          businessProfiles: updatedAccount.businessProfiles,
+        },
         message: 'Signed in successfully!',
       },
     })
