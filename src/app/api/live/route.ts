@@ -5,6 +5,7 @@ import { encryptEmail } from '@/lib/crypto'
 import { nanoid } from 'nanoid'
 import { moderateTextContent } from '@/lib/content-moderation'
 import { isValidSAPhoneNumber, formatPhoneNumber, detectCarrier } from '@/lib/carrier-billing'
+import { getFingerprint } from '@/lib/fingerprint'
 
 // Billboard categories
 const BILLBOARD_CATEGORIES = [
@@ -140,6 +141,11 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50)
     const since = searchParams.get('since') // For polling new posts
+    const hideWatched = searchParams.get('hideWatched') !== 'false' // Default true
+    const personalized = searchParams.get('personalized') === 'true' // Apply preference scores
+
+    // Get session token for personalization
+    const sessionToken = getFingerprint(request)
 
     // Calculate date boundaries
     const sevenDaysAgo = new Date(Date.now() - ACTIVE_FEED_DAYS * 24 * 60 * 60 * 1000)
@@ -193,8 +199,38 @@ export async function GET(request: NextRequest) {
       orderBy = { upvotes: 'desc' }
     }
 
+    // Get user preferences for personalization
+    let watchedPostIds: string[] = []
+    let categoryScores: Record<string, number> = {}
+
+    if (hideWatched || personalized) {
+      // Get user preferences
+      const userPrefs = await prisma.userPreference.findUnique({
+        where: { sessionToken },
+      })
+
+      if (userPrefs) {
+        categoryScores = JSON.parse(userPrefs.categoryScores || '{}')
+      }
+
+      // Get watched post IDs if hideWatched is enabled
+      if (hideWatched) {
+        const viewHistory = await prisma.viewHistory.findMany({
+          where: { sessionToken },
+          select: { postId: true },
+        })
+        watchedPostIds = viewHistory.map((v) => v.postId)
+      }
+    }
+
+    // Add exclusion for watched posts if enabled
+    const finalWhereClause = {
+      ...whereClause,
+      ...(hideWatched && watchedPostIds.length > 0 ? { id: { notIn: watchedPostIds } } : {}),
+    }
+
     const posts = await prisma.liveBillboard.findMany({
-      where: whereClause,
+      where: finalWhereClause,
       orderBy,
       skip: (page - 1) * limit,
       take: limit,
@@ -213,8 +249,8 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Get total count for pagination
-    const totalCount = await prisma.liveBillboard.count({ where: whereClause })
+    // Get total count for pagination (with watched exclusion if enabled)
+    const totalCount = await prisma.liveBillboard.count({ where: finalWhereClause })
 
     // Get category counts for filters (only active posts from last 7 days, filtered by country)
     const categoryCounts = await prisma.liveBillboard.groupBy({
@@ -246,10 +282,22 @@ export async function GET(request: NextRequest) {
       where: { status: 'LIVE', country, createdAt: { lt: sevenDaysAgo }, moderationStatus: { notIn: ['REJECTED', 'FLAGGED'] } },
     })
 
+    // Apply personalization scoring if enabled
+    let sortedPosts = posts
+    if (personalized && Object.keys(categoryScores).length > 0) {
+      // Calculate personalized score for each post
+      sortedPosts = [...posts].sort((a, b) => {
+        const scoreA = categoryScores[a.category] || 1.0
+        const scoreB = categoryScores[b.category] || 1.0
+        // Higher scores = more preferred, should come first
+        return scoreB - scoreA
+      })
+    }
+
     return NextResponse.json({
       success: true,
       data: {
-        posts: posts.map((post) => {
+        posts: sortedPosts.map((post) => {
           const now = Date.now()
           const auctionEndsAt = post.auctionEndsAt?.getTime() || 0
           const timeRemaining = Math.max(0, auctionEndsAt - now)
@@ -258,6 +306,7 @@ export async function GET(request: NextRequest) {
           return {
             ...post,
             commentCount: post._count.comments,
+            preferenceScore: personalized ? (categoryScores[post.category] || 1.0) : undefined,
             // Auction info
             auction: {
               status: post.auctionStatus,
@@ -287,6 +336,11 @@ export async function GET(request: NextRequest) {
           archiveCount,
         },
         serverTime: new Date().toISOString(),
+        personalization: {
+          hideWatched,
+          personalized,
+          watchedCount: watchedPostIds.length,
+        },
       },
     })
   } catch (error) {

@@ -420,6 +420,7 @@ model LiveBillboard {
   reports      ContentReport[]
   bids         AuctionBid[]
   wonAuctions  WonAuction[]
+  viewHistory  ViewHistory[]
 
   @@index([category, createdAt])
   @@index([province, createdAt])
@@ -1223,4 +1224,70 @@ model SuggestionVote {
   createdAt    DateTime @default(now())
 
   @@unique([suggestionId, fingerprint])
+}
+
+// ============================================
+// VIEW HISTORY - Track watched content for personalization
+// ============================================
+
+// View history for personalized feeds
+// Tracks what users have watched/skipped to personalize their feed
+model ViewHistory {
+  id            String   @id @default(cuid())
+
+  // Post that was viewed
+  postId        String
+  post          LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // Anonymous user identifier (session token or fingerprint)
+  sessionToken  String
+
+  // Engagement signals
+  watchDuration Int      @default(0)  // Seconds watched
+  completed     Boolean  @default(false) // Watched >80% of video
+  skipped       Boolean  @default(false) // Scrolled past quickly (<3 sec)
+  voted         Boolean  @default(false) // User voted on this post
+  shared        Boolean  @default(false) // User shared this post
+
+  // Category for preference learning (denormalized for query efficiency)
+  category      String
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // One view record per user per post
+  @@unique([postId, sessionToken])
+  @@index([sessionToken, createdAt])
+  @@index([sessionToken, category])
+  @@index([postId])
+}
+
+// User preferences learned from behavior
+// Stores category preference scores per user
+model UserPreference {
+  id            String   @id @default(cuid())
+
+  // Anonymous user identifier
+  sessionToken  String   @unique
+
+  // Category preference scores (JSON: {"BREAKING": 1.5, "TRAFFIC": 0.8, ...})
+  // Score > 1 = boosted, Score < 1 = penalized, 1 = neutral
+  categoryScores String  @default("{}")
+
+  // Preferred location (learned from engaged content)
+  preferredProvince String?
+
+  // Feed settings
+  hideWatched   Boolean  @default(true) // Hide already-watched videos
+
+  // Stats
+  totalViews    Int      @default(0)
+  totalSkips    Int      @default(0)
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([sessionToken])
 }

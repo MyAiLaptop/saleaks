@@ -173,6 +173,8 @@ export default function CountryLiveBillboardPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [showArchive, setShowArchive] = useState(false)
   const [archiveCount, setArchiveCount] = useState(0)
+  const [hideWatched, setHideWatched] = useState(true) // Hide already-watched videos by default
+  const [watchedCount, setWatchedCount] = useState(0) // Number of watched videos filtered out
 
   // Create post
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -244,6 +246,8 @@ export default function CountryLiveBillboardPage() {
       if (showArchive) params.set('archive', 'true')
       if (isPoll && lastFetch && !showArchive) params.set('since', lastFetch)
       if (!isPoll) params.set('page', isRefresh ? '1' : String(page))
+      // Personalization: hide watched videos
+      params.set('hideWatched', hideWatched ? 'true' : 'false')
 
       const res = await fetch(`/api/live?${params}`)
       const data = await res.json()
@@ -266,6 +270,10 @@ export default function CountryLiveBillboardPage() {
         setCategoryCounts(data.data.filters.categoryCounts)
         setSectionCounts(data.data.filters.sectionCounts || { news: 0, local: 0, social: 0, viral: 0, culture: 0 })
         setArchiveCount(data.data.filters.archiveCount || 0)
+        // Track how many videos are being filtered out
+        if (data.data.personalization) {
+          setWatchedCount(data.data.personalization.watchedCount || 0)
+        }
         setError('')
       }
     } catch {
@@ -274,14 +282,14 @@ export default function CountryLiveBillboardPage() {
       setLoading(false)
       setLoadingMore(false)
     }
-  }, [country, section, category, province, sort, happeningNow, showArchive, page, lastFetch])
+  }, [country, section, category, province, sort, happeningNow, showArchive, hideWatched, page, lastFetch])
 
   // Initial load
   useEffect(() => {
     setLoading(true)
     setPage(1)
     fetchPosts(true)
-  }, [country, section, category, province, sort, happeningNow, showArchive])
+  }, [country, section, category, province, sort, happeningNow, showArchive, hideWatched])
 
   // Polling for new posts
   useEffect(() => {
@@ -1206,6 +1214,31 @@ export default function CountryLiveBillboardPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Hide Watched Toggle */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300">Hide Watched Videos</label>
+                    <p className="text-xs text-gray-500">
+                      {watchedCount > 0 ? `${watchedCount} videos hidden` : 'Only show fresh content'}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setHideWatched(!hideWatched)}
+                    title={hideWatched ? 'Show all videos' : 'Hide watched videos'}
+                    aria-label={hideWatched ? 'Show all videos' : 'Hide watched videos'}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      hideWatched ? 'bg-primary-500' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        hideWatched ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
 
                 {(category || province) && (
                   <div className="flex items-center gap-2">

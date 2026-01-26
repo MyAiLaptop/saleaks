@@ -12,6 +12,24 @@ interface AutoPlayVideoProps {
   country?: string
 }
 
+// Track view engagement for personalization
+async function trackView(postId: string, data: {
+  watchDuration: number
+  completed: boolean
+  skipped: boolean
+  shared: boolean
+}) {
+  try {
+    await fetch(`/api/live/${postId}/view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+  } catch {
+    // Silent fail - tracking is not critical
+  }
+}
+
 export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, postId, country = 'sa' }: AutoPlayVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -27,6 +45,13 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
   const [showShareCopied, setShowShareCopied] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // View tracking state
+  const viewStartTimeRef = useRef<number | null>(null)
+  const totalWatchTimeRef = useRef<number>(0)
+  const hasTrackedRef = useRef(false)
+  const wasSharedRef = useRef(false)
+  const maxWatchedPercentRef = useRef<number>(0)
 
   // Format time as mm:ss
   const formatTime = (seconds: number) => {
@@ -95,6 +120,56 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
     }
   }, [isDragging])
 
+  // Track when video starts/stops playing for watch time calculation
+  useEffect(() => {
+    if (isPlaying) {
+      viewStartTimeRef.current = Date.now()
+    } else if (viewStartTimeRef.current) {
+      // Video paused - accumulate watch time
+      const watchSession = (Date.now() - viewStartTimeRef.current) / 1000
+      totalWatchTimeRef.current += watchSession
+      viewStartTimeRef.current = null
+    }
+  }, [isPlaying])
+
+  // Track max watched percentage
+  useEffect(() => {
+    if (duration > 0) {
+      const percentage = (currentTime / duration) * 100
+      if (percentage > maxWatchedPercentRef.current) {
+        maxWatchedPercentRef.current = percentage
+      }
+    }
+  }, [currentTime, duration])
+
+  // Send tracking data when video goes out of view or component unmounts
+  const sendTrackingData = useCallback(() => {
+    if (!postId || hasTrackedRef.current) return
+
+    // Calculate final watch time
+    let finalWatchTime = totalWatchTimeRef.current
+    if (viewStartTimeRef.current) {
+      finalWatchTime += (Date.now() - viewStartTimeRef.current) / 1000
+    }
+
+    // Determine if video was skipped (less than 3 seconds watched)
+    const skipped = finalWatchTime < 3 && maxWatchedPercentRef.current < 20
+
+    // Determine if video was completed (watched >80%)
+    const completed = maxWatchedPercentRef.current >= 80
+
+    // Only track if user interacted meaningfully
+    if (finalWatchTime > 0.5) {
+      hasTrackedRef.current = true
+      trackView(postId, {
+        watchDuration: Math.round(finalWatchTime),
+        completed,
+        skipped,
+        shared: wasSharedRef.current,
+      })
+    }
+  }, [postId])
+
   // Intersection observer for auto-play when visible
   useEffect(() => {
     const video = videoRef.current
@@ -114,6 +189,8 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
           } else {
             video.pause()
             setIsPlaying(false)
+            // Send tracking when video goes out of view
+            sendTrackingData()
           }
         })
       },
@@ -127,8 +204,10 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
 
     return () => {
       observer.disconnect()
+      // Send tracking on unmount
+      sendTrackingData()
     }
-  }, [src])
+  }, [src, sendTrackingData])
 
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -224,6 +303,9 @@ export function AutoPlayVideo({ src, watermarkedSrc, className = '', poster, pos
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation()
     if (!postId) return
+
+    // Track that video was shared
+    wasSharedRef.current = true
 
     const shareUrl = `https://spillnova.com/${country}/live/${postId}`
 
