@@ -49,6 +49,7 @@ import {
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
+import UserProfilePopup from '@/components/UserProfilePopup'
 
 interface Media {
   id: string
@@ -1576,6 +1577,9 @@ export default function LiveBillboardPage() {
           onClose={() => setImageGallery(null)}
         />
       )}
+
+      {/* User Profile Popup - asks users about their location for better ad targeting */}
+      <UserProfilePopup />
     </div>
   )
 }

@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import { PurchaseButton } from '@/components/PurchaseButton'
 import { useCountry } from '@/lib/country-context'
+import UserProfilePopup from '@/components/UserProfilePopup'
 
 interface Media {
   id: string
@@ -441,6 +442,9 @@ export default function CountryLivePostPage() {
 
         </div>
       </div>
+
+      {/* User Profile Popup - asks users about their location for better ad targeting */}
+      <UserProfilePopup />
     </div>
   )
 }

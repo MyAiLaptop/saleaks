@@ -30,6 +30,7 @@ import {
   ShoppingCart,
 } from 'lucide-react'
 import { PurchaseButton } from '@/components/PurchaseButton'
+import UserProfilePopup from '@/components/UserProfilePopup'
 
 interface Media {
   id: string
@@ -606,6 +607,9 @@ export default function LivePostPage() {
           </div>
         </div>
       </div>
+
+      {/* User Profile Popup - asks users about their location for better ad targeting */}
+      <UserProfilePopup />
     </div>
   )
 }
