@@ -155,6 +155,19 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
         </Link>
       </div>
 
+      {/* Search Bar */}
+      {!isCollapsed && (
+        <div className="px-3 mb-4">
+          <Link
+            href={`/${country}/browse`}
+            className="flex items-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-gray-400 text-sm transition-colors"
+          >
+            <Search className="h-4 w-4" />
+            <span>Search content...</span>
+          </Link>
+        </div>
+      )}
+
       {/* Main Navigation */}
       <nav className="flex flex-col gap-1 px-3 flex-grow">
         {navItems.map((item) => {

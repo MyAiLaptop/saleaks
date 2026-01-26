@@ -1,0 +1,340 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link "SpillNova SpillNova ZA" [ref=e5] [cursor=pointer]:
+          - /url: /sa
+          - img "SpillNova" [ref=e6]
+          - generic [ref=e7]: SpillNova
+          - img "ZA" [ref=e8]
+        - button "Toggle menu" [active] [ref=e15] [cursor=pointer]:
+          - img [ref=e16]
+      - navigation [ref=e20]:
+        - link "Live Billboard" [ref=e21] [cursor=pointer]:
+          - /url: /sa/live
+          - img [ref=e22]
+          - generic [ref=e28]: Live Billboard
+        - link "Browse Content" [ref=e29] [cursor=pointer]:
+          - /url: /sa/browse
+          - img [ref=e30]
+          - generic [ref=e33]: Browse Content
+        - link "Business Directory" [ref=e34] [cursor=pointer]:
+          - /url: /sa/directory
+          - img [ref=e35]
+          - generic [ref=e39]: Business Directory
+        - link "Discussions" [ref=e40] [cursor=pointer]:
+          - /url: /sa/discussions
+          - img [ref=e41]
+          - generic [ref=e43]: Discussions
+        - link "Suggestions" [ref=e44] [cursor=pointer]:
+          - /url: /sa/suggestions
+          - img [ref=e45]
+          - generic [ref=e47]: Suggestions
+        - link "How It Works" [ref=e48] [cursor=pointer]:
+          - /url: /sa/how-it-works
+          - img [ref=e49]
+          - generic [ref=e52]: How It Works
+        - link "Get Alerts" [ref=e53] [cursor=pointer]:
+          - /url: /sa/subscribe
+          - img [ref=e54]
+          - generic [ref=e57]: Get Alerts
+        - link "Buyer Portal" [ref=e58] [cursor=pointer]:
+          - /url: /sa/buyer
+          - img [ref=e59]
+          - generic [ref=e62]: Buyer Portal
+        - link "My Account" [ref=e63] [cursor=pointer]:
+          - /url: /sa/account
+          - img [ref=e64]
+          - generic [ref=e67]: My Account
+        - link "Change Region (South Africa)" [ref=e68] [cursor=pointer]:
+          - /url: /?change=true
+          - img [ref=e69]
+          - generic [ref=e72]: Change Region (South Africa)
+  - main [ref=e73]:
+    - generic [ref=e75]:
+      - generic [ref=e77]:
+        - button "Watch SpillNova video" [ref=e79] [cursor=pointer]:
+          - img "SpillNova" [ref=e80]
+          - img [ref=e83]
+          - generic [ref=e85]: Watch Video
+        - generic [ref=e86]:
+          - img "ZA" [ref=e87]
+          - generic [ref=e94]: South Africa
+        - generic [ref=e95]:
+          - img [ref=e96]
+          - generic [ref=e99]: 100% Authentic - Camera Captured Only
+        - heading "Real Content Marketplace. Sell. Buy. Verified." [level=1] [ref=e100]:
+          - text: Real Content Marketplace.
+          - text: Sell. Buy. Verified.
+        - paragraph [ref=e101]: South Africa's marketplace for authentic videos and photos. Real-time camera capture only, buyers get verified media. No uploads - guaranteed authentic.
+        - paragraph [ref=e102]:
+          - img [ref=e103]
+          - text: No AI-generated fakes - camera-only capture ensures authenticity
+        - generic [ref=e106]:
+          - link "Browse Content" [ref=e107] [cursor=pointer]:
+            - /url: /sa/browse
+            - img [ref=e108]
+            - text: Browse Content
+          - link "Live Feed" [ref=e112] [cursor=pointer]:
+            - /url: /sa/live
+            - img [ref=e113]
+            - text: Live Feed
+      - generic [ref=e122]:
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - heading "Live Content Feed" [level=2] [ref=e129]
+            - generic [ref=e130]: REAL-TIME
+          - link "View All" [ref=e131] [cursor=pointer]:
+            - /url: /sa/live
+            - text: View All
+            - img [ref=e132]
+        - paragraph [ref=e134]: Fresh content from creators across South Africa. Camera-captured, 100% authentic.
+        - generic [ref=e135]:
+          - img [ref=e136]
+          - paragraph [ref=e142]: No live posts at the moment
+          - paragraph [ref=e143]: Check back soon for fresh content from creators
+        - generic [ref=e144]:
+          - paragraph [ref=e145]: Fresh content uploaded regularly from creators across South Africa
+          - link "Go to Live Feed" [ref=e146] [cursor=pointer]:
+            - /url: /sa/live
+            - img [ref=e147]
+            - text: Go to Live Feed
+      - generic [ref=e157]:
+        - generic [ref=e158]:
+          - img [ref=e160]
+          - generic [ref=e162]:
+            - heading "Premium Early Access 10 MIN HEAD START" [level=2] [ref=e163]:
+              - text: Premium Early Access
+              - generic [ref=e164]: 10 MIN HEAD START
+            - paragraph [ref=e165]: Get new content 10 minutes before the public. Perfect for media buyers and content curators.
+        - link "View Plans" [ref=e166] [cursor=pointer]:
+          - /url: /sa/pricing
+          - img [ref=e167]
+          - text: View Plans
+      - generic [ref=e170]:
+        - generic [ref=e171]:
+          - heading "Why SpillNova?" [level=2] [ref=e172]
+          - paragraph [ref=e173]: The marketplace for authentic content. Real videos, real photos, real earnings.
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - img [ref=e177]
+            - heading "Camera Only" [level=3] [ref=e180]
+            - paragraph [ref=e181]: All content is captured directly from device cameras. No uploads - guaranteed real footage.
+          - generic [ref=e182]:
+            - img [ref=e184]
+            - heading "Trusted Source" [level=3] [ref=e189]
+            - paragraph [ref=e190]: Content used by media buyers, publishers, and creators looking for authentic footage.
+          - generic [ref=e191]:
+            - img [ref=e193]
+            - heading "100% Authentic" [level=3] [ref=e196]
+            - paragraph [ref=e197]: No AI-generated fakes. Every video and photo is verified real and trusted.
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - generic [ref=e200]: VERIFIED
+            - generic [ref=e201]:
+              - img [ref=e203]
+              - generic [ref=e206]:
+                - heading "100% Authentic" [level=3] [ref=e207]
+                - text: CAMERA CAPTURED ONLY
+            - paragraph [ref=e208]: All content is captured directly from device cameras. No uploads allowed - this guarantees every video and photo is real, not AI-generated.
+            - list [ref=e209]:
+              - listitem [ref=e210]:
+                - img [ref=e211]
+                - text: Real-time camera capture only
+              - listitem [ref=e214]:
+                - img [ref=e215]
+                - text: No AI-generated fakes
+              - listitem [ref=e218]:
+                - img [ref=e219]
+                - text: Verified authentic content
+              - listitem [ref=e222]:
+                - img [ref=e223]
+                - text: Trusted by media buyers
+            - link "Browse Verified Content" [ref=e226] [cursor=pointer]:
+              - /url: /sa/browse
+              - img [ref=e227]
+              - text: Browse Verified Content
+          - generic [ref=e230]:
+            - generic [ref=e231]:
+              - img [ref=e233]
+              - generic [ref=e237]:
+                - heading "For Buyers" [level=3] [ref=e238]
+                - text: MEDIA & PUBLISHERS
+            - paragraph [ref=e239]: Find authentic videos and photos for your projects. Browse by category, bid on exclusive content, or purchase directly.
+            - list [ref=e240]:
+              - listitem [ref=e241]:
+                - img [ref=e242]
+                - text: Verified authentic content
+              - listitem [ref=e245]:
+                - img [ref=e246]
+                - text: Exclusive licensing available
+              - listitem [ref=e249]:
+                - img [ref=e250]
+                - text: High-quality downloads
+              - listitem [ref=e253]:
+                - img [ref=e254]
+                - text: Secure payment options
+            - link "Browse Content" [ref=e257] [cursor=pointer]:
+              - /url: /sa/browse
+              - img [ref=e258]
+              - text: Browse Content
+      - generic [ref=e262]:
+        - generic [ref=e263]:
+          - heading "Authentic Content. Protected Distribution." [level=2] [ref=e264]
+          - paragraph [ref=e265]: Camera-only capture ensures 100% real content. No AI fakes, no filters, no manipulation.
+        - generic [ref=e266]:
+          - generic [ref=e267]:
+            - img [ref=e269]
+            - heading "Verified Authentic" [level=3] [ref=e272]
+            - paragraph [ref=e273]: All content is captured directly from device cameras. No AI-generated images or manipulated media allowed.
+          - generic [ref=e274]:
+            - img [ref=e276]
+            - heading "Content Protection" [level=3] [ref=e278]
+            - paragraph [ref=e279]: Your content is protected with watermarks until purchased. Buyers get clean, high-quality downloads.
+          - generic [ref=e280]:
+            - img [ref=e282]
+            - heading "Metadata Stripping" [level=3] [ref=e285]
+            - paragraph [ref=e286]: All uploaded files have their metadata (EXIF data, location, device info) automatically removed for privacy.
+      - generic [ref=e289]:
+        - generic [ref=e290]:
+          - heading "How It Works" [level=2] [ref=e291]
+          - paragraph [ref=e292]: Browse authentic content, purchase securely, and download instantly.
+        - generic [ref=e293]:
+          - generic [ref=e294]:
+            - img [ref=e296]
+            - heading "Browse" [level=3] [ref=e299]
+            - paragraph [ref=e300]: Explore authentic videos and photos from verified creators.
+          - generic [ref=e301]:
+            - img [ref=e303]
+            - heading "Preview" [level=3] [ref=e306]
+            - paragraph [ref=e307]: View watermarked previews and content details before buying.
+          - generic [ref=e308]:
+            - img [ref=e310]
+            - heading "Purchase" [level=3] [ref=e314]
+            - paragraph [ref=e315]: Buy content securely with local payment methods.
+          - generic [ref=e316]:
+            - img [ref=e318]
+            - heading "Download" [level=3] [ref=e321]
+            - paragraph [ref=e322]: Get instant access to high-quality, watermark-free files.
+        - link "Start Browsing" [ref=e324] [cursor=pointer]:
+          - /url: /sa/browse
+          - img [ref=e325]
+          - text: Start Browsing
+      - generic [ref=e333]:
+        - generic [ref=e334]:
+          - generic [ref=e335]:
+            - img [ref=e336]
+            - generic [ref=e341]: For Media Buyers
+          - heading "Get Verified Access" [level=2] [ref=e342]
+          - paragraph [ref=e343]: Create a buyer account to access exclusive content, bid on auctions, and get early access to new uploads.
+          - generic [ref=e344]:
+            - link "Create Buyer Account" [ref=e345] [cursor=pointer]:
+              - /url: /sa/buyer
+              - text: Create Buyer Account
+              - img [ref=e346]
+            - link "View Premium Plans" [ref=e348] [cursor=pointer]:
+              - /url: /sa/pricing
+        - generic [ref=e350]:
+          - generic [ref=e351]:
+            - img [ref=e352]
+            - generic [ref=e354]: 10 min
+            - generic [ref=e355]: Early Access
+          - generic [ref=e356]:
+            - img [ref=e357]
+            - generic [ref=e359]: Direct
+            - generic [ref=e360]: Contact
+          - generic [ref=e361]:
+            - img [ref=e362]
+            - generic [ref=e365]: Instant
+            - generic [ref=e366]: Alerts
+          - generic [ref=e367]:
+            - img [ref=e368]
+            - generic [ref=e370]: Verified
+            - generic [ref=e371]: Content
+      - generic [ref=e375]:
+        - generic [ref=e376]:
+          - img [ref=e378]
+          - generic [ref=e381]:
+            - heading "Stay Informed" [level=2] [ref=e382]
+            - paragraph [ref=e383]: Get email or SMS alerts when new content is uploaded in your categories of interest.
+        - link "Subscribe to Alerts" [ref=e384] [cursor=pointer]:
+          - /url: /sa/subscribe
+          - img [ref=e385]
+          - text: Subscribe to Alerts
+      - generic [ref=e390]:
+        - img "SpillNova" [ref=e391]
+        - heading "Real Content. Verified Authentic." [level=2] [ref=e392]
+        - paragraph [ref=e393]: South Africa's marketplace for authentic videos and photos. Camera-captured only - no AI-generated fakes allowed.
+        - generic [ref=e394]:
+          - generic [ref=e395]:
+            - img [ref=e396]
+            - text: Camera Only
+          - generic [ref=e399]: "|"
+          - generic [ref=e400]:
+            - img [ref=e401]
+            - text: 100% Authentic
+          - generic [ref=e404]: "|"
+          - generic [ref=e405]:
+            - img [ref=e406]
+            - text: Instant Access
+        - generic [ref=e408]:
+          - link "Browse Content" [ref=e409] [cursor=pointer]:
+            - /url: /sa/browse
+            - img [ref=e410]
+            - text: Browse Content
+          - link "Live Feed" [ref=e414] [cursor=pointer]:
+            - /url: /sa/live
+            - img [ref=e415]
+            - text: Live Feed
+  - contentinfo [ref=e421]:
+    - generic [ref=e422]:
+      - generic [ref=e423]:
+        - generic [ref=e424]:
+          - img "SpillNova" [ref=e426]
+          - paragraph [ref=e427]: The global marketplace for authentic video and photo content. Buy and sell real footage from real people, verified and protected.
+          - generic [ref=e428]:
+            - generic [ref=e429]:
+              - img [ref=e430]
+              - generic [ref=e433]: Verified Real
+            - generic [ref=e434]:
+              - img [ref=e435]
+              - generic [ref=e437]: Content Protected
+        - generic [ref=e438]:
+          - heading "Quick Links" [level=3] [ref=e439]
+          - list [ref=e440]:
+            - listitem [ref=e441]:
+              - link "Live Feed" [ref=e442] [cursor=pointer]:
+                - /url: /live
+            - listitem [ref=e443]:
+              - link "Browse Content" [ref=e444] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e445]:
+              - link "Sell Your Content" [ref=e446] [cursor=pointer]:
+                - /url: /upload
+            - listitem [ref=e447]:
+              - link "How It Works" [ref=e448] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e449]:
+              - link "Get Alerts" [ref=e450] [cursor=pointer]:
+                - /url: /subscribe
+            - listitem [ref=e451]:
+              - link "For Buyers" [ref=e452] [cursor=pointer]:
+                - /url: /buyer
+            - listitem [ref=e453]:
+              - link "Pricing" [ref=e454] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e455]:
+          - heading "Why SpillNova" [level=3] [ref=e456]
+          - list [ref=e457]:
+            - listitem [ref=e458]: 100% real, verified content
+            - listitem [ref=e459]: No AI-generated fakes
+            - listitem [ref=e460]: Direct creator payments
+            - listitem [ref=e461]: Global coverage
+      - generic [ref=e463]:
+        - paragraph [ref=e464]: © 2026 SpillNova. All rights reserved.
+        - paragraph [ref=e465]: Real content. Real value. Real simple.
+  - alert [ref=e466]
+```

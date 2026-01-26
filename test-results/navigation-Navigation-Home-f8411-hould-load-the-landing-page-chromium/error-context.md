@@ -1,0 +1,1182 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SpillNova SpillNova ZA" [ref=e5] [cursor=pointer]:
+        - /url: /sa
+        - img "SpillNova" [ref=e6]
+        - generic [ref=e7]: SpillNova
+        - img "ZA" [ref=e8]
+      - navigation [ref=e15]:
+        - link "Live" [ref=e16] [cursor=pointer]:
+          - /url: /sa/live
+          - img [ref=e17]
+          - generic [ref=e23]: Live
+        - link "Browse" [ref=e24] [cursor=pointer]:
+          - /url: /sa/browse
+          - img [ref=e25]
+          - generic [ref=e28]: Browse
+        - link "Directory" [ref=e29] [cursor=pointer]:
+          - /url: /sa/directory
+          - img [ref=e30]
+          - generic [ref=e34]: Directory
+        - link "Discussions" [ref=e35] [cursor=pointer]:
+          - /url: /sa/discussions
+          - img [ref=e36]
+          - generic [ref=e38]: Discussions
+        - link "Suggestions" [ref=e39] [cursor=pointer]:
+          - /url: /sa/suggestions
+          - img [ref=e40]
+          - generic [ref=e42]: Suggestions
+        - link "How It Works" [ref=e43] [cursor=pointer]:
+          - /url: /sa/how-it-works
+          - img [ref=e44]
+          - generic [ref=e47]: How It Works
+        - link "Alerts" [ref=e48] [cursor=pointer]:
+          - /url: /sa/subscribe
+          - img [ref=e49]
+          - generic [ref=e52]: Alerts
+        - link "Buyer" [ref=e53] [cursor=pointer]:
+          - /url: /sa/buyer
+          - img [ref=e54]
+          - generic [ref=e57]: Buyer
+        - link "Account" [ref=e58] [cursor=pointer]:
+          - /url: /sa/account
+          - img [ref=e59]
+          - generic [ref=e62]: Account
+        - link "Change Region" [ref=e63] [cursor=pointer]:
+          - /url: /?change=true
+          - img [ref=e64]
+  - main [ref=e67]:
+    - generic [ref=e69]:
+      - button "Watch SpillNova video" [ref=e73] [cursor=pointer]:
+        - img "SpillNova" [ref=e74]
+        - img [ref=e77]
+        - generic [ref=e79]: Watch Video
+      - main [ref=e80]:
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - img [ref=e83]
+            - generic [ref=e86]: 100% Authentic Content - No AI Fakes
+          - heading "Real Content Marketplace. Sell. Buy. Verified." [level=1] [ref=e87]:
+            - text: Real Content Marketplace.
+            - text: Sell. Buy. Verified.
+          - paragraph [ref=e88]: The marketplace for authentic videos and photos. Real-time camera capture only, buyers get verified media. No uploads allowed - prevents AI-generated fakes.
+          - generic [ref=e89]:
+            - generic [ref=e90]:
+              - img [ref=e91]
+              - heading "Select Your Region" [level=2] [ref=e94]
+            - paragraph [ref=e95]: Choose your country to access localized content, payment methods, and categories.
+            - generic [ref=e96]:
+              - button "ZA South Africa R ZAR" [ref=e97] [cursor=pointer]:
+                - img "ZA" [ref=e98]
+                - generic [ref=e105]:
+                  - generic [ref=e106]: South Africa
+                  - generic [ref=e107]: R ZAR
+                - img [ref=e108]
+              - button "NG Nigeria ₦ NGN" [ref=e110] [cursor=pointer]:
+                - img "NG" [ref=e111]
+                - generic [ref=e114]:
+                  - generic [ref=e115]: Nigeria
+                  - generic [ref=e116]: ₦ NGN
+                - img [ref=e117]
+              - button "KE Kenya KSh KES" [ref=e119] [cursor=pointer]:
+                - img "KE" [ref=e120]
+                - generic [ref=e130]:
+                  - generic [ref=e131]: Kenya
+                  - generic [ref=e132]: KSh KES
+                - img [ref=e133]
+              - button "GH Ghana GH₵ GHS" [ref=e135] [cursor=pointer]:
+                - img "GH" [ref=e136]
+                - generic [ref=e141]:
+                  - generic [ref=e142]: Ghana
+                  - generic [ref=e143]: GH₵ GHS
+                - img [ref=e144]
+              - button "US United States $ USD" [ref=e146] [cursor=pointer]:
+                - img "US" [ref=e147]
+                - generic [ref=e152]:
+                  - generic [ref=e153]: United States
+                  - generic [ref=e154]: $ USD
+                - img [ref=e155]
+              - button "GB United Kingdom £ GBP" [ref=e157] [cursor=pointer]:
+                - img "GB" [ref=e158]
+                - generic [ref=e166]:
+                  - generic [ref=e167]: United Kingdom
+                  - generic [ref=e168]: £ GBP
+                - img [ref=e169]
+              - button "ZW Zimbabwe $ USD" [ref=e171] [cursor=pointer]:
+                - img "ZW" [ref=e172]
+                - generic [ref=e182]:
+                  - generic [ref=e183]: Zimbabwe
+                  - generic [ref=e184]: $ USD
+                - img [ref=e185]
+              - button "EG Egypt E£ EGP" [ref=e187] [cursor=pointer]:
+                - img "EG" [ref=e188]
+                - generic [ref=e193]:
+                  - generic [ref=e194]: Egypt
+                  - generic [ref=e195]: E£ EGP
+                - img [ref=e196]
+              - button "MA Morocco MAD MAD" [ref=e198] [cursor=pointer]:
+                - img "MA" [ref=e199]
+                - generic [ref=e202]:
+                  - generic [ref=e203]: Morocco
+                  - generic [ref=e204]: MAD MAD
+                - img [ref=e205]
+              - button "TZ Tanzania TSh TZS" [ref=e207] [cursor=pointer]:
+                - img "TZ" [ref=e208]
+                - generic [ref=e213]:
+                  - generic [ref=e214]: Tanzania
+                  - generic [ref=e215]: TSh TZS
+                - img [ref=e216]
+              - button "UG Uganda USh UGX" [ref=e218] [cursor=pointer]:
+                - img "UG" [ref=e219]
+                - generic [ref=e227]:
+                  - generic [ref=e228]: Uganda
+                  - generic [ref=e229]: USh UGX
+                - img [ref=e230]
+              - button "ET Ethiopia Br ETB" [ref=e232] [cursor=pointer]:
+                - img "ET" [ref=e233]
+                - generic [ref=e241]:
+                  - generic [ref=e242]: Ethiopia
+                  - generic [ref=e243]: Br ETB
+                - img [ref=e244]
+              - button "DE Germany € EUR" [ref=e246] [cursor=pointer]:
+                - img "DE" [ref=e247]
+                - generic [ref=e251]:
+                  - generic [ref=e252]: Germany
+                  - generic [ref=e253]: € EUR
+                - img [ref=e254]
+              - button "FR France € EUR" [ref=e256] [cursor=pointer]:
+                - img "FR" [ref=e257]
+                - generic [ref=e261]:
+                  - generic [ref=e262]: France
+                  - generic [ref=e263]: € EUR
+                - img [ref=e264]
+              - button "ES Spain € EUR" [ref=e266] [cursor=pointer]:
+                - img "ES" [ref=e267]
+                - generic [ref=e274]:
+                  - generic [ref=e275]: Spain
+                  - generic [ref=e276]: € EUR
+                - img [ref=e277]
+              - button "IT Italy € EUR" [ref=e279] [cursor=pointer]:
+                - img "IT" [ref=e280]
+                - generic [ref=e284]:
+                  - generic [ref=e285]: Italy
+                  - generic [ref=e286]: € EUR
+                - img [ref=e287]
+              - button "NL Netherlands € EUR" [ref=e289] [cursor=pointer]:
+                - img "NL" [ref=e290]
+                - generic [ref=e294]:
+                  - generic [ref=e295]: Netherlands
+                  - generic [ref=e296]: € EUR
+                - img [ref=e297]
+              - button "IE Ireland € EUR" [ref=e299] [cursor=pointer]:
+                - img "IE" [ref=e300]
+                - generic [ref=e304]:
+                  - generic [ref=e305]: Ireland
+                  - generic [ref=e306]: € EUR
+                - img [ref=e307]
+              - button "IN India ₹ INR" [ref=e309] [cursor=pointer]:
+                - img "IN" [ref=e310]
+                - generic [ref=e317]:
+                  - generic [ref=e318]: India
+                  - generic [ref=e319]: ₹ INR
+                - img [ref=e320]
+              - button "PK Pakistan ₨ PKR" [ref=e322] [cursor=pointer]:
+                - img "PK" [ref=e323]
+                - generic [ref=e329]:
+                  - generic [ref=e330]: Pakistan
+                  - generic [ref=e331]: ₨ PKR
+                - img [ref=e332]
+              - button "PH Philippines ₱ PHP" [ref=e334] [cursor=pointer]:
+                - img "PH" [ref=e335]
+                - generic [ref=e340]:
+                  - generic [ref=e341]: Philippines
+                  - generic [ref=e342]: ₱ PHP
+                - img [ref=e343]
+              - button "ID Indonesia Rp IDR" [ref=e345] [cursor=pointer]:
+                - img "ID" [ref=e346]
+                - generic [ref=e349]:
+                  - generic [ref=e350]: Indonesia
+                  - generic [ref=e351]: Rp IDR
+                - img [ref=e352]
+              - button "MY Malaysia RM MYR" [ref=e354] [cursor=pointer]:
+                - img "MY" [ref=e355]
+                - generic [ref=e360]:
+                  - generic [ref=e361]: Malaysia
+                  - generic [ref=e362]: RM MYR
+                - img [ref=e363]
+              - button "SG Singapore S$ SGD" [ref=e365] [cursor=pointer]:
+                - img "SG" [ref=e366]
+                - generic [ref=e372]:
+                  - generic [ref=e373]: Singapore
+                  - generic [ref=e374]: S$ SGD
+                - img [ref=e375]
+              - button "CA Canada C$ CAD" [ref=e377] [cursor=pointer]:
+                - img "CA" [ref=e378]
+                - generic [ref=e381]:
+                  - generic [ref=e382]: Canada
+                  - generic [ref=e383]: C$ CAD
+                - img [ref=e384]
+              - button "MX Mexico MX$ MXN" [ref=e386] [cursor=pointer]:
+                - img "MX" [ref=e387]
+                - generic [ref=e393]:
+                  - generic [ref=e394]: Mexico
+                  - generic [ref=e395]: MX$ MXN
+                - img [ref=e396]
+              - button "BR Brazil R$ BRL" [ref=e398] [cursor=pointer]:
+                - img "BR" [ref=e399]
+                - generic [ref=e404]:
+                  - generic [ref=e405]: Brazil
+                  - generic [ref=e406]: R$ BRL
+                - img [ref=e407]
+              - button "AR Argentina AR$ ARS" [ref=e409] [cursor=pointer]:
+                - img "AR" [ref=e410]
+                - generic [ref=e414]:
+                  - generic [ref=e415]: Argentina
+                  - generic [ref=e416]: AR$ ARS
+                - img [ref=e417]
+              - button "CO Colombia CO$ COP" [ref=e419] [cursor=pointer]:
+                - img "CO" [ref=e420]
+                - generic [ref=e424]:
+                  - generic [ref=e425]: Colombia
+                  - generic [ref=e426]: CO$ COP
+                - img [ref=e427]
+              - button "AU Australia A$ AUD" [ref=e429] [cursor=pointer]:
+                - img "AU" [ref=e430]
+                - generic [ref=e442]:
+                  - generic [ref=e443]: Australia
+                  - generic [ref=e444]: A$ AUD
+                - img [ref=e445]
+              - button "NZ New Zealand NZ$ NZD" [ref=e447] [cursor=pointer]:
+                - img "NZ" [ref=e448]
+                - generic [ref=e457]:
+                  - generic [ref=e458]: New Zealand
+                  - generic [ref=e459]: NZ$ NZD
+                - img [ref=e460]
+              - button "AE United Arab Emirates AED AED" [ref=e462] [cursor=pointer]:
+                - img "AE" [ref=e463]
+                - generic [ref=e468]:
+                  - generic [ref=e469]: United Arab Emirates
+                  - generic [ref=e470]: AED AED
+                - img [ref=e471]
+              - button "ZA Saudi Arabia SAR SAR" [ref=e473] [cursor=pointer]:
+                - img "ZA" [ref=e474]
+                - generic [ref=e481]:
+                  - generic [ref=e482]: Saudi Arabia
+                  - generic [ref=e483]: SAR SAR
+                - img [ref=e484]
+              - button "IL Israel ₪ ILS" [ref=e486] [cursor=pointer]:
+                - img "IL" [ref=e487]
+                - generic [ref=e490]:
+                  - generic [ref=e491]: Israel
+                  - generic [ref=e492]: ₪ ILS
+                - img [ref=e493]
+              - button "DZ Algeria د.ج DZD" [ref=e495] [cursor=pointer]:
+                - img "DZ" [ref=e496]
+                - generic [ref=e502]:
+                  - generic [ref=e503]: Algeria
+                  - generic [ref=e504]: د.ج DZD
+                - img [ref=e505]
+              - button "TN Tunisia د.ت TND" [ref=e507] [cursor=pointer]:
+                - img "TN" [ref=e508]
+                - generic [ref=e514]:
+                  - generic [ref=e515]: Tunisia
+                  - generic [ref=e516]: د.ت TND
+                - img [ref=e517]
+              - button "LY Libya ل.د LYD" [ref=e519] [cursor=pointer]:
+                - img "LY" [ref=e520]
+                - generic [ref=e527]:
+                  - generic [ref=e528]: Libya
+                  - generic [ref=e529]: ل.د LYD
+                - img [ref=e530]
+              - button "SD Sudan ج.س SDG" [ref=e532] [cursor=pointer]:
+                - img "SD" [ref=e533]
+                - generic [ref=e538]:
+                  - generic [ref=e539]: Sudan
+                  - generic [ref=e540]: ج.س SDG
+                - img [ref=e541]
+              - button "SS South Sudan £ SSP" [ref=e543] [cursor=pointer]:
+                - img "SS" [ref=e544]
+                - generic [ref=e551]:
+                  - generic [ref=e552]: South Sudan
+                  - generic [ref=e553]: £ SSP
+                - img [ref=e554]
+              - button "SN Senegal CFA XOF" [ref=e556] [cursor=pointer]:
+                - img "SN" [ref=e557]
+                - generic [ref=e561]:
+                  - generic [ref=e562]: Senegal
+                  - generic [ref=e563]: CFA XOF
+                - img [ref=e564]
+              - button "CI Côte d'Ivoire CFA XOF" [ref=e566] [cursor=pointer]:
+                - img "CI" [ref=e567]
+                - generic [ref=e571]:
+                  - generic [ref=e572]: Côte d'Ivoire
+                  - generic [ref=e573]: CFA XOF
+                - img [ref=e574]
+              - button "CM Cameroon FCFA XAF" [ref=e576] [cursor=pointer]:
+                - img "CM" [ref=e577]
+                - generic [ref=e581]:
+                  - generic [ref=e582]: Cameroon
+                  - generic [ref=e583]: FCFA XAF
+                - img [ref=e584]
+              - button "CD DR Congo FC CDF" [ref=e586] [cursor=pointer]:
+                - img "CD" [ref=e587]
+                - generic [ref=e592]:
+                  - generic [ref=e593]: DR Congo
+                  - generic [ref=e594]: FC CDF
+                - img [ref=e595]
+              - button "AO Angola Kz AOA" [ref=e597] [cursor=pointer]:
+                - img "AO" [ref=e598]
+                - generic [ref=e606]:
+                  - generic [ref=e607]: Angola
+                  - generic [ref=e608]: Kz AOA
+                - img [ref=e609]
+              - button "MZ Mozambique MT MZN" [ref=e611] [cursor=pointer]:
+                - img "MZ" [ref=e612]
+                - generic [ref=e619]:
+                  - generic [ref=e620]: Mozambique
+                  - generic [ref=e621]: MT MZN
+                - img [ref=e622]
+              - button "MG Madagascar Ar MGA" [ref=e624] [cursor=pointer]:
+                - img "MG" [ref=e625]
+                - generic [ref=e629]:
+                  - generic [ref=e630]: Madagascar
+                  - generic [ref=e631]: Ar MGA
+                - img [ref=e632]
+              - button "ZM Zambia ZK ZMW" [ref=e634] [cursor=pointer]:
+                - img "ZM" [ref=e635]
+                - generic [ref=e641]:
+                  - generic [ref=e642]: Zambia
+                  - generic [ref=e643]: ZK ZMW
+                - img [ref=e644]
+              - button "BW Botswana P BWP" [ref=e646] [cursor=pointer]:
+                - img "BW" [ref=e647]
+                - generic [ref=e651]:
+                  - generic [ref=e652]: Botswana
+                  - generic [ref=e653]: P BWP
+                - img [ref=e654]
+              - button "NA Namibia N$ NAD" [ref=e656] [cursor=pointer]:
+                - img "NA" [ref=e657]
+                - generic [ref=e663]:
+                  - generic [ref=e664]: Namibia
+                  - generic [ref=e665]: N$ NAD
+                - img [ref=e666]
+              - button "RW Rwanda FRw RWF" [ref=e668] [cursor=pointer]:
+                - img "RW" [ref=e669]
+                - generic [ref=e674]:
+                  - generic [ref=e675]: Rwanda
+                  - generic [ref=e676]: FRw RWF
+                - img [ref=e677]
+              - button "MU Mauritius ₨ MUR" [ref=e679] [cursor=pointer]:
+                - img "MU" [ref=e680]
+                - generic [ref=e685]:
+                  - generic [ref=e686]: Mauritius
+                  - generic [ref=e687]: ₨ MUR
+                - img [ref=e688]
+              - button "PT Portugal € EUR" [ref=e690] [cursor=pointer]:
+                - img "PT" [ref=e691]
+                - generic [ref=e697]:
+                  - generic [ref=e698]: Portugal
+                  - generic [ref=e699]: € EUR
+                - img [ref=e700]
+              - button "BE Belgium € EUR" [ref=e702] [cursor=pointer]:
+                - img "BE" [ref=e703]
+                - generic [ref=e707]:
+                  - generic [ref=e708]: Belgium
+                  - generic [ref=e709]: € EUR
+                - img [ref=e710]
+              - button "CH Switzerland CHF CHF" [ref=e712] [cursor=pointer]:
+                - img "CH" [ref=e713]
+                - generic [ref=e716]:
+                  - generic [ref=e717]: Switzerland
+                  - generic [ref=e718]: CHF CHF
+                - img [ref=e719]
+              - button "AT Austria € EUR" [ref=e721] [cursor=pointer]:
+                - img "AT" [ref=e722]
+                - generic [ref=e725]:
+                  - generic [ref=e726]: Austria
+                  - generic [ref=e727]: € EUR
+                - img [ref=e728]
+              - button "PL Poland zł PLN" [ref=e730] [cursor=pointer]:
+                - img "PL" [ref=e731]
+                - generic [ref=e736]:
+                  - generic [ref=e737]: Poland
+                  - generic [ref=e738]: zł PLN
+                - img [ref=e739]
+              - button "CZ Czech Republic Kč CZK" [ref=e741] [cursor=pointer]:
+                - img "CZ" [ref=e742]
+                - generic [ref=e746]:
+                  - generic [ref=e747]: Czech Republic
+                  - generic [ref=e748]: Kč CZK
+                - img [ref=e749]
+              - button "HU Hungary Ft HUF" [ref=e751] [cursor=pointer]:
+                - img "HU" [ref=e752]
+                - generic [ref=e756]:
+                  - generic [ref=e757]: Hungary
+                  - generic [ref=e758]: Ft HUF
+                - img [ref=e759]
+              - button "RO Romania lei RON" [ref=e761] [cursor=pointer]:
+                - img "RO" [ref=e762]
+                - generic [ref=e766]:
+                  - generic [ref=e767]: Romania
+                  - generic [ref=e768]: lei RON
+                - img [ref=e769]
+              - button "BG Bulgaria лв BGN" [ref=e771] [cursor=pointer]:
+                - img "BG" [ref=e772]
+                - generic [ref=e776]:
+                  - generic [ref=e777]: Bulgaria
+                  - generic [ref=e778]: лв BGN
+                - img [ref=e779]
+              - button "GR Greece € EUR" [ref=e781] [cursor=pointer]:
+                - img "GR" [ref=e782]
+                - generic [ref=e790]:
+                  - generic [ref=e791]: Greece
+                  - generic [ref=e792]: € EUR
+                - img [ref=e793]
+              - button "HR Croatia € EUR" [ref=e795] [cursor=pointer]:
+                - img "HR" [ref=e796]
+                - generic [ref=e804]:
+                  - generic [ref=e805]: Croatia
+                  - generic [ref=e806]: € EUR
+                - img [ref=e807]
+              - button "RS Serbia дин RSD" [ref=e809] [cursor=pointer]:
+                - img "RS" [ref=e810]
+                - generic [ref=e817]:
+                  - generic [ref=e818]: Serbia
+                  - generic [ref=e819]: дин RSD
+                - img [ref=e820]
+              - button "UA Ukraine ₴ UAH" [ref=e822] [cursor=pointer]:
+                - img "UA" [ref=e823]
+                - generic [ref=e826]:
+                  - generic [ref=e827]: Ukraine
+                  - generic [ref=e828]: ₴ UAH
+                - img [ref=e829]
+              - button "SE Sweden kr SEK" [ref=e831] [cursor=pointer]:
+                - img "SE" [ref=e832]
+                - generic [ref=e835]:
+                  - generic [ref=e836]: Sweden
+                  - generic [ref=e837]: kr SEK
+                - img [ref=e838]
+              - button "NO Norway kr NOK" [ref=e840] [cursor=pointer]:
+                - img "NO" [ref=e841]
+                - generic [ref=e845]:
+                  - generic [ref=e846]: Norway
+                  - generic [ref=e847]: kr NOK
+                - img [ref=e848]
+              - button "DK Denmark kr DKK" [ref=e850] [cursor=pointer]:
+                - img "DK" [ref=e851]
+                - generic [ref=e854]:
+                  - generic [ref=e855]: Denmark
+                  - generic [ref=e856]: kr DKK
+                - img [ref=e857]
+              - button "FI Finland € EUR" [ref=e859] [cursor=pointer]:
+                - img "FI" [ref=e860]
+                - generic [ref=e863]:
+                  - generic [ref=e864]: Finland
+                  - generic [ref=e865]: € EUR
+                - img [ref=e866]
+              - button "RU Russia ₽ RUB" [ref=e868] [cursor=pointer]:
+                - img "RU" [ref=e869]
+                - generic [ref=e874]:
+                  - generic [ref=e875]: Russia
+                  - generic [ref=e876]: ₽ RUB
+                - img [ref=e877]
+              - button "CN China ¥ CNY" [ref=e879] [cursor=pointer]:
+                - img "CN" [ref=e880]
+                - generic [ref=e883]:
+                  - generic [ref=e884]: China
+                  - generic [ref=e885]: ¥ CNY
+                - img [ref=e886]
+              - button "JP Japan ¥ JPY" [ref=e888] [cursor=pointer]:
+                - img "JP" [ref=e889]
+                - generic [ref=e892]:
+                  - generic [ref=e893]: Japan
+                  - generic [ref=e894]: ¥ JPY
+                - img [ref=e895]
+              - button "KR South Korea ₩ KRW" [ref=e897] [cursor=pointer]:
+                - img "KR" [ref=e898]
+                - generic [ref=e907]:
+                  - generic [ref=e908]: South Korea
+                  - generic [ref=e909]: ₩ KRW
+                - img [ref=e910]
+              - button "TH Thailand ฿ THB" [ref=e912] [cursor=pointer]:
+                - img "TH" [ref=e913]
+                - generic [ref=e917]:
+                  - generic [ref=e918]: Thailand
+                  - generic [ref=e919]: ฿ THB
+                - img [ref=e920]
+              - button "VN Vietnam ₫ VND" [ref=e922] [cursor=pointer]:
+                - img "VN" [ref=e923]
+                - generic [ref=e926]:
+                  - generic [ref=e927]: Vietnam
+                  - generic [ref=e928]: ₫ VND
+                - img [ref=e929]
+              - button "BD Bangladesh ৳ BDT" [ref=e931] [cursor=pointer]:
+                - img "BD" [ref=e932]
+                - generic [ref=e935]:
+                  - generic [ref=e936]: Bangladesh
+                  - generic [ref=e937]: ৳ BDT
+                - img [ref=e938]
+              - button "LK Sri Lanka Rs LKR" [ref=e940] [cursor=pointer]:
+                - img "LK" [ref=e941]
+                - generic [ref=e950]:
+                  - generic [ref=e951]: Sri Lanka
+                  - generic [ref=e952]: Rs LKR
+                - img [ref=e953]
+              - button "NP Nepal रू NPR" [ref=e955] [cursor=pointer]:
+                - img "NP" [ref=e956]
+                - generic [ref=e962]:
+                  - generic [ref=e963]: Nepal
+                  - generic [ref=e964]: रू NPR
+                - img [ref=e965]
+              - button "MM Myanmar K MMK" [ref=e967] [cursor=pointer]:
+                - img "MM" [ref=e968]
+                - generic [ref=e973]:
+                  - generic [ref=e974]: Myanmar
+                  - generic [ref=e975]: K MMK
+                - img [ref=e976]
+              - button "KH Cambodia ៛ KHR" [ref=e978] [cursor=pointer]:
+                - img "KH" [ref=e979]
+                - generic [ref=e983]:
+                  - generic [ref=e984]: Cambodia
+                  - generic [ref=e985]: ៛ KHR
+                - img [ref=e986]
+              - button "IR Iran ﷼ IRR" [ref=e988] [cursor=pointer]:
+                - img "IR" [ref=e989]
+                - generic [ref=e994]:
+                  - generic [ref=e995]: Iran
+                  - generic [ref=e996]: ﷼ IRR
+                - img [ref=e997]
+              - button "IQ Iraq ع.د IQD" [ref=e999] [cursor=pointer]:
+                - img "IQ" [ref=e1000]
+                - generic [ref=e1005]:
+                  - generic [ref=e1006]: Iraq
+                  - generic [ref=e1007]: ع.د IQD
+                - img [ref=e1008]
+              - button "JO Jordan د.ا JOD" [ref=e1010] [cursor=pointer]:
+                - img "JO" [ref=e1011]
+                - generic [ref=e1017]:
+                  - generic [ref=e1018]: Jordan
+                  - generic [ref=e1019]: د.ا JOD
+                - img [ref=e1020]
+              - button "LB Lebanon ل.ل LBP" [ref=e1022] [cursor=pointer]:
+                - img "LB" [ref=e1023]
+                - generic [ref=e1028]:
+                  - generic [ref=e1029]: Lebanon
+                  - generic [ref=e1030]: ل.ل LBP
+                - img [ref=e1031]
+              - button "KW Kuwait د.ك KWD" [ref=e1033] [cursor=pointer]:
+                - img "KW" [ref=e1034]
+                - generic [ref=e1039]:
+                  - generic [ref=e1040]: Kuwait
+                  - generic [ref=e1041]: د.ك KWD
+                - img [ref=e1042]
+              - button "QA Qatar ر.ق QAR" [ref=e1044] [cursor=pointer]:
+                - img "QA" [ref=e1045]
+                - generic [ref=e1048]:
+                  - generic [ref=e1049]: Qatar
+                  - generic [ref=e1050]: ر.ق QAR
+                - img [ref=e1051]
+              - button "BH Bahrain ب.د BHD" [ref=e1053] [cursor=pointer]:
+                - img "BH" [ref=e1054]
+                - generic [ref=e1057]:
+                  - generic [ref=e1058]: Bahrain
+                  - generic [ref=e1059]: ب.د BHD
+                - img [ref=e1060]
+              - button "OM Oman ر.ع OMR" [ref=e1062] [cursor=pointer]:
+                - img "OM" [ref=e1063]
+                - generic [ref=e1070]:
+                  - generic [ref=e1071]: Oman
+                  - generic [ref=e1072]: ر.ع OMR
+                - img [ref=e1073]
+              - button "CL Chile $ CLP" [ref=e1075] [cursor=pointer]:
+                - img "CL" [ref=e1076]
+                - generic [ref=e1081]:
+                  - generic [ref=e1082]: Chile
+                  - generic [ref=e1083]: $ CLP
+                - img [ref=e1084]
+              - button "PE Peru S/ PEN" [ref=e1086] [cursor=pointer]:
+                - img "PE" [ref=e1087]
+                - generic [ref=e1090]:
+                  - generic [ref=e1091]: Peru
+                  - generic [ref=e1092]: S/ PEN
+                - img [ref=e1093]
+              - button "EC Ecuador $ USD" [ref=e1095] [cursor=pointer]:
+                - img "EC" [ref=e1096]
+                - generic [ref=e1104]:
+                  - generic [ref=e1105]: Ecuador
+                  - generic [ref=e1106]: $ USD
+                - img [ref=e1107]
+              - button "VE Venezuela Bs VES" [ref=e1109] [cursor=pointer]:
+                - img "VE" [ref=e1110]
+                - generic [ref=e1115]:
+                  - generic [ref=e1116]: Venezuela
+                  - generic [ref=e1117]: Bs VES
+                - img [ref=e1118]
+              - button "UY Uruguay $U UYU" [ref=e1120] [cursor=pointer]:
+                - img "UY" [ref=e1121]
+                - generic [ref=e1126]:
+                  - generic [ref=e1127]: Uruguay
+                  - generic [ref=e1128]: $U UYU
+                - img [ref=e1129]
+              - button "PY Paraguay ₲ PYG" [ref=e1131] [cursor=pointer]:
+                - img "PY" [ref=e1132]
+                - generic [ref=e1138]:
+                  - generic [ref=e1139]: Paraguay
+                  - generic [ref=e1140]: ₲ PYG
+                - img [ref=e1141]
+              - button "BO Bolivia Bs BOB" [ref=e1143] [cursor=pointer]:
+                - img "BO" [ref=e1144]
+                - generic [ref=e1148]:
+                  - generic [ref=e1149]: Bolivia
+                  - generic [ref=e1150]: Bs BOB
+                - img [ref=e1151]
+              - button "PA Panama B/. PAB" [ref=e1153] [cursor=pointer]:
+                - img "PA" [ref=e1154]
+                - generic [ref=e1160]:
+                  - generic [ref=e1161]: Panama
+                  - generic [ref=e1162]: B/. PAB
+                - img [ref=e1163]
+              - button "CR Costa Rica ₡ CRC" [ref=e1165] [cursor=pointer]:
+                - img "CR" [ref=e1166]
+                - generic [ref=e1170]:
+                  - generic [ref=e1171]: Costa Rica
+                  - generic [ref=e1172]: ₡ CRC
+                - img [ref=e1173]
+              - button "GT Guatemala Q GTQ" [ref=e1175] [cursor=pointer]:
+                - img "GT" [ref=e1176]
+                - generic [ref=e1181]:
+                  - generic [ref=e1182]: Guatemala
+                  - generic [ref=e1183]: Q GTQ
+                - img [ref=e1184]
+              - button "HN Honduras L HNL" [ref=e1186] [cursor=pointer]:
+                - img "HN" [ref=e1187]
+                - generic [ref=e1190]:
+                  - generic [ref=e1191]: Honduras
+                  - generic [ref=e1192]: L HNL
+                - img [ref=e1193]
+              - button "SV El Salvador $ USD" [ref=e1195] [cursor=pointer]:
+                - img "SV" [ref=e1196]
+                - generic [ref=e1202]:
+                  - generic [ref=e1203]: El Salvador
+                  - generic [ref=e1204]: $ USD
+                - img [ref=e1205]
+              - button "NI Nicaragua C$ NIO" [ref=e1207] [cursor=pointer]:
+                - img "NI" [ref=e1208]
+                - generic [ref=e1216]:
+                  - generic [ref=e1217]: Nicaragua
+                  - generic [ref=e1218]: C$ NIO
+                - img [ref=e1219]
+              - button "CU Cuba $ CUP" [ref=e1221] [cursor=pointer]:
+                - img "CU" [ref=e1222]
+                - generic [ref=e1227]:
+                  - generic [ref=e1228]: Cuba
+                  - generic [ref=e1229]: $ CUP
+                - img [ref=e1230]
+              - button "DO Dominican Republic RD$ DOP" [ref=e1232] [cursor=pointer]:
+                - img "DO" [ref=e1233]
+                - generic [ref=e1244]:
+                  - generic [ref=e1245]: Dominican Republic
+                  - generic [ref=e1246]: RD$ DOP
+                - img [ref=e1247]
+              - button "PR Puerto Rico $ USD" [ref=e1249] [cursor=pointer]:
+                - img "PR" [ref=e1250]
+                - generic [ref=e1255]:
+                  - generic [ref=e1256]: Puerto Rico
+                  - generic [ref=e1257]: $ USD
+                - img [ref=e1258]
+              - button "JM Jamaica J$ JMD" [ref=e1260] [cursor=pointer]:
+                - img "JM" [ref=e1261]
+                - generic [ref=e1266]:
+                  - generic [ref=e1267]: Jamaica
+                  - generic [ref=e1268]: J$ JMD
+                - img [ref=e1269]
+              - button "TT Trinidad and Tobago TT$ TTD" [ref=e1271] [cursor=pointer]:
+                - img "TT" [ref=e1272]
+                - generic [ref=e1276]:
+                  - generic [ref=e1277]: Trinidad and Tobago
+                  - generic [ref=e1278]: TT$ TTD
+                - img [ref=e1279]
+              - button "PG Papua New Guinea K PGK" [ref=e1281] [cursor=pointer]:
+                - img "PG" [ref=e1282]
+                - generic [ref=e1287]:
+                  - generic [ref=e1288]: Papua New Guinea
+                  - generic [ref=e1289]: K PGK
+                - img [ref=e1290]
+              - button "FJ Fiji FJ$ FJD" [ref=e1292] [cursor=pointer]:
+                - img "FJ" [ref=e1293]
+                - generic [ref=e1304]:
+                  - generic [ref=e1305]: Fiji
+                  - generic [ref=e1306]: FJ$ FJD
+                - img [ref=e1307]
+              - button "ML Mali CFA XOF" [ref=e1309] [cursor=pointer]:
+                - img "ML" [ref=e1310]
+                - generic [ref=e1314]:
+                  - generic [ref=e1315]: Mali
+                  - generic [ref=e1316]: CFA XOF
+                - img [ref=e1317]
+              - button "BF Burkina Faso CFA XOF" [ref=e1319] [cursor=pointer]:
+                - img "BF" [ref=e1320]
+                - generic [ref=e1324]:
+                  - generic [ref=e1325]: Burkina Faso
+                  - generic [ref=e1326]: CFA XOF
+                - img [ref=e1327]
+              - button "NE Niger CFA XOF" [ref=e1329] [cursor=pointer]:
+                - img "NE" [ref=e1330]
+                - generic [ref=e1335]:
+                  - generic [ref=e1336]: Niger
+                  - generic [ref=e1337]: CFA XOF
+                - img [ref=e1338]
+              - button "TD Chad FCFA XAF" [ref=e1340] [cursor=pointer]:
+                - img "TD" [ref=e1341]
+                - generic [ref=e1345]:
+                  - generic [ref=e1346]: Chad
+                  - generic [ref=e1347]: FCFA XAF
+                - img [ref=e1348]
+              - button "GN Guinea FG GNF" [ref=e1350] [cursor=pointer]:
+                - img "GN" [ref=e1351]
+                - generic [ref=e1355]:
+                  - generic [ref=e1356]: Guinea
+                  - generic [ref=e1357]: FG GNF
+                - img [ref=e1358]
+              - button "BJ Benin CFA XOF" [ref=e1360] [cursor=pointer]:
+                - img "BJ" [ref=e1361]
+                - generic [ref=e1365]:
+                  - generic [ref=e1366]: Benin
+                  - generic [ref=e1367]: CFA XOF
+                - img [ref=e1368]
+              - button "TG Togo CFA XOF" [ref=e1370] [cursor=pointer]:
+                - img "TG" [ref=e1371]
+                - generic [ref=e1376]:
+                  - generic [ref=e1377]: Togo
+                  - generic [ref=e1378]: CFA XOF
+                - img [ref=e1379]
+              - button "SL Sierra Leone Le SLL" [ref=e1381] [cursor=pointer]:
+                - img "SL" [ref=e1382]
+                - generic [ref=e1386]:
+                  - generic [ref=e1387]: Sierra Leone
+                  - generic [ref=e1388]: Le SLL
+                - img [ref=e1389]
+              - button "LR Liberia L$ LRD" [ref=e1391] [cursor=pointer]:
+                - img "LR" [ref=e1392]
+                - generic [ref=e1397]:
+                  - generic [ref=e1398]: Liberia
+                  - generic [ref=e1399]: L$ LRD
+                - img [ref=e1400]
+              - button "MR Mauritania UM MRU" [ref=e1402] [cursor=pointer]:
+                - img "MR" [ref=e1403]
+                - generic [ref=e1408]:
+                  - generic [ref=e1409]: Mauritania
+                  - generic [ref=e1410]: UM MRU
+                - img [ref=e1411]
+              - button "GM Gambia D GMD" [ref=e1413] [cursor=pointer]:
+                - img "GM" [ref=e1414]
+                - generic [ref=e1419]:
+                  - generic [ref=e1420]: Gambia
+                  - generic [ref=e1421]: D GMD
+                - img [ref=e1422]
+              - button "GA Gabon FCFA XAF" [ref=e1424] [cursor=pointer]:
+                - img "GA" [ref=e1425]
+                - generic [ref=e1429]:
+                  - generic [ref=e1430]: Gabon
+                  - generic [ref=e1431]: FCFA XAF
+                - img [ref=e1432]
+              - button "CG Republic of Congo FCFA XAF" [ref=e1434] [cursor=pointer]:
+                - img "CG" [ref=e1435]
+                - generic [ref=e1439]:
+                  - generic [ref=e1440]: Republic of Congo
+                  - generic [ref=e1441]: FCFA XAF
+                - img [ref=e1442]
+              - button "BI Burundi FBu BIF" [ref=e1444] [cursor=pointer]:
+                - img "BI" [ref=e1445]
+                - generic [ref=e1452]:
+                  - generic [ref=e1453]: Burundi
+                  - generic [ref=e1454]: FBu BIF
+                - img [ref=e1455]
+              - button "MW Malawi MK MWK" [ref=e1457] [cursor=pointer]:
+                - img "MW" [ref=e1458]
+                - generic [ref=e1464]:
+                  - generic [ref=e1465]: Malawi
+                  - generic [ref=e1466]: MK MWK
+                - img [ref=e1467]
+              - button "SZ Eswatini E SZL" [ref=e1469] [cursor=pointer]:
+                - img "SZ" [ref=e1470]
+                - generic [ref=e1478]:
+                  - generic [ref=e1479]: Eswatini
+                  - generic [ref=e1480]: E SZL
+                - img [ref=e1481]
+              - button "LS Lesotho L LSL" [ref=e1483] [cursor=pointer]:
+                - img "LS" [ref=e1484]
+                - generic [ref=e1490]:
+                  - generic [ref=e1491]: Lesotho
+                  - generic [ref=e1492]: L LSL
+                - img [ref=e1493]
+              - button "SO Somalia Sh SOS" [ref=e1495] [cursor=pointer]:
+                - img "SO" [ref=e1496]
+                - generic [ref=e1499]:
+                  - generic [ref=e1500]: Somalia
+                  - generic [ref=e1501]: Sh SOS
+                - img [ref=e1502]
+              - button "DJ Djibouti Fdj DJF" [ref=e1504] [cursor=pointer]:
+                - img "DJ" [ref=e1505]
+                - generic [ref=e1510]:
+                  - generic [ref=e1511]: Djibouti
+                  - generic [ref=e1512]: Fdj DJF
+                - img [ref=e1513]
+              - button "ER Eritrea Nfk ERN" [ref=e1515] [cursor=pointer]:
+                - img "ER" [ref=e1516]
+                - generic [ref=e1529]:
+                  - generic [ref=e1530]: Eritrea
+                  - generic [ref=e1531]: Nfk ERN
+                - img [ref=e1532]
+              - button "CV Cape Verde $ CVE" [ref=e1534] [cursor=pointer]:
+                - img "CV" [ref=e1535]
+                - generic [ref=e1540]:
+                  - generic [ref=e1541]: Cape Verde
+                  - generic [ref=e1542]: $ CVE
+                - img [ref=e1543]
+              - button "SC Seychelles ₨ SCR" [ref=e1545] [cursor=pointer]:
+                - img "SC" [ref=e1546]
+                - generic [ref=e1552]:
+                  - generic [ref=e1553]: Seychelles
+                  - generic [ref=e1554]: ₨ SCR
+                - img [ref=e1555]
+              - button "SK Slovakia € EUR" [ref=e1557] [cursor=pointer]:
+                - img "SK" [ref=e1558]
+                - generic [ref=e1566]:
+                  - generic [ref=e1567]: Slovakia
+                  - generic [ref=e1568]: € EUR
+                - img [ref=e1569]
+              - button "SI Slovenia € EUR" [ref=e1571] [cursor=pointer]:
+                - img "SI" [ref=e1572]
+                - generic [ref=e1579]:
+                  - generic [ref=e1580]: Slovenia
+                  - generic [ref=e1581]: € EUR
+                - img [ref=e1582]
+              - button "EE Estonia € EUR" [ref=e1584] [cursor=pointer]:
+                - img "EE" [ref=e1585]
+                - generic [ref=e1589]:
+                  - generic [ref=e1590]: Estonia
+                  - generic [ref=e1591]: € EUR
+                - img [ref=e1592]
+              - button "LV Latvia € EUR" [ref=e1594] [cursor=pointer]:
+                - img "LV" [ref=e1595]
+                - generic [ref=e1598]:
+                  - generic [ref=e1599]: Latvia
+                  - generic [ref=e1600]: € EUR
+                - img [ref=e1601]
+              - button "LT Lithuania € EUR" [ref=e1603] [cursor=pointer]:
+                - img "LT" [ref=e1604]
+                - generic [ref=e1608]:
+                  - generic [ref=e1609]: Lithuania
+                  - generic [ref=e1610]: € EUR
+                - img [ref=e1611]
+              - button "BA Bosnia and Herzegovina KM BAM" [ref=e1613] [cursor=pointer]:
+                - img "BA" [ref=e1614]
+                - generic [ref=e1627]:
+                  - generic [ref=e1628]: Bosnia and Herzegovina
+                  - generic [ref=e1629]: KM BAM
+                - img [ref=e1630]
+              - button "MK North Macedonia ден MKD" [ref=e1632] [cursor=pointer]:
+                - img "MK" [ref=e1633]
+                - generic [ref=e1640]:
+                  - generic [ref=e1641]: North Macedonia
+                  - generic [ref=e1642]: ден MKD
+                - img [ref=e1643]
+              - button "AL Albania L ALL" [ref=e1645] [cursor=pointer]:
+                - img "AL" [ref=e1646]
+                - generic [ref=e1650]:
+                  - generic [ref=e1651]: Albania
+                  - generic [ref=e1652]: L ALL
+                - img [ref=e1653]
+              - button "ME Montenegro € EUR" [ref=e1655] [cursor=pointer]:
+                - img "ME" [ref=e1656]
+                - generic [ref=e1663]:
+                  - generic [ref=e1664]: Montenegro
+                  - generic [ref=e1665]: € EUR
+                - img [ref=e1666]
+              - button "XK Kosovo € EUR" [ref=e1668] [cursor=pointer]:
+                - img "XK" [ref=e1669]
+                - generic [ref=e1673]:
+                  - generic [ref=e1674]: Kosovo
+                  - generic [ref=e1675]: € EUR
+                - img [ref=e1676]
+              - button "MD Moldova L MDL" [ref=e1678] [cursor=pointer]:
+                - img "MD" [ref=e1679]
+                - generic [ref=e1684]:
+                  - generic [ref=e1685]: Moldova
+                  - generic [ref=e1686]: L MDL
+                - img [ref=e1687]
+              - button "BY Belarus Br BYN" [ref=e1689] [cursor=pointer]:
+                - img "BY" [ref=e1690]
+                - generic [ref=e1696]:
+                  - generic [ref=e1697]: Belarus
+                  - generic [ref=e1698]: Br BYN
+                - img [ref=e1699]
+              - button "IS Iceland kr ISK" [ref=e1701] [cursor=pointer]:
+                - img "IS" [ref=e1702]
+                - generic [ref=e1706]:
+                  - generic [ref=e1707]: Iceland
+                  - generic [ref=e1708]: kr ISK
+                - img [ref=e1709]
+              - button "LU Luxembourg € EUR" [ref=e1711] [cursor=pointer]:
+                - img "LU" [ref=e1712]
+                - generic [ref=e1716]:
+                  - generic [ref=e1717]: Luxembourg
+                  - generic [ref=e1718]: € EUR
+                - img [ref=e1719]
+              - button "MT Malta € EUR" [ref=e1721] [cursor=pointer]:
+                - img "MT" [ref=e1722]
+                - generic [ref=e1729]:
+                  - generic [ref=e1730]: Malta
+                  - generic [ref=e1731]: € EUR
+                - img [ref=e1732]
+              - button "CY Cyprus € EUR" [ref=e1734] [cursor=pointer]:
+                - img "CY" [ref=e1735]
+                - generic [ref=e1742]:
+                  - generic [ref=e1743]: Cyprus
+                  - generic [ref=e1744]: € EUR
+                - img [ref=e1745]
+              - button "AF Afghanistan ؋ AFN" [ref=e1747] [cursor=pointer]:
+                - img "AF" [ref=e1748]
+                - generic [ref=e1754]:
+                  - generic [ref=e1755]: Afghanistan
+                  - generic [ref=e1756]: ؋ AFN
+                - img [ref=e1757]
+              - button "KZ Kazakhstan ₸ KZT" [ref=e1759] [cursor=pointer]:
+                - img "KZ" [ref=e1760]
+                - generic [ref=e1764]:
+                  - generic [ref=e1765]: Kazakhstan
+                  - generic [ref=e1766]: ₸ KZT
+                - img [ref=e1767]
+              - button "UZ Uzbekistan soʻm UZS" [ref=e1769] [cursor=pointer]:
+                - img "UZ" [ref=e1770]
+                - generic [ref=e1777]:
+                  - generic [ref=e1778]: Uzbekistan
+                  - generic [ref=e1779]: soʻm UZS
+                - img [ref=e1780]
+              - button "TM Turkmenistan m TMT" [ref=e1782] [cursor=pointer]:
+                - img "TM" [ref=e1783]
+                - generic [ref=e1798]:
+                  - generic [ref=e1799]: Turkmenistan
+                  - generic [ref=e1800]: m TMT
+                - img [ref=e1801]
+              - button "TJ Tajikistan SM TJS" [ref=e1803] [cursor=pointer]:
+                - img "TJ" [ref=e1804]
+                - generic [ref=e1809]:
+                  - generic [ref=e1810]: Tajikistan
+                  - generic [ref=e1811]: SM TJS
+                - img [ref=e1812]
+              - button "KG Kyrgyzstan сом KGS" [ref=e1814] [cursor=pointer]:
+                - img "KG" [ref=e1815]
+                - generic [ref=e1822]:
+                  - generic [ref=e1823]: Kyrgyzstan
+                  - generic [ref=e1824]: сом KGS
+                - img [ref=e1825]
+              - button "MN Mongolia ₮ MNT" [ref=e1827] [cursor=pointer]:
+                - img "MN" [ref=e1828]
+                - generic [ref=e1837]:
+                  - generic [ref=e1838]: Mongolia
+                  - generic [ref=e1839]: ₮ MNT
+                - img [ref=e1840]
+              - button "AZ Azerbaijan ₼ AZN" [ref=e1842] [cursor=pointer]:
+                - img "AZ" [ref=e1843]
+                - generic [ref=e1850]:
+                  - generic [ref=e1851]: Azerbaijan
+                  - generic [ref=e1852]: ₼ AZN
+                - img [ref=e1853]
+              - button "GE Georgia ₾ GEL" [ref=e1855] [cursor=pointer]:
+                - img "GE" [ref=e1856]
+                - generic [ref=e1860]:
+                  - generic [ref=e1861]: Georgia
+                  - generic [ref=e1862]: ₾ GEL
+                - img [ref=e1863]
+              - button "AM Armenia ֏ AMD" [ref=e1865] [cursor=pointer]:
+                - img "AM" [ref=e1866]
+                - generic [ref=e1870]:
+                  - generic [ref=e1871]: Armenia
+                  - generic [ref=e1872]: ֏ AMD
+                - img [ref=e1873]
+              - button "SY Syria £S SYP" [ref=e1875] [cursor=pointer]:
+                - img "SY" [ref=e1876]
+                - generic [ref=e1881]:
+                  - generic [ref=e1882]: Syria
+                  - generic [ref=e1883]: £S SYP
+                - img [ref=e1884]
+              - button "YE Yemen ﷼ YER" [ref=e1886] [cursor=pointer]:
+                - img "YE" [ref=e1887]
+                - generic [ref=e1891]:
+                  - generic [ref=e1892]: Yemen
+                  - generic [ref=e1893]: ﷼ YER
+                - img [ref=e1894]
+              - button "LA Laos ₭ LAK" [ref=e1896] [cursor=pointer]:
+                - img "LA" [ref=e1897]
+                - generic [ref=e1901]:
+                  - generic [ref=e1902]: Laos
+                  - generic [ref=e1903]: ₭ LAK
+                - img [ref=e1904]
+              - button "BT Bhutan Nu. BTN" [ref=e1906] [cursor=pointer]:
+                - img "BT" [ref=e1907]
+                - generic [ref=e1911]:
+                  - generic [ref=e1912]: Bhutan
+                  - generic [ref=e1913]: Nu. BTN
+                - img [ref=e1914]
+              - button "MV Maldives Rf MVR" [ref=e1916] [cursor=pointer]:
+                - img "MV" [ref=e1917]
+                - generic [ref=e1921]:
+                  - generic [ref=e1922]: Maldives
+                  - generic [ref=e1923]: Rf MVR
+                - img [ref=e1924]
+              - button "BN Brunei B$ BND" [ref=e1926] [cursor=pointer]:
+                - img "BN" [ref=e1927]
+                - generic [ref=e1934]:
+                  - generic [ref=e1935]: Brunei
+                  - generic [ref=e1936]: B$ BND
+                - img [ref=e1937]
+              - button "TL Timor-Leste $ USD" [ref=e1939] [cursor=pointer]:
+                - img "TL" [ref=e1940]
+                - generic [ref=e1945]:
+                  - generic [ref=e1946]: Timor-Leste
+                  - generic [ref=e1947]: $ USD
+                - img [ref=e1948]
+              - button "GY Guyana G$ GYD" [ref=e1950] [cursor=pointer]:
+                - img "GY" [ref=e1951]
+                - generic [ref=e1957]:
+                  - generic [ref=e1958]: Guyana
+                  - generic [ref=e1959]: G$ GYD
+                - img [ref=e1960]
+              - button "SR Suriname $ SRD" [ref=e1962] [cursor=pointer]:
+                - img "SR" [ref=e1963]
+                - generic [ref=e1968]:
+                  - generic [ref=e1969]: Suriname
+                  - generic [ref=e1970]: $ SRD
+                - img [ref=e1971]
+              - button "BZ Belize BZ$ BZD" [ref=e1973] [cursor=pointer]:
+                - img "BZ" [ref=e1974]
+                - generic [ref=e1982]:
+                  - generic [ref=e1983]: Belize
+                  - generic [ref=e1984]: BZ$ BZD
+                - img [ref=e1985]
+              - button "HT Haiti G HTG" [ref=e1987] [cursor=pointer]:
+                - img "HT" [ref=e1988]
+                - generic [ref=e1997]:
+                  - generic [ref=e1998]: Haiti
+                  - generic [ref=e1999]: G HTG
+                - img [ref=e2000]
+              - button "BS Bahamas B$ BSD" [ref=e2002] [cursor=pointer]:
+                - img "BS" [ref=e2003]
+                - generic [ref=e2007]:
+                  - generic [ref=e2008]: Bahamas
+                  - generic [ref=e2009]: B$ BSD
+                - img [ref=e2010]
+              - button "BB Barbados Bds$ BBD" [ref=e2012] [cursor=pointer]:
+                - img "BB" [ref=e2013]
+                - generic [ref=e2017]:
+                  - generic [ref=e2018]: Barbados
+                  - generic [ref=e2019]: Bds$ BBD
+                - img [ref=e2020]
+              - button "WS Samoa WS$ WST" [ref=e2022] [cursor=pointer]:
+                - img "WS" [ref=e2023]
+                - generic [ref=e2027]:
+                  - generic [ref=e2028]: Samoa
+                  - generic [ref=e2029]: WS$ WST
+                - img [ref=e2030]
+              - button "TO Tonga T$ TOP" [ref=e2032] [cursor=pointer]:
+                - img "TO" [ref=e2033]
+                - generic [ref=e2037]:
+                  - generic [ref=e2038]: Tonga
+                  - generic [ref=e2039]: T$ TOP
+                - img [ref=e2040]
+              - button "VU Vanuatu VT VUV" [ref=e2042] [cursor=pointer]:
+                - img "VU" [ref=e2043]
+                - generic [ref=e2051]:
+                  - generic [ref=e2052]: Vanuatu
+                  - generic [ref=e2053]: VT VUV
+                - img [ref=e2054]
+              - button "SB Solomon Islands SI$ SBD" [ref=e2056] [cursor=pointer]:
+                - img "SB" [ref=e2057]
+                - generic [ref=e2062]:
+                  - generic [ref=e2063]: Solomon Islands
+                  - generic [ref=e2064]: SI$ SBD
+                - img [ref=e2065]
+          - generic [ref=e2067]:
+            - generic [ref=e2068]:
+              - img [ref=e2070]
+              - heading "100% Authentic" [level=3] [ref=e2073]
+              - paragraph [ref=e2074]: Real-time camera capture only. No uploads allowed - guaranteed authentic content.
+            - generic [ref=e2075]:
+              - img [ref=e2077]
+              - heading "Browse Content" [level=3] [ref=e2080]
+              - paragraph [ref=e2081]: Find authentic videos and photos for your projects or publication.
+            - generic [ref=e2082]:
+              - img [ref=e2084]
+              - heading "Live Feed" [level=3] [ref=e2090]
+              - paragraph [ref=e2091]: Real-time content from citizen creators capturing what's happening now.
+          - generic [ref=e2092]:
+            - paragraph [ref=e2093]: "Or go directly to:"
+            - link "ZA South Africa" [ref=e2094] [cursor=pointer]:
+              - /url: /sa
+              - img "ZA" [ref=e2095]
+              - text: South Africa
+              - img [ref=e2102]
+      - generic [ref=e2106]:
+        - generic [ref=e2107]:
+          - img "SpillNova" [ref=e2108]
+          - generic [ref=e2109]: SpillNova - Real Content Marketplace
+        - generic [ref=e2110]:
+          - link "Terms" [ref=e2111] [cursor=pointer]:
+            - /url: /terms
+          - link "Privacy" [ref=e2112] [cursor=pointer]:
+            - /url: /privacy
+  - contentinfo [ref=e2113]:
+    - generic [ref=e2114]:
+      - generic [ref=e2115]:
+        - generic [ref=e2116]:
+          - img "SpillNova" [ref=e2118]
+          - paragraph [ref=e2119]: The global marketplace for authentic video and photo content. Buy and sell real footage from real people, verified and protected.
+          - generic [ref=e2120]:
+            - generic [ref=e2121]:
+              - img [ref=e2122]
+              - generic [ref=e2125]: Verified Real
+            - generic [ref=e2126]:
+              - img [ref=e2127]
+              - generic [ref=e2129]: Content Protected
+        - generic [ref=e2130]:
+          - heading "Quick Links" [level=3] [ref=e2131]
+          - list [ref=e2132]:
+            - listitem [ref=e2133]:
+              - link "Live Feed" [ref=e2134] [cursor=pointer]:
+                - /url: /live
+            - listitem [ref=e2135]:
+              - link "Browse Content" [ref=e2136] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e2137]:
+              - link "Sell Your Content" [ref=e2138] [cursor=pointer]:
+                - /url: /upload
+            - listitem [ref=e2139]:
+              - link "How It Works" [ref=e2140] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e2141]:
+              - link "Get Alerts" [ref=e2142] [cursor=pointer]:
+                - /url: /subscribe
+            - listitem [ref=e2143]:
+              - link "For Buyers" [ref=e2144] [cursor=pointer]:
+                - /url: /buyer
+            - listitem [ref=e2145]:
+              - link "Pricing" [ref=e2146] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e2147]:
+          - heading "Why SpillNova" [level=3] [ref=e2148]
+          - list [ref=e2149]:
+            - listitem [ref=e2150]: 100% real, verified content
+            - listitem [ref=e2151]: No AI-generated fakes
+            - listitem [ref=e2152]: Direct creator payments
+            - listitem [ref=e2153]: Global coverage
+      - generic [ref=e2155]:
+        - paragraph [ref=e2156]: © 2026 SpillNova. All rights reserved.
+        - paragraph [ref=e2157]: Real content. Real value. Real simple.
+  - alert [ref=e2158]
+```

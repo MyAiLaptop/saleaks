@@ -2,21 +2,23 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSearchParams, useRouter } from 'next/navigation'
 import {
   Search,
   Filter,
   Calendar,
   MapPin,
-  Building2,
   Eye,
   ChevronLeft,
   ChevronRight,
   Loader2,
-  ThumbsUp,
-  ThumbsDown,
-  FileText,
+  Play,
+  Flame,
+  Zap,
+  ArrowRight,
   X,
+  SlidersHorizontal,
 } from 'lucide-react'
 import { useCountry } from '@/lib/country-context'
 
@@ -29,6 +31,12 @@ interface Category {
 interface ProvinceFilter {
   name: string
   count: number
+}
+
+interface Media {
+  type: 'image' | 'video'
+  url: string
+  thumbnailUrl?: string
 }
 
 interface Post {
@@ -47,6 +55,8 @@ interface Post {
   createdAt: string
   hasEvidence: boolean
   messageCount: number
+  displayName?: string
+  media?: Media[]
 }
 
 export default function CountryBrowsePage() {
@@ -142,349 +152,329 @@ export default function CountryBrowsePage() {
 
   const activeFilterCount = [categorySlug, province, organization, hasEvidence].filter(Boolean).length
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-ZA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+  const formatTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays < 7) return `${diffDays}d ago`
+    return date.toLocaleDateString()
   }
 
-  const truncateContent = (content: string, maxLength = 200) => {
-    if (content.length <= maxLength) return content
-    return content.substring(0, maxLength).trim() + '...'
+  const formatViews = (views: number) => {
+    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`
+    if (views >= 1000) return `${Math.floor(views / 1000)}K`
+    return views.toString()
+  }
+
+  const getBadge = (post: Post) => {
+    if (post.featured) return { label: 'Exclusive', className: 'bg-gradient-to-r from-amber-500 to-yellow-500 text-black' }
+    if (post.viewCount > 1000) return { label: 'Trending', className: 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white' }
+    if (post.upvotes > 10) return { label: 'Hot', className: 'bg-gradient-to-r from-red-500 to-orange-500 text-white' }
+    const createdDate = new Date(post.createdAt)
+    const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    if (createdDate > dayAgo) return { label: 'New', className: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white' }
+    return null
   }
 
   return (
-    <div
-      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
-    >
-      <div className="bg-black/60 min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Browse Content
-            </h1>
-            <p className="text-gray-300">
-              {total} authentic videos and photos from {config.name}
-            </p>
+    <div className="min-h-screen">
+      {/* Hero Banner */}
+      <div className="relative h-[300px] md:h-[400px] overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: "linear-gradient(to right, rgba(16, 22, 34, 0.95) 20%, rgba(16, 22, 34, 0.4) 60%, rgba(16, 22, 34, 0.7)), url('https://media.saleaks.co.za/global_back_ground.png?v=2')",
+          }}
+        />
+        <div className="relative h-full flex flex-col justify-center px-6 md:px-12 max-w-3xl">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <span className="text-white/80 text-xs font-bold uppercase tracking-widest">Live Marketplace</span>
           </div>
+          <h1 className="text-white text-3xl md:text-5xl font-extrabold leading-tight mb-4">
+            Your Footage,<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-primary-400">Their Front Page.</span>
+          </h1>
+          <p className="text-gray-300 text-base md:text-lg mb-6 max-w-xl">
+            Browse authentic videos and photos from {config.name}. Real content from real people.
+          </p>
+          <div className="flex gap-3">
+            <Link
+              href={`/${country}/live`}
+              className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 transition-all"
+            >
+              Get Started <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href={`/${country}/how-it-works`}
+              className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full font-bold text-sm border border-white/20 transition-all"
+            >
+              How it Works
+            </Link>
+          </div>
+        </div>
+      </div>
 
-          {/* Search and Filters */}
-          <div className="bg-black/40 backdrop-blur-sm rounded-lg shadow p-4 mb-6 border border-white/10">
-        <form onSubmit={handleSearch} className="flex gap-2 md:gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+      {/* Main Content */}
+      <div className="px-4 md:px-8 py-6">
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="mb-6">
+          <div className="relative max-w-2xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search content by title, description, or category..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              placeholder="Search viral footage, news events, or creators..."
+              className="w-full bg-white/5 border border-white/10 rounded-full py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all"
             />
           </div>
+        </form>
+
+        {/* Category Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-6 no-scrollbar">
           <button
-            type="submit"
-            className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+            type="button"
+            onClick={() => { setCategorySlug(''); setPage(1) }}
+            className={`flex-shrink-0 h-10 px-5 rounded-full text-sm font-bold transition-all ${
+              !categorySlug
+                ? 'bg-primary-500 text-white'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'
+            }`}
           >
-            Search
+            All Stories
           </button>
+          {categories.slice(0, 8).map((cat) => (
+            <button
+              key={cat.slug}
+              type="button"
+              onClick={() => { setCategorySlug(cat.slug); setPage(1) }}
+              className={`flex-shrink-0 h-10 px-5 rounded-full text-sm font-medium transition-all ${
+                categorySlug === cat.slug
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
           <button
             type="button"
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center px-4 py-2 border rounded-lg transition-colors ${
+            title="Toggle filters"
+            aria-label="Toggle filters"
+            className={`flex-shrink-0 h-10 px-4 rounded-full transition-all ${
               activeFilterCount > 0
-                ? 'border-primary-500 bg-primary-500/30 text-primary-300'
-                : 'border-white/20 text-gray-300 hover:bg-white/10'
+                ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/10'
             }`}
           >
-            <Filter className="h-5 w-5 mr-2" />
-            Filters
-            {activeFilterCount > 0 && (
-              <span className="ml-2 px-2 py-0.5 text-xs bg-primary-500 text-white rounded-full">
-                {activeFilterCount}
-              </span>
-            )}
+            <SlidersHorizontal className="h-5 w-5" />
           </button>
-        </form>
+        </div>
 
-        {/* Active Filters Tags */}
-        {activeFilterCount > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3">
-            {categorySlug && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 dark:bg-primary-900/50 text-primary-800 dark:text-primary-200">
-                {categories.find(c => c.slug === categorySlug)?.name || categorySlug}
-                <button type="button" onClick={() => { setCategorySlug(''); setPage(1) }} className="ml-2 hover:text-primary-600" title="Remove category filter">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            )}
-            {province && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200">
-                {province}
-                <button type="button" onClick={() => { setProvince(''); setPage(1) }} className="ml-2 hover:text-blue-600" title="Remove province filter">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            )}
-            {organization && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">
-                Org: {organization}
-                <button type="button" onClick={() => { setOrganization(''); setPage(1) }} className="ml-2 hover:text-amber-600" title="Remove organization filter">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            )}
-            {hasEvidence && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200">
-                With Evidence
-                <button type="button" onClick={() => { setHasEvidence(false); setPage(1) }} className="ml-2 hover:text-green-600" title="Remove evidence filter">
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            >
-              Clear all
-            </button>
-          </div>
-        )}
-
+        {/* Filters Panel */}
         {showFilters && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 mt-4 border-t border-white/10">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Category
-              </label>
-              <select
-                value={categorySlug}
-                onChange={(e) => {
-                  setCategorySlug(e.target.value)
-                  setPage(1)
-                }}
-                title="Filter by category"
-                className="w-full px-3 py-2 rounded-lg border border-white/20 bg-black/30 text-white"
-              >
-                <option value="">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat.slug} value={cat.slug}>
-                    {cat.name} ({cat.count})
-                  </option>
-                ))}
-              </select>
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-white/10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Province</label>
+                <select
+                  value={province}
+                  onChange={(e) => { setProvince(e.target.value); setPage(1) }}
+                  title="Filter by province"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white"
+                >
+                  <option value="">All Provinces</option>
+                  {provinces.map((prov) => (
+                    <option key={prov.name} value={prov.name}>{prov.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-400 mb-2">Sort By</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => { setSortBy(e.target.value); setPage(1) }}
+                  title="Sort results"
+                  className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-white/5 text-white"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="mostViewed">Most Viewed</option>
+                  <option value="mostCredible">Most Credible</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={hasEvidence}
+                    onChange={(e) => { setHasEvidence(e.target.checked); setPage(1) }}
+                    className="h-5 w-5 rounded border-white/20 bg-white/5 text-primary-500 focus:ring-primary-500"
+                  />
+                  <span className="text-sm text-gray-300">Only with media</span>
+                </label>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Province
-              </label>
-              <select
-                value={province}
-                onChange={(e) => {
-                  setProvince(e.target.value)
-                  setPage(1)
-                }}
-                title="Filter by province"
-                className="w-full px-3 py-2 rounded-lg border border-white/20 bg-black/30 text-white"
-              >
-                <option value="">All Provinces</option>
-                {provinces.length > 0 ? (
-                  provinces.map((prov) => (
-                    <option key={prov.name} value={prov.name}>
-                      {prov.name} ({prov.count})
-                    </option>
-                  ))
-                ) : (
-                  (config.provinces || []).map((prov) => (
-                    <option key={prov} value={prov}>
-                      {prov}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Organization
-              </label>
-              <input
-                type="text"
-                value={organization}
-                onChange={(e) => setOrganization(e.target.value)}
-                onBlur={() => setPage(1)}
-                placeholder="Search by organization..."
-                className="w-full px-3 py-2 rounded-lg border border-white/20 bg-black/30 text-white placeholder-gray-400"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
-                Sort By
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) => {
-                  setSortBy(e.target.value)
-                  setPage(1)
-                }}
-                title="Sort results"
-                className="w-full px-3 py-2 rounded-lg border border-white/20 bg-black/30 text-white"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="mostViewed">Most Viewed</option>
-                <option value="mostCredible">Most Credible</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-4 md:col-span-2 lg:col-span-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={hasEvidence}
-                  onChange={(e) => {
-                    setHasEvidence(e.target.checked)
-                    setPage(1)
-                  }}
-                  className="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
-                />
-                <span className="text-sm text-gray-300 flex items-center">
-                  <FileText className="h-4 w-4 mr-1 text-green-400" />
-                  Only show content with media
-                </span>
-              </label>
+            {activeFilterCount > 0 && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="ml-auto px-4 py-2 text-sm text-gray-400 hover:text-white"
+                className="mt-4 text-sm text-gray-400 hover:text-white flex items-center gap-1"
               >
-                Clear All Filters
+                <X className="h-4 w-4" /> Clear all filters
               </button>
-            </div>
+            )}
           </div>
         )}
-          </div>
 
-          {/* Posts List */}
-          {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
-            </div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-gray-300 text-lg">
-                No content found matching your criteria.
-              </p>
-              <Link
-                href={`/${country}/upload`}
-                className="inline-block mt-4 text-primary-400 hover:text-primary-300"
-              >
-                Be the first to upload content
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {posts.map((post) => (
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+            <Zap className="h-5 w-5 text-primary-400" />
+            Latest Hot Leads
+          </h2>
+          <div className="flex items-center gap-4 text-sm font-bold text-gray-500">
+            <span className="text-primary-400 border-b-2 border-primary-400 pb-1 cursor-pointer">Live Feed</span>
+            <span className="hover:text-white transition-colors cursor-pointer">Closed Deals</span>
+          </div>
+        </div>
+
+        {/* Video Grid */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+          </div>
+        ) : posts.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-lg mb-4">No content found matching your criteria.</p>
+            <Link
+              href={`/${country}/live`}
+              className="inline-flex items-center gap-2 text-primary-400 hover:text-primary-300 font-medium"
+            >
+              <Play className="h-5 w-5" /> Be the first to upload content
+            </Link>
+          </div>
+        ) : (
+          <div className="masonry-grid">
+            {posts.map((post) => {
+              const badge = getBadge(post)
+              const thumbnail = post.media && post.media.length > 0
+                ? (post.media[0].thumbnailUrl || post.media[0].url)
+                : null
+              const isVideo = post.media && post.media.length > 0 && post.media[0].type === 'video'
+
+              return (
                 <Link
                   key={post.publicId}
                   href={`/${country}/live/${post.publicId}`}
-                  className="block bg-black/40 backdrop-blur-sm rounded-lg shadow hover:bg-black/50 transition-all border border-white/10"
+                  className="group cursor-pointer block"
                 >
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2 flex-wrap">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200">
-                        {post.category.name}
-                      </span>
-                      {post.featured && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
-                          Featured
+                  <div className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-ink-800">
+                    {/* Thumbnail */}
+                    {thumbnail ? (
+                      <Image
+                        src={thumbnail}
+                        alt={post.title || post.content.slice(0, 50)}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-ink-700 to-ink-800 flex items-center justify-center">
+                        <Play className="h-12 w-12 text-gray-600" />
+                      </div>
+                    )}
+
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 video-card-gradient" />
+
+                    {/* Badge */}
+                    {badge && (
+                      <div className="absolute top-3 left-3 flex gap-2">
+                        <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${badge.className}`}>
+                          {badge.label}
                         </span>
-                      )}
-                      {post.hasEvidence && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                          <FileText className="h-3 w-3 mr-1" />
-                          Evidence
-                        </span>
-                      )}
-                    </div>
-                    <h2 className="text-xl font-semibold text-white mb-2">
-                      {post.title}
-                    </h2>
-                    <p className="text-gray-300 text-sm mb-4">
-                      {post.excerpt || truncateContent(post.content)}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                      <span className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {formatDate(post.createdAt)}
-                      </span>
-                      {(post.province || post.city) && (
-                        <span className="flex items-center">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {[post.city, post.province].filter(Boolean).join(', ')}
-                        </span>
-                      )}
-                      {post.organization && (
-                        <span className="flex items-center">
-                          <Building2 className="h-4 w-4 mr-1" />
-                          {post.organization}
-                        </span>
-                      )}
-                      <span className="flex items-center">
-                        <Eye className="h-4 w-4 mr-1" />
-                        {post.viewCount} views
-                      </span>
-                      {(post.upvotes > 0 || post.downvotes > 0) && (
-                        <span className={`flex items-center ${
-                          post.upvotes - post.downvotes > 0 ? 'text-green-400' :
-                          post.upvotes - post.downvotes < 0 ? 'text-red-400' :
-                          'text-gray-400'
-                        }`}>
-                          {post.upvotes - post.downvotes >= 0 ? (
-                            <ThumbsUp className="h-4 w-4 mr-1" />
-                          ) : (
-                            <ThumbsDown className="h-4 w-4 mr-1" />
-                          )}
-                          {post.upvotes - post.downvotes > 0 ? '+' : ''}{post.upvotes - post.downvotes}
-                        </span>
-                      )}
+                        {isVideo && (
+                          <span className="bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full border border-white/20">
+                            HD
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Play Button Overlay */}
+                    {isVideo && (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+                          <Play className="h-6 w-6 text-white fill-white" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Bottom Content */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <p className="text-sm font-bold line-clamp-2 leading-tight mb-3">
+                        {post.title || post.content.slice(0, 100)}
+                      </p>
+
+                      <div className="flex items-center justify-between">
+                        {/* Author */}
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-400 to-primary-600" />
+                          <span className="text-xs font-medium text-gray-300">
+                            {post.displayName || 'Anonymous'}
+                          </span>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          <span className="text-xs font-bold">{formatViews(post.viewCount)}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
                 </Link>
-              ))}
-            </div>
-          )}
+              )
+            })}
+          </div>
+        )}
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="flex items-center px-4 py-2 border border-white/20 rounded-lg text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="h-5 w-5 mr-1" />
-                Previous
-              </button>
-              <span className="text-gray-300">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="flex items-center px-4 py-2 border border-white/20 rounded-lg text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-                <ChevronRight className="h-5 w-5 ml-1" />
-              </button>
-            </div>
-          )}
-        </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-8 pb-8">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="flex items-center px-5 py-2.5 border border-white/20 rounded-full text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft className="h-5 w-5 mr-1" />
+              Previous
+            </button>
+            <span className="text-gray-400 font-medium">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="flex items-center px-5 py-2.5 border border-white/20 rounded-full text-gray-300 hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Next
+              <ChevronRight className="h-5 w-5 ml-1" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

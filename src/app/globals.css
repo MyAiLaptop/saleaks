@@ -135,12 +135,35 @@ textarea,
   }
 
   /* ========================================
+     MASONRY VIDEO GRID
+     ======================================== */
+
+  .masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .masonry-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .masonry-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+  }
+
+  /* ========================================
      VIDEO CARD GRADIENT OVERLAYS
      ======================================== */
 
   /* Bottom gradient for video cards - shows title/info */
   .video-card-gradient {
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.5) 40%, transparent 100%);
   }
 
   /* Top gradient - for badges/status */

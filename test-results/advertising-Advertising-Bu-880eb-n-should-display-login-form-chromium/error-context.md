@@ -1,0 +1,147 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SpillNova SpillNova ZA" [ref=e5] [cursor=pointer]:
+        - /url: /sa
+        - img "SpillNova" [ref=e6]
+        - generic [ref=e7]: SpillNova
+        - img "ZA" [ref=e8]
+      - navigation [ref=e15]:
+        - link "Live" [ref=e16] [cursor=pointer]:
+          - /url: /sa/live
+          - img [ref=e17]
+          - generic [ref=e23]: Live
+        - link "Browse" [ref=e24] [cursor=pointer]:
+          - /url: /sa/browse
+          - img [ref=e25]
+          - generic [ref=e28]: Browse
+        - link "Directory" [ref=e29] [cursor=pointer]:
+          - /url: /sa/directory
+          - img [ref=e30]
+          - generic [ref=e34]: Directory
+        - link "Discussions" [ref=e35] [cursor=pointer]:
+          - /url: /sa/discussions
+          - img [ref=e36]
+          - generic [ref=e38]: Discussions
+        - link "Suggestions" [ref=e39] [cursor=pointer]:
+          - /url: /sa/suggestions
+          - img [ref=e40]
+          - generic [ref=e42]: Suggestions
+        - link "How It Works" [ref=e43] [cursor=pointer]:
+          - /url: /sa/how-it-works
+          - img [ref=e44]
+          - generic [ref=e47]: How It Works
+        - link "Alerts" [ref=e48] [cursor=pointer]:
+          - /url: /sa/subscribe
+          - img [ref=e49]
+          - generic [ref=e52]: Alerts
+        - link "Buyer" [ref=e53] [cursor=pointer]:
+          - /url: /sa/buyer
+          - img [ref=e54]
+          - generic [ref=e57]: Buyer
+        - link "Account" [ref=e58] [cursor=pointer]:
+          - /url: /sa/account
+          - img [ref=e59]
+          - generic [ref=e62]: Account
+        - link "Change Region" [ref=e63] [cursor=pointer]:
+          - /url: /?change=true
+          - img [ref=e64]
+  - main [ref=e67]:
+    - generic [ref=e68]:
+      - generic [ref=e70]:
+        - link [ref=e71] [cursor=pointer]:
+          - /url: /sa/live
+          - img [ref=e72]
+        - generic [ref=e74]:
+          - heading "Advertise on SpillNova" [level=1] [ref=e75]
+          - paragraph [ref=e76]: Reach engaged local audiences
+      - main [ref=e77]:
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - heading "Why Advertise With Us?" [level=2] [ref=e80]:
+              - img [ref=e81]
+              - text: Why Advertise With Us?
+            - list [ref=e83]:
+              - listitem [ref=e84]:
+                - img [ref=e85]
+                - generic [ref=e87]: Target specific videos relevant to your business
+              - listitem [ref=e88]:
+                - img [ref=e89]
+                - generic [ref=e91]: Non-intrusive ads that users choose to engage with
+              - listitem [ref=e92]:
+                - img [ref=e93]
+                - generic [ref=e95]: Track impressions and clicks in real-time
+              - listitem [ref=e96]:
+                - img [ref=e97]
+                - generic [ref=e99]: Affordable pricing starting from R15
+            - generic [ref=e100]:
+              - paragraph [ref=e101]: "💡 Pro Tip: 50% Off Self-Promotion!"
+              - paragraph [ref=e102]: Post your own funny or engaging videos, then advertise on them at half price! Great content + subtle advertising = more customers without being salesy.
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - button "Login" [ref=e105] [cursor=pointer]
+              - button "Register" [ref=e106] [cursor=pointer]
+            - generic [ref=e107]:
+              - generic [ref=e108]:
+                - generic [ref=e109]: Phone Number
+                - generic [ref=e110]:
+                  - img [ref=e111]
+                  - textbox "e.g. 0821234567" [ref=e113]
+              - generic [ref=e114]:
+                - generic [ref=e115]: Password
+                - generic [ref=e116]:
+                  - img [ref=e117]
+                  - textbox "••••••••" [ref=e120]
+              - button "Login" [ref=e121] [cursor=pointer]
+  - contentinfo [ref=e122]:
+    - generic [ref=e123]:
+      - generic [ref=e124]:
+        - generic [ref=e125]:
+          - img "SpillNova" [ref=e127]
+          - paragraph [ref=e128]: The global marketplace for authentic video and photo content. Buy and sell real footage from real people, verified and protected.
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - img [ref=e131]
+              - generic [ref=e134]: Verified Real
+            - generic [ref=e135]:
+              - img [ref=e136]
+              - generic [ref=e138]: Content Protected
+        - generic [ref=e139]:
+          - heading "Quick Links" [level=3] [ref=e140]
+          - list [ref=e141]:
+            - listitem [ref=e142]:
+              - link "Live Feed" [ref=e143] [cursor=pointer]:
+                - /url: /live
+            - listitem [ref=e144]:
+              - link "Browse Content" [ref=e145] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e146]:
+              - link "Sell Your Content" [ref=e147] [cursor=pointer]:
+                - /url: /upload
+            - listitem [ref=e148]:
+              - link "How It Works" [ref=e149] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e150]:
+              - link "Get Alerts" [ref=e151] [cursor=pointer]:
+                - /url: /subscribe
+            - listitem [ref=e152]:
+              - link "For Buyers" [ref=e153] [cursor=pointer]:
+                - /url: /buyer
+            - listitem [ref=e154]:
+              - link "Pricing" [ref=e155] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e156]:
+          - heading "Why SpillNova" [level=3] [ref=e157]
+          - list [ref=e158]:
+            - listitem [ref=e159]: 100% real, verified content
+            - listitem [ref=e160]: No AI-generated fakes
+            - listitem [ref=e161]: Direct creator payments
+            - listitem [ref=e162]: Global coverage
+      - generic [ref=e164]:
+        - paragraph [ref=e165]: © 2026 SpillNova. All rights reserved.
+        - paragraph [ref=e166]: Real content. Real value. Real simple.
+  - alert [ref=e167]
+```

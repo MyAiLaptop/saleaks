@@ -1,0 +1,183 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SpillNova SpillNova ZA" [ref=e5] [cursor=pointer]:
+        - /url: /sa
+        - img "SpillNova" [ref=e6]
+        - generic [ref=e7]: SpillNova
+        - img "ZA" [ref=e8]
+      - navigation [ref=e15]:
+        - link "Live" [ref=e16] [cursor=pointer]:
+          - /url: /sa/live
+          - img [ref=e17]
+          - generic [ref=e23]: Live
+        - link "Browse" [ref=e24] [cursor=pointer]:
+          - /url: /sa/browse
+          - img [ref=e25]
+          - generic [ref=e28]: Browse
+        - link "Directory" [ref=e29] [cursor=pointer]:
+          - /url: /sa/directory
+          - img [ref=e30]
+          - generic [ref=e34]: Directory
+        - link "Discussions" [ref=e35] [cursor=pointer]:
+          - /url: /sa/discussions
+          - img [ref=e36]
+          - generic [ref=e38]: Discussions
+        - link "Suggestions" [ref=e39] [cursor=pointer]:
+          - /url: /sa/suggestions
+          - img [ref=e40]
+          - generic [ref=e42]: Suggestions
+        - link "How It Works" [ref=e43] [cursor=pointer]:
+          - /url: /sa/how-it-works
+          - img [ref=e44]
+          - generic [ref=e47]: How It Works
+        - link "Alerts" [ref=e48] [cursor=pointer]:
+          - /url: /sa/subscribe
+          - img [ref=e49]
+          - generic [ref=e52]: Alerts
+        - link "Buyer" [ref=e53] [cursor=pointer]:
+          - /url: /sa/buyer
+          - img [ref=e54]
+          - generic [ref=e57]: Buyer
+        - link "Account" [ref=e58] [cursor=pointer]:
+          - /url: /sa/account
+          - img [ref=e59]
+          - generic [ref=e62]: Account
+        - link "Change Region" [ref=e63] [cursor=pointer]:
+          - /url: /?change=true
+          - img [ref=e64]
+  - main [ref=e67]:
+    - generic [ref=e68]:
+      - generic [ref=e71]:
+        - button "Go back" [ref=e72] [cursor=pointer]:
+          - img [ref=e73]
+        - generic [ref=e75]:
+          - heading "Business Directory" [level=1] [ref=e76]:
+            - img [ref=e77]
+            - text: Business Directory
+          - paragraph [ref=e81]: Find local businesses and services
+      - generic [ref=e83]:
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - img [ref=e86]
+            - textbox "Search businesses (e.g., plumber, electrician...)" [active] [ref=e89]: test
+          - button "Filters" [ref=e90] [cursor=pointer]:
+            - img [ref=e91]
+            - generic [ref=e93]: Filters
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: Filter Results
+            - button "Clear all" [ref=e98] [cursor=pointer]:
+              - img [ref=e99]
+              - text: Clear all
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - generic [ref=e104]: Category
+              - generic [ref=e105]:
+                - combobox "Category" [ref=e106]:
+                  - option "All Categories" [selected]
+                  - option "Plumber"
+                  - option "Electrician"
+                  - option "Carpenter"
+                  - option "Painter"
+                  - option "Garden Services"
+                  - option "Cleaning Services"
+                  - option "Security"
+                  - option "IT Services"
+                  - option "Auto Mechanic"
+                  - option "Towing Services"
+                  - option "Locksmith"
+                  - option "HVAC / Air Conditioning"
+                  - option "Roofing"
+                  - option "Pest Control"
+                  - option "Moving Services"
+                  - option "Catering"
+                  - option "Photography"
+                  - option "Legal Services"
+                  - option "Accounting"
+                  - option "Real Estate"
+                  - option "Other"
+                - img
+            - generic [ref=e107]:
+              - generic [ref=e108]: Province
+              - generic [ref=e109]:
+                - combobox "Province" [ref=e110]:
+                  - option "All Provinces" [selected]
+                  - option "Eastern Cape"
+                  - option "Free State"
+                  - option "Gauteng"
+                  - option "KwaZulu-Natal"
+                  - option "Limpopo"
+                  - option "Mpumalanga"
+                  - option "Northern Cape"
+                  - option "North West"
+                  - option "Western Cape"
+                - img
+            - generic [ref=e111]:
+              - generic [ref=e112]: City/Town
+              - textbox "Enter city or town" [ref=e113]
+      - main [ref=e114]:
+        - generic [ref=e115]:
+          - img [ref=e116]
+          - heading "No businesses found" [level=2] [ref=e120]
+          - paragraph [ref=e121]: Try adjusting your search or filters
+          - button "Clear Filters" [ref=e122] [cursor=pointer]
+      - generic [ref=e124]:
+        - heading "Own a Business?" [level=2] [ref=e125]
+        - paragraph [ref=e126]: Get listed for free and reach customers in your area
+        - link "Register Your Business" [ref=e127] [cursor=pointer]:
+          - /url: /sa/advertise
+          - img [ref=e128]
+          - text: Register Your Business
+  - contentinfo [ref=e132]:
+    - generic [ref=e133]:
+      - generic [ref=e134]:
+        - generic [ref=e135]:
+          - img "SpillNova" [ref=e137]
+          - paragraph [ref=e138]: The global marketplace for authentic video and photo content. Buy and sell real footage from real people, verified and protected.
+          - generic [ref=e139]:
+            - generic [ref=e140]:
+              - img [ref=e141]
+              - generic [ref=e144]: Verified Real
+            - generic [ref=e145]:
+              - img [ref=e146]
+              - generic [ref=e148]: Content Protected
+        - generic [ref=e149]:
+          - heading "Quick Links" [level=3] [ref=e150]
+          - list [ref=e151]:
+            - listitem [ref=e152]:
+              - link "Live Feed" [ref=e153] [cursor=pointer]:
+                - /url: /live
+            - listitem [ref=e154]:
+              - link "Browse Content" [ref=e155] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e156]:
+              - link "Sell Your Content" [ref=e157] [cursor=pointer]:
+                - /url: /upload
+            - listitem [ref=e158]:
+              - link "How It Works" [ref=e159] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e160]:
+              - link "Get Alerts" [ref=e161] [cursor=pointer]:
+                - /url: /subscribe
+            - listitem [ref=e162]:
+              - link "For Buyers" [ref=e163] [cursor=pointer]:
+                - /url: /buyer
+            - listitem [ref=e164]:
+              - link "Pricing" [ref=e165] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e166]:
+          - heading "Why SpillNova" [level=3] [ref=e167]
+          - list [ref=e168]:
+            - listitem [ref=e169]: 100% real, verified content
+            - listitem [ref=e170]: No AI-generated fakes
+            - listitem [ref=e171]: Direct creator payments
+            - listitem [ref=e172]: Global coverage
+      - generic [ref=e174]:
+        - paragraph [ref=e175]: © 2026 SpillNova. All rights reserved.
+        - paragraph [ref=e176]: Real content. Real value. Real simple.
+  - alert [ref=e177]
+```

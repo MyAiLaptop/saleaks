@@ -1,0 +1,102 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SpillNova SpillNova ZA" [ref=e5] [cursor=pointer]:
+        - /url: /sa
+        - img "SpillNova" [ref=e6]
+        - generic [ref=e7]: SpillNova
+        - img "ZA" [ref=e8]
+      - navigation [ref=e15]:
+        - link "Live" [ref=e16] [cursor=pointer]:
+          - /url: /sa/live
+          - img [ref=e17]
+          - generic [ref=e23]: Live
+        - link "Browse" [ref=e24] [cursor=pointer]:
+          - /url: /sa/browse
+          - img [ref=e25]
+          - generic [ref=e28]: Browse
+        - link "Directory" [ref=e29] [cursor=pointer]:
+          - /url: /sa/directory
+          - img [ref=e30]
+          - generic [ref=e34]: Directory
+        - link "Discussions" [ref=e35] [cursor=pointer]:
+          - /url: /sa/discussions
+          - img [ref=e36]
+          - generic [ref=e38]: Discussions
+        - link "Suggestions" [ref=e39] [cursor=pointer]:
+          - /url: /sa/suggestions
+          - img [ref=e40]
+          - generic [ref=e42]: Suggestions
+        - link "How It Works" [ref=e43] [cursor=pointer]:
+          - /url: /sa/how-it-works
+          - img [ref=e44]
+          - generic [ref=e47]: How It Works
+        - link "Alerts" [ref=e48] [cursor=pointer]:
+          - /url: /sa/subscribe
+          - img [ref=e49]
+          - generic [ref=e52]: Alerts
+        - link "Buyer" [ref=e53] [cursor=pointer]:
+          - /url: /sa/buyer
+          - img [ref=e54]
+          - generic [ref=e57]: Buyer
+        - link "Account" [ref=e58] [cursor=pointer]:
+          - /url: /sa/account
+          - img [ref=e59]
+          - generic [ref=e62]: Account
+        - link "Change Region" [ref=e63] [cursor=pointer]:
+          - /url: /?change=true
+          - img [ref=e64]
+  - main [ref=e67]:
+    - img [ref=e70]
+  - contentinfo [ref=e72]:
+    - generic [ref=e73]:
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - img "SpillNova" [ref=e77]
+          - paragraph [ref=e78]: The global marketplace for authentic video and photo content. Buy and sell real footage from real people, verified and protected.
+          - generic [ref=e79]:
+            - generic [ref=e80]:
+              - img [ref=e81]
+              - generic [ref=e84]: Verified Real
+            - generic [ref=e85]:
+              - img [ref=e86]
+              - generic [ref=e88]: Content Protected
+        - generic [ref=e89]:
+          - heading "Quick Links" [level=3] [ref=e90]
+          - list [ref=e91]:
+            - listitem [ref=e92]:
+              - link "Live Feed" [ref=e93] [cursor=pointer]:
+                - /url: /live
+            - listitem [ref=e94]:
+              - link "Browse Content" [ref=e95] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e96]:
+              - link "Sell Your Content" [ref=e97] [cursor=pointer]:
+                - /url: /upload
+            - listitem [ref=e98]:
+              - link "How It Works" [ref=e99] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e100]:
+              - link "Get Alerts" [ref=e101] [cursor=pointer]:
+                - /url: /subscribe
+            - listitem [ref=e102]:
+              - link "For Buyers" [ref=e103] [cursor=pointer]:
+                - /url: /buyer
+            - listitem [ref=e104]:
+              - link "Pricing" [ref=e105] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e106]:
+          - heading "Why SpillNova" [level=3] [ref=e107]
+          - list [ref=e108]:
+            - listitem [ref=e109]: 100% real, verified content
+            - listitem [ref=e110]: No AI-generated fakes
+            - listitem [ref=e111]: Direct creator payments
+            - listitem [ref=e112]: Global coverage
+      - generic [ref=e114]:
+        - paragraph [ref=e115]: © 2026 SpillNova. All rights reserved.
+        - paragraph [ref=e116]: Real content. Real value. Real simple.
+  - alert [ref=e117]
+```

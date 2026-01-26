@@ -1,0 +1,114 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "SpillNova SpillNova ZA" [ref=e5] [cursor=pointer]:
+        - /url: /sa
+        - img "SpillNova" [ref=e6]
+        - generic [ref=e7]: SpillNova
+        - img "ZA" [ref=e8]
+      - button "Toggle menu" [ref=e15] [cursor=pointer]:
+        - img [ref=e16]
+  - main [ref=e17]:
+    - generic [ref=e18]:
+      - generic [ref=e20]:
+        - link "ZA Spill Nova" [ref=e21] [cursor=pointer]:
+          - /url: /sa
+          - img "ZA" [ref=e22]
+          - text: Spill
+          - generic [ref=e29]: Nova
+        - link "Back to Live" [ref=e30] [cursor=pointer]:
+          - /url: /sa/live
+      - main [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - img [ref=e37]
+              - heading "Sign In to Your Account" [level=2] [ref=e39]
+              - paragraph [ref=e40]: Enter your phone number and password
+            - generic [ref=e41]:
+              - generic [ref=e42]:
+                - generic [ref=e43]: Phone Number
+                - generic [ref=e44]:
+                  - generic [ref=e45]: "+27"
+                  - textbox "82 123 4567" [active] [ref=e46]
+              - generic [ref=e47]:
+                - generic [ref=e48]: Password
+                - generic [ref=e49]:
+                  - img [ref=e50]
+                  - textbox "Enter your password" [ref=e53]
+                  - button [ref=e54] [cursor=pointer]:
+                    - img [ref=e55]
+              - button "Sign In" [disabled] [ref=e58]:
+                - text: Sign In
+                - img [ref=e59]
+              - generic [ref=e61]:
+                - button "Forgot password?" [ref=e62] [cursor=pointer]
+                - button "Create account" [ref=e63] [cursor=pointer]
+            - paragraph [ref=e64]:
+              - text: By signing in, you agree to our
+              - link "Terms & Conditions" [ref=e65] [cursor=pointer]:
+                - /url: /terms
+          - generic [ref=e67]:
+            - heading "How it works" [level=3] [ref=e68]
+            - list [ref=e69]:
+              - listitem [ref=e70]:
+                - generic [ref=e71]: "1"
+                - generic [ref=e72]: Submit content with your phone number to enable revenue sharing
+              - listitem [ref=e73]:
+                - generic [ref=e74]: "2"
+                - generic [ref=e75]: When someone buys your content, you earn 50% of the sale
+              - listitem [ref=e76]:
+                - generic [ref=e77]: "3"
+                - generic [ref=e78]: Sign in with your phone number to view and withdraw your earnings
+  - contentinfo [ref=e79]:
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - generic [ref=e82]:
+          - img "SpillNova" [ref=e84]
+          - paragraph [ref=e85]: The global marketplace for authentic video and photo content. Buy and sell real footage from real people, verified and protected.
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - img [ref=e88]
+              - generic [ref=e91]: Verified Real
+            - generic [ref=e92]:
+              - img [ref=e93]
+              - generic [ref=e95]: Content Protected
+        - generic [ref=e96]:
+          - heading "Quick Links" [level=3] [ref=e97]
+          - list [ref=e98]:
+            - listitem [ref=e99]:
+              - link "Live Feed" [ref=e100] [cursor=pointer]:
+                - /url: /live
+            - listitem [ref=e101]:
+              - link "Browse Content" [ref=e102] [cursor=pointer]:
+                - /url: /browse
+            - listitem [ref=e103]:
+              - link "Sell Your Content" [ref=e104] [cursor=pointer]:
+                - /url: /upload
+            - listitem [ref=e105]:
+              - link "How It Works" [ref=e106] [cursor=pointer]:
+                - /url: /how-it-works
+            - listitem [ref=e107]:
+              - link "Get Alerts" [ref=e108] [cursor=pointer]:
+                - /url: /subscribe
+            - listitem [ref=e109]:
+              - link "For Buyers" [ref=e110] [cursor=pointer]:
+                - /url: /buyer
+            - listitem [ref=e111]:
+              - link "Pricing" [ref=e112] [cursor=pointer]:
+                - /url: /pricing
+        - generic [ref=e113]:
+          - heading "Why SpillNova" [level=3] [ref=e114]
+          - list [ref=e115]:
+            - listitem [ref=e116]: 100% real, verified content
+            - listitem [ref=e117]: No AI-generated fakes
+            - listitem [ref=e118]: Direct creator payments
+            - listitem [ref=e119]: Global coverage
+      - generic [ref=e121]:
+        - paragraph [ref=e122]: © 2026 SpillNova. All rights reserved.
+        - paragraph [ref=e123]: Real content. Real value. Real simple.
+  - alert [ref=e124]
+```
