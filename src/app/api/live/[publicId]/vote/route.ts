@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getFingerprint } from '@/lib/fingerprint'
+import { notifyReaction } from '@/lib/creator-notifications'
 
 // Calculate trending score
 function calculateTrendingScore(upvotes: number, downvotes: number, createdAt: Date): number {
@@ -78,7 +79,7 @@ export async function POST(
 
     const post = await prisma.liveBillboard.findUnique({
       where: { publicId },
-      select: { id: true, upvotes: true, downvotes: true, createdAt: true },
+      select: { id: true, upvotes: true, downvotes: true, createdAt: true, submitterAccountId: true },
     })
 
     if (!post) {
@@ -148,6 +149,17 @@ export async function POST(
         trendingScore: newTrendingScore,
       },
     })
+
+    // Notify creator of upvotes at milestones
+    if (post.submitterAccountId && newUpvotes > post.upvotes) {
+      notifyReaction(
+        post.id,
+        publicId,
+        post.submitterAccountId,
+        '👍',
+        newUpvotes
+      ).catch(err => console.error('[Vote Notification] Error:', err))
+    }
 
     return NextResponse.json({
       success: true,

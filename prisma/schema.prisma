@@ -754,6 +754,7 @@ model SubmitterAccount {
   withdrawals   SubmitterWithdrawal[]
   posts         Post[]            @relation("SubmitterPosts")
   livePosts     LiveBillboard[] @relation("SubmitterLivePosts")
+  notifications CreatorNotification[]
 
   @@index([phoneNumber])
   @@index([email])
@@ -1639,4 +1640,45 @@ model MarketplaceFavorite {
   @@unique([listingId, userPhone])
   @@index([deviceId])
   @@index([userPhone])
+}
+
+// ============================================
+// CREATOR NOTIFICATIONS - Engagement feedback for content creators
+// ============================================
+
+model CreatorNotification {
+  id            String   @id @default(cuid())
+
+  // Link to submitter account
+  accountId     String
+  account       SubmitterAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  // Link to the post this notification is about
+  postId        String?
+  postPublicId  String?  // For display in notifications
+
+  // Notification type
+  type          String   // VIEW_MILESTONE, REACTION, BID_PLACED, PURCHASE, AUCTION_WON
+
+  // Notification content
+  title         String   // e.g., "Your video hit 100 views!"
+  message       String   // e.g., "Keep creating - your content is getting attention"
+
+  // Associated data (JSON)
+  // For VIEW_MILESTONE: { views: 100 }
+  // For REACTION: { emoji: "👍", total: 25 }
+  // For BID_PLACED: { amount: 5000, bidderName: "News24" }
+  // For PURCHASE: { amount: 2500, buyerName: "eNCA" }
+  data          String?  // JSON string
+
+  // Read status
+  isRead        Boolean  @default(false)
+  readAt        DateTime?
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+
+  @@index([accountId])
+  @@index([accountId, isRead])
+  @@index([createdAt])
 }

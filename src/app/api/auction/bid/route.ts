@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { isValidSAPhoneNumber, formatPhoneNumber } from '@/lib/carrier-billing'
 import { formatCredits } from '@/lib/credits'
+import { notifyBidPlaced } from '@/lib/creator-notifications'
 
 // Minimum bid amount in cents (R50)
 const MINIMUM_BID = 5000
@@ -160,6 +161,17 @@ export async function POST(request: NextRequest) {
     ])
 
     // TODO: Notify previous highest bidder they've been outbid (via SMS)
+
+    // Notify creator about the new bid
+    if (post.submitterAccountId) {
+      notifyBidPlaced(
+        post.id,
+        post.publicId,
+        post.submitterAccountId,
+        amount,
+        displayName || buyer.organizationName || undefined
+      ).catch(err => console.error('[Bid Notification] Error:', err))
+    }
 
     console.log(`[Auction] New bid on post ${postId}: ${formatCredits(amount)} from ${normalizedPhone} (has ${formatCredits(buyer.creditBalance)} credits)`)
 

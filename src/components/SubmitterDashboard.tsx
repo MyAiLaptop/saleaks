@@ -14,7 +14,12 @@ import {
   RefreshCw,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Bell,
+  Sparkles,
+  ThumbsUp,
+  DollarSign,
+  Gavel
 } from 'lucide-react'
 
 interface Earning {
@@ -41,6 +46,17 @@ interface ContentItem {
   title?: string
   content?: string
   viewCount: number
+  createdAt: string
+}
+
+interface Notification {
+  id: string
+  type: string
+  title: string
+  message: string
+  postPublicId?: string
+  data?: Record<string, unknown>
+  isRead: boolean
   createdAt: string
 }
 
@@ -111,8 +127,11 @@ export function SubmitterDashboard({ onLogout }: SubmitterDashboardProps) {
   const [data, setData] = useState<AccountData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'earnings' | 'withdrawals' | 'content'>('earnings')
+  const [activeTab, setActiveTab] = useState<'earnings' | 'withdrawals' | 'content' | 'notifications'>('earnings')
   const [withdrawing, setWithdrawing] = useState(false)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [unreadCount, setUnreadCount] = useState(0)
+  const [notificationsLoading, setNotificationsLoading] = useState(false)
 
   const fetchAccountData = async () => {
     try {
@@ -136,8 +155,40 @@ export function SubmitterDashboard({ onLogout }: SubmitterDashboardProps) {
     }
   }
 
+  const fetchNotifications = async () => {
+    setNotificationsLoading(true)
+    try {
+      const res = await fetch('/api/submitter/notifications?limit=20')
+      const result = await res.json()
+      if (result.success) {
+        setNotifications(result.data.notifications)
+        setUnreadCount(result.data.pagination.unread)
+      }
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err)
+    } finally {
+      setNotificationsLoading(false)
+    }
+  }
+
+  const markNotificationsRead = async (ids?: string[]) => {
+    try {
+      const body = ids ? { notificationIds: ids } : { markAllRead: true }
+      await fetch('/api/submitter/notifications', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      // Refresh notifications
+      fetchNotifications()
+    } catch (err) {
+      console.error('Failed to mark notifications read:', err)
+    }
+  }
+
   useEffect(() => {
     fetchAccountData()
+    fetchNotifications()
   }, [])
 
   const handleLogout = async () => {
@@ -320,6 +371,25 @@ export function SubmitterDashboard({ onLogout }: SubmitterDashboardProps) {
         >
           Your Content ({data.content.totalPosts})
         </button>
+        <button
+          onClick={() => {
+            setActiveTab('notifications')
+            if (unreadCount > 0) markNotificationsRead()
+          }}
+          className={`px-4 py-2 font-medium transition-colors flex items-center gap-1 ${
+            activeTab === 'notifications'
+              ? 'text-primary-400 border-b-2 border-primary-400'
+              : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <Bell className="h-4 w-4" />
+          Activity
+          {unreadCount > 0 && (
+            <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-xs rounded-full">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -413,6 +483,66 @@ export function SubmitterDashboard({ onLogout }: SubmitterDashboardProps) {
                     </div>
                   </a>
                 ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'notifications' && (
+          <>
+            {notificationsLoading ? (
+              <div className="p-8 flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-primary-400" />
+              </div>
+            ) : notifications.length === 0 ? (
+              <div className="p-8 text-center text-gray-400">
+                <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No activity yet</p>
+                <p className="text-sm mt-2">When your content gets views, reactions, or bids, you&apos;ll see it here</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-ink-700">
+                {notifications.map((notification) => {
+                  const IconComponent = {
+                    VIEW_MILESTONE: Sparkles,
+                    REACTION: ThumbsUp,
+                    BID_PLACED: Gavel,
+                    PURCHASE: DollarSign,
+                    AUCTION_WON: Gavel,
+                  }[notification.type] || Bell
+
+                  const iconColor = {
+                    VIEW_MILESTONE: 'text-purple-400',
+                    REACTION: 'text-blue-400',
+                    BID_PLACED: 'text-yellow-400',
+                    PURCHASE: 'text-green-400',
+                    AUCTION_WON: 'text-green-400',
+                  }[notification.type] || 'text-gray-400'
+
+                  return (
+                    <div
+                      key={notification.id}
+                      className={`p-4 flex gap-3 ${!notification.isRead ? 'bg-primary-500/5' : ''}`}
+                    >
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-full bg-ink-700 flex items-center justify-center ${iconColor}`}>
+                        <IconComponent className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-medium">{notification.title}</p>
+                        <p className="text-sm text-gray-400 mt-0.5">{notification.message}</p>
+                        <p className="text-xs text-gray-500 mt-1">{formatDate(notification.createdAt)}</p>
+                      </div>
+                      {notification.postPublicId && (
+                        <a
+                          href={`/live/${notification.postPublicId}`}
+                          className="flex-shrink-0 text-primary-400 hover:text-primary-300 text-sm"
+                        >
+                          View
+                        </a>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             )}
           </>

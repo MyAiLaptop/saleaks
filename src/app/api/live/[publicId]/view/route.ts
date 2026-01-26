@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getFingerprint } from '@/lib/fingerprint'
+import { checkViewMilestone } from '@/lib/creator-notifications'
 
 /**
  * POST /api/live/[publicId]/view
@@ -27,7 +28,7 @@ export async function POST(
     // Find the post
     const post = await prisma.liveBillboard.findUnique({
       where: { publicId },
-      select: { id: true, category: true },
+      select: { id: true, category: true, viewCount: true, submitterAccountId: true },
     })
 
     if (!post) {
@@ -75,10 +76,20 @@ export async function POST(
 
     // Increment view count on post if this is a new view
     if (viewHistory.createdAt.getTime() === viewHistory.updatedAt.getTime()) {
-      await prisma.liveBillboard.update({
+      const updatedPost = await prisma.liveBillboard.update({
         where: { id: post.id },
         data: { viewCount: { increment: 1 } },
       })
+
+      // Check for view milestones and notify creator
+      if (post.submitterAccountId) {
+        checkViewMilestone(
+          post.id,
+          publicId,
+          post.submitterAccountId,
+          updatedPost.viewCount
+        ).catch(err => console.error('[View Milestone] Error:', err))
+      }
     }
 
     return NextResponse.json({
