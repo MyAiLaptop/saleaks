@@ -225,6 +225,7 @@ export function MobilePostWizard({
                 type="button"
                 onClick={onRequestVideo}
                 className="p-2 bg-red-500/20 text-red-400 rounded-lg"
+                aria-label="Record video"
               >
                 <Video className="h-5 w-5" />
               </button>
@@ -232,6 +233,7 @@ export function MobilePostWizard({
                 type="button"
                 onClick={onRequestPhoto}
                 className="p-2 bg-blue-500/20 text-blue-400 rounded-lg"
+                aria-label="Take photo"
               >
                 <Camera className="h-5 w-5" />
               </button>
@@ -309,8 +311,9 @@ export function MobilePostWizard({
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Province/Region</label>
+          <label htmlFor="wizard-province" className="block text-sm font-medium text-gray-300 mb-2">Province/Region</label>
           <select
+            id="wizard-province"
             value={province}
             onChange={(e) => setProvince(e.target.value)}
             className="w-full px-4 py-4 rounded-xl border border-white/20 bg-black/30 text-white text-lg appearance-none"
@@ -325,8 +328,9 @@ export function MobilePostWizard({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">City/Area (optional)</label>
+          <label htmlFor="wizard-city" className="block text-sm font-medium text-gray-300 mb-2">City/Area (optional)</label>
           <input
+            id="wizard-city"
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}

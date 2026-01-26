@@ -13,7 +13,20 @@
     "db:push": "prisma db push",
     "db:seed": "npx ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "db:studio": "prisma studio",
-    "setup": "npm run db:generate && npm run db:push && npm run db:seed"
+    "setup": "npm run db:generate && npm run db:push && npm run db:seed",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:navigation": "playwright test navigation.spec.ts",
+    "test:live": "playwright test live-feed.spec.ts",
+    "test:directory": "playwright test directory.spec.ts",
+    "test:advertising": "playwright test advertising.spec.ts",
+    "test:account": "playwright test account.spec.ts",
+    "test:interactions": "playwright test interactions.spec.ts",
+    "test:edge-cases": "playwright test edge-cases.spec.ts",
+    "test:accessibility": "playwright test accessibility.spec.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.972.0",
@@ -33,6 +46,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^20.11.0",

@@ -270,8 +270,10 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
 
         {/* Close button */}
         <button
+          type="button"
           onClick={onCancel}
           className="absolute top-4 right-4 w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors z-10"
+          aria-label="Close camera"
         >
           <X className="h-5 w-5" />
         </button>
@@ -280,9 +282,10 @@ export function PhotoCapture({ onPhotoCapture, onCancel }: PhotoCaptureProps) {
         {!capturedImage && !isInitializing && (
           <div className="absolute top-4 left-1/2 -translate-x-1/2">
             <button
+              type="button"
               onClick={switchCamera}
               className="w-10 h-10 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors"
-              title="Switch camera"
+              aria-label="Switch camera"
             >
               <SwitchCamera className="h-5 w-5" />
             </button>

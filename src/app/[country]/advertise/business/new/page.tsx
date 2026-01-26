@@ -469,6 +469,7 @@ export default function CreateBusinessProfilePage() {
                       type="button"
                       onClick={() => setLogo(null)}
                       className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:bg-black/80"
+                      aria-label="Remove logo"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -516,6 +517,7 @@ export default function CreateBusinessProfilePage() {
                       type="button"
                       onClick={() => setCoverImage(null)}
                       className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full text-white hover:bg-black/80"
+                      aria-label="Remove cover image"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -579,6 +581,7 @@ export default function CreateBusinessProfilePage() {
                   type="button"
                   onClick={() => setIntroVideo(null)}
                   className="absolute top-2 right-2 p-2 bg-black/60 rounded-full text-white hover:bg-black/80"
+                  aria-label="Remove intro video"
                 >
                   <X className="w-5 h-5" />
                 </button>
