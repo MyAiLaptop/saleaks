@@ -100,8 +100,8 @@ const POLL_INTERVAL = 5000
 export default function CountryLiveBillboardPage() {
   const { country, config } = useCountry()
 
-  // Use country-specific categories and provinces
-  const CATEGORIES = [
+  // Base categories (same for all countries)
+  const BASE_CATEGORIES = [
     // News categories
     { id: 'BREAKING', label: 'Breaking News', icon: AlertTriangle, color: 'text-red-500 bg-red-100 dark:bg-red-900/30' },
     { id: 'TRAFFIC', label: 'Traffic', icon: Car, color: 'text-orange-500 bg-orange-100 dark:bg-orange-900/30' },
@@ -119,16 +119,28 @@ export default function CountryLiveBillboardPage() {
     { id: 'MUSIC', label: 'Music', icon: Music, color: 'text-indigo-500 bg-indigo-100 dark:bg-indigo-900/30' },
     { id: 'ANIMALS', label: 'Animals', icon: PawPrint, color: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30' },
     { id: 'STUNTS', label: 'Stunts', icon: Sparkles, color: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30' },
-    // Culture categories
-    { id: 'CULTURE_BLACK', label: 'Black Culture', icon: Heart, color: 'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30' },
-    { id: 'CULTURE_WHITE', label: 'White Culture', icon: Heart, color: 'text-sky-500 bg-sky-100 dark:bg-sky-900/30' },
-    { id: 'CULTURE_INDIAN', label: 'Indian Culture', icon: Heart, color: 'text-orange-500 bg-orange-100 dark:bg-orange-900/30' },
-    { id: 'CULTURE_COLOURED', label: 'Coloured Culture', icon: Heart, color: 'text-teal-500 bg-teal-100 dark:bg-teal-900/30' },
-    { id: 'CULTURE_ZULU', label: 'Zulu Culture', icon: Landmark, color: 'text-green-600 bg-green-100 dark:bg-green-900/30' },
-    { id: 'CULTURE_XHOSA', label: 'Xhosa Culture', icon: Landmark, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30' },
-    { id: 'CULTURE_AFRIKAANS', label: 'Afrikaans Culture', icon: Landmark, color: 'text-red-500 bg-red-100 dark:bg-red-900/30' },
-    { id: 'CULTURE_OTHER', label: 'Other Culture', icon: Landmark, color: 'text-purple-500 bg-purple-100 dark:bg-purple-900/30' },
   ]
+
+  // Country-specific culture categories from config
+  const CULTURE_CATEGORIES = (config.cultureCategories || []).map((cat, index) => ({
+    id: cat.id,
+    label: cat.label,
+    icon: index % 2 === 0 ? Heart : Landmark, // Alternate icons for variety
+    color: [
+      'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30',
+      'text-sky-500 bg-sky-100 dark:bg-sky-900/30',
+      'text-orange-500 bg-orange-100 dark:bg-orange-900/30',
+      'text-teal-500 bg-teal-100 dark:bg-teal-900/30',
+      'text-green-600 bg-green-100 dark:bg-green-900/30',
+      'text-blue-600 bg-blue-100 dark:bg-blue-900/30',
+      'text-red-500 bg-red-100 dark:bg-red-900/30',
+      'text-purple-500 bg-purple-100 dark:bg-purple-900/30',
+      'text-pink-500 bg-pink-100 dark:bg-pink-900/30',
+    ][index % 9],
+  }))
+
+  // Combined categories
+  const CATEGORIES = [...BASE_CATEGORIES, ...CULTURE_CATEGORIES]
 
   // Feed sections
   const SECTIONS = [

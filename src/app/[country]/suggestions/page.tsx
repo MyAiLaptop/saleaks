@@ -29,6 +29,7 @@ import {
   Music,
   Landmark,
   MoreHorizontal,
+  Heart,
 } from 'lucide-react'
 import { Flag } from '@/components/Flag'
 import { useCountry } from '@/lib/country-context'
@@ -49,7 +50,8 @@ interface Suggestion {
   createdAt: string
 }
 
-const CATEGORIES = [
+// Base categories (same for all countries)
+const BASE_CATEGORIES = [
   { id: 'BREAKING', label: 'Breaking News', icon: AlertTriangle, color: 'text-red-500 bg-red-100 dark:bg-red-900/30' },
   { id: 'CRIME', label: 'Crime', icon: Shield, color: 'text-purple-500 bg-purple-100 dark:bg-purple-900/30' },
   { id: 'PROTEST', label: 'Protest', icon: Megaphone, color: 'text-amber-500 bg-amber-100 dark:bg-amber-900/30' },
@@ -68,6 +70,27 @@ const CATEGORIES = [
 export default function SuggestionsPage() {
   const { country, config } = useCountry()
   const PROVINCES = config.provinces || []
+
+  // Country-specific culture categories from config
+  const CULTURE_CATEGORIES = (config.cultureCategories || []).map((cat, index) => ({
+    id: cat.id,
+    label: cat.label,
+    icon: index % 2 === 0 ? Heart : Landmark,
+    color: [
+      'text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30',
+      'text-sky-500 bg-sky-100 dark:bg-sky-900/30',
+      'text-orange-500 bg-orange-100 dark:bg-orange-900/30',
+      'text-teal-500 bg-teal-100 dark:bg-teal-900/30',
+      'text-green-600 bg-green-100 dark:bg-green-900/30',
+      'text-blue-600 bg-blue-100 dark:bg-blue-900/30',
+      'text-red-500 bg-red-100 dark:bg-red-900/30',
+      'text-purple-500 bg-purple-100 dark:bg-purple-900/30',
+      'text-pink-500 bg-pink-100 dark:bg-pink-900/30',
+    ][index % 9],
+  }))
+
+  // Combined categories
+  const CATEGORIES = [...BASE_CATEGORIES, ...CULTURE_CATEGORIES]
 
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [loading, setLoading] = useState(true)

@@ -9,6 +9,11 @@
  * - Localized content
  */
 
+export interface CultureCategory {
+  id: string
+  label: string
+}
+
 export interface CountryConfig {
   code: string // ISO 3166-1 alpha-2
   name: string
@@ -20,6 +25,7 @@ export interface CountryConfig {
   phoneLength: number // digits after country code
   paymentMethods: ('carrier' | 'payfast' | 'paystack' | 'stripe' | 'mpesa' | 'flutterwave')[]
   categories: string[]
+  cultureCategories?: CultureCategory[] // Country-specific culture categories
   provinces?: string[] // states/provinces/regions
   timezone: string
   enabled: boolean
@@ -46,6 +52,17 @@ export const countries: Record<string, CountryConfig> = {
       'COMMUNITY',
       'POLITICS',
       'OTHER',
+    ],
+    cultureCategories: [
+      { id: 'CULTURE_ZULU', label: 'Zulu Culture' },
+      { id: 'CULTURE_XHOSA', label: 'Xhosa Culture' },
+      { id: 'CULTURE_AFRIKAANS', label: 'Afrikaans Culture' },
+      { id: 'CULTURE_SOTHO', label: 'Sotho Culture' },
+      { id: 'CULTURE_TSWANA', label: 'Tswana Culture' },
+      { id: 'CULTURE_VENDA', label: 'Venda Culture' },
+      { id: 'CULTURE_INDIAN', label: 'Indian Culture' },
+      { id: 'CULTURE_COLOURED', label: 'Coloured Culture' },
+      { id: 'CULTURE_OTHER', label: 'Other Culture' },
     ],
     provinces: [
       'Gauteng',
@@ -81,6 +98,15 @@ export const countries: Record<string, CountryConfig> = {
       'COMMUNITY',
       'OTHER',
     ],
+    cultureCategories: [
+      { id: 'CULTURE_YORUBA', label: 'Yoruba Culture' },
+      { id: 'CULTURE_IGBO', label: 'Igbo Culture' },
+      { id: 'CULTURE_HAUSA', label: 'Hausa Culture' },
+      { id: 'CULTURE_FULANI', label: 'Fulani Culture' },
+      { id: 'CULTURE_IJAW', label: 'Ijaw Culture' },
+      { id: 'CULTURE_EDO', label: 'Edo Culture' },
+      { id: 'CULTURE_OTHER', label: 'Other Culture' },
+    ],
     provinces: [
       'Lagos',
       'Abuja',
@@ -113,6 +139,15 @@ export const countries: Record<string, CountryConfig> = {
       'WEATHER',
       'COMMUNITY',
       'OTHER',
+    ],
+    cultureCategories: [
+      { id: 'CULTURE_KIKUYU', label: 'Kikuyu Culture' },
+      { id: 'CULTURE_LUO', label: 'Luo Culture' },
+      { id: 'CULTURE_KALENJIN', label: 'Kalenjin Culture' },
+      { id: 'CULTURE_LUHYA', label: 'Luhya Culture' },
+      { id: 'CULTURE_KAMBA', label: 'Kamba Culture' },
+      { id: 'CULTURE_MAASAI', label: 'Maasai Culture' },
+      { id: 'CULTURE_OTHER', label: 'Other Culture' },
     ],
     provinces: [
       'Nairobi',
@@ -173,6 +208,14 @@ export const countries: Record<string, CountryConfig> = {
       'COMMUNITY',
       'OTHER',
     ],
+    cultureCategories: [
+      { id: 'CULTURE_AFRICAN_AMERICAN', label: 'African American' },
+      { id: 'CULTURE_LATINO', label: 'Latino/Hispanic' },
+      { id: 'CULTURE_ASIAN_AMERICAN', label: 'Asian American' },
+      { id: 'CULTURE_NATIVE_AMERICAN', label: 'Native American' },
+      { id: 'CULTURE_SOUTHERN', label: 'Southern Culture' },
+      { id: 'CULTURE_OTHER', label: 'Other Culture' },
+    ],
     provinces: [], // Too many states to list
     timezone: 'America/New_York',
     enabled: true,
@@ -195,6 +238,15 @@ export const countries: Record<string, CountryConfig> = {
       'WEATHER',
       'COMMUNITY',
       'OTHER',
+    ],
+    cultureCategories: [
+      { id: 'CULTURE_BRITISH', label: 'British Culture' },
+      { id: 'CULTURE_SCOTTISH', label: 'Scottish Culture' },
+      { id: 'CULTURE_WELSH', label: 'Welsh Culture' },
+      { id: 'CULTURE_IRISH', label: 'Irish Culture' },
+      { id: 'CULTURE_SOUTH_ASIAN', label: 'South Asian British' },
+      { id: 'CULTURE_CARIBBEAN', label: 'Caribbean British' },
+      { id: 'CULTURE_OTHER', label: 'Other Culture' },
     ],
     provinces: [
       'England',
