@@ -99,6 +99,7 @@ SpillNova is a **privacy-focused citizen journalism and whistleblower platform**
 **Personalization:**
 - `ViewHistory` - Tracks watched/skipped videos per session
 - `UserPreference` - Learned category preferences, hideWatched setting
+- `CreatorNotification` - Engagement notifications for content creators
 
 ## Recent Changes (January 2026)
 
@@ -135,6 +136,18 @@ Added TikTok-style feed personalization:
 ### UI Consistency
 - Global background image applied to all pages (discussions, live, marketplace, etc.)
 - Pattern: `bg-fixed bg-cover bg-center` with `bg-black/60` overlay
+
+### Creator Engagement Notifications
+Dopamine-feedback system to drive content creation:
+- **Database model:** `CreatorNotification` - stores notifications for creators
+- **Helper library:** `src/lib/creator-notifications.ts` - functions to trigger notifications
+- **API endpoints:** `src/app/api/submitter/notifications/route.ts` (GET list, PATCH mark read)
+- **UI:** Activity tab in SubmitterDashboard with unread count badge
+- **Triggers:**
+  - View milestones: 10, 50, 100, 500, 1K, 5K, 10K, 50K, 100K views
+  - Upvote milestones: 1, 10, 25, 50, 100, 500 upvotes
+  - Bid placed on auction content
+  - Content purchases (planned)
 
 ### Deployment Fixes
 - Dockerfile updated with `--accept-data-loss` flag for Prisma migrations
