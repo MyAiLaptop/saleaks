@@ -421,6 +421,7 @@ model LiveBillboard {
   bids         AuctionBid[]
   wonAuctions  WonAuction[]
   viewHistory  ViewHistory[]
+  videoAds     VideoAd[]
 
   @@index([category, createdAt])
   @@index([province, createdAt])
@@ -1290,4 +1291,185 @@ model UserPreference {
   updatedAt     DateTime @updatedAt
 
   @@index([sessionToken])
+}
+
+// ============================================
+// ADVERTISING SYSTEM - Non-intrusive video ads
+// ============================================
+
+// Advertiser account - businesses that want to advertise
+model AdvertiserAccount {
+  id            String   @id @default(cuid())
+
+  // Phone number (normalized to international format)
+  phoneNumber   String   @unique
+
+  // Password authentication (bcrypt hashed)
+  passwordHash  String?
+
+  // Business info (basic)
+  businessName  String?
+  email         String?
+  emailVerified Boolean  @default(false)
+
+  // Password reset tokens
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
+
+  // Credit/Token balance (in cents ZAR)
+  creditBalance Int      @default(0)
+  totalSpent    Int      @default(0)
+
+  // Verification
+  verified      Boolean  @default(false)
+  verifiedAt    DateTime?
+
+  // Session management
+  sessionToken      String?   @unique
+  sessionExpiresAt  DateTime?
+  lastLoginAt       DateTime?
+  loginAttempts     Int       @default(0)
+  lockedUntil       DateTime?
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  businessProfiles  BusinessProfile[]
+  creditTransactions AdvertiserCreditTransaction[]
+
+  @@index([phoneNumber])
+  @@index([email])
+}
+
+// Business profile - public page for a business
+model BusinessProfile {
+  id            String   @id @default(cuid())
+  publicId      String   @unique  // URL slug: /business/abc-plumbing
+
+  // Owner
+  advertiserId  String
+  advertiser    AdvertiserAccount @relation(fields: [advertiserId], references: [id], onDelete: Cascade)
+
+  // Business details
+  name          String
+  description   String?
+  logo          String?  // R2 key for logo image
+  coverImage    String?  // R2 key for cover image
+
+  // Contact info
+  phone         String?
+  whatsapp      String?
+  email         String?
+  website       String?
+
+  // Location/Service area
+  country       String   @default("sa")
+  province      String?
+  city          String?
+  serviceAreas  String?  // JSON array of areas served
+
+  // Categories of service (e.g., "PLUMBER", "ELECTRICIAN", "SOLAR")
+  categories    String?  // JSON array of business categories
+
+  // Social links
+  facebook      String?
+  instagram     String?
+  twitter       String?
+  tiktok        String?
+
+  // Stats
+  totalClicks   Int      @default(0)
+  totalViews    Int      @default(0)
+
+  // Status: ACTIVE, SUSPENDED, DELETED
+  status        String   @default("ACTIVE")
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  videoAds      VideoAd[]
+
+  @@index([advertiserId])
+  @@index([status])
+  @@index([country, province])
+}
+
+// Video ad - a hook question tied to a specific video
+model VideoAd {
+  id            String   @id @default(cuid())
+
+  // The video this ad is attached to
+  postId        String
+  post          LiveBillboard @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // The business profile being advertised
+  businessId    String
+  business      BusinessProfile @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  // The hook question (e.g., "Need a plumber?")
+  hookQuestion  String
+
+  // Optional icon/emoji for visual appeal
+  icon          String?  // e.g., "🔧", "☀️", "🏠"
+
+  // Pricing
+  amountPaid    Int      // Amount paid in cents
+  submitterShare Int     // 50% to content creator
+  platformShare Int      // 50% to platform
+
+  // Duration
+  startsAt      DateTime @default(now())
+  expiresAt     DateTime // When the ad expires
+
+  // Status: ACTIVE, EXPIRED, CANCELLED, PENDING_PAYMENT
+  status        String   @default("ACTIVE")
+
+  // Stats
+  impressions   Int      @default(0)
+  clicks        Int      @default(0)
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([postId, status])
+  @@index([businessId])
+  @@index([status, expiresAt])
+}
+
+// Credit transactions for advertisers
+model AdvertiserCreditTransaction {
+  id            String   @id @default(cuid())
+
+  // Link to advertiser account
+  advertiserId  String
+  advertiser    AdvertiserAccount @relation(fields: [advertiserId], references: [id])
+
+  // Transaction details
+  type          String   // PURCHASE, AD_SPEND, REFUND
+  amount        Int      // Amount in cents (positive for credits, negative for spend)
+  balanceBefore Int
+  balanceAfter  Int
+
+  // Reference
+  referenceType String?  // PAYFAST, FLUTTERWAVE, VIDEO_AD
+  referenceId   String?  // Payment ID or VideoAd ID
+
+  // Description
+  description   String?
+
+  // Payment tracking (for credit purchases)
+  paymentId     String?
+  status        String   @default("COMPLETED")
+  completedAt   DateTime?
+
+  createdAt     DateTime @default(now())
+
+  @@index([advertiserId])
+  @@index([type])
+  @@index([createdAt])
 }

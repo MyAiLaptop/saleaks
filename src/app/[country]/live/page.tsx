@@ -50,6 +50,7 @@ import { MobilePostWizard } from '@/components/MobilePostWizard'
 import { Flag } from '@/components/Flag'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
+import { VideoAdBanner } from '@/components/VideoAdBanner'
 import { useCountry } from '@/lib/country-context'
 
 interface Media {
@@ -1407,6 +1408,11 @@ export default function CountryLiveBillboardPage() {
                           ))}
                         </div>
                       </div>
+                    )}
+
+                    {/* Ad Banner - shows hook question or "Advertise Here" */}
+                    {post.media && post.media.some(m => m.mimeType.startsWith('video/')) && (
+                      <VideoAdBanner postId={post.publicId} country={country} />
                     )}
 
                     <div className="p-4">
