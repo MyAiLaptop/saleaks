@@ -55,22 +55,12 @@ textarea,
 }
 
 /* ========================================
-   HEADER FIXED POSITIONING
-   Ensures header stays fixed on scroll
+   SIDEBAR LAYOUT UTILITIES
    ======================================== */
 
-header {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 100 !important;
-  background-color: rgba(0, 0, 0, 0.95) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: transform;
+/* Sidebar transitions */
+.sidebar-transition {
+  transition: width 0.3s ease, transform 0.3s ease;
 }
 
 /* ========================================

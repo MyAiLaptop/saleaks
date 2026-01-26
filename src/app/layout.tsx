@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
+import { AppLayout } from '@/components/AppLayout'
 import { PWAProvider } from '@/components/PWAProvider'
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -64,56 +63,15 @@ export default function RootLayout({
               html, body {
                 background-color: #0F131A !important;
               }
-              /* Header styles - applies to both placeholder and real header */
-              header, #header-placeholder {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                z-index: 100 !important;
-                background-color: rgba(0, 0, 0, 0.95) !important;
-                -webkit-backdrop-filter: blur(12px) !important;
-                backdrop-filter: blur(12px) !important;
-                height: 64px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-              }
-              /* Hide placeholder once real header exists - using :has() */
-              body:has(header) #header-placeholder {
-                display: none !important;
-              }
-              /* Reserve space for fixed header */
-              main {
-                padding-top: 64px !important;
-              }
             `,
           }}
         />
       </head>
-      <body className={`${plusJakarta.className} min-h-screen flex flex-col bg-ink-900`}>
-        {/* Static header placeholder - shows immediately while React loads */}
-        <div
-          id="header-placeholder"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '64px',
-            backgroundColor: 'rgba(0, 0, 0, 0.95)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            zIndex: 99,
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-          }}
-        />
+      <body className={`${plusJakarta.className} min-h-screen bg-ink-900`}>
         <PWAProvider />
-        <Header />
-        <main className="flex-1 pt-16">
+        <AppLayout>
           {children}
-        </main>
-        <Footer />
+        </AppLayout>
       </body>
     </html>
   )
