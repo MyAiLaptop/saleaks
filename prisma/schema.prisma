@@ -347,6 +347,18 @@ model LiveBillboard {
   // Category: BREAKING, TRAFFIC, CRIME, PROTEST, LOADSHEDDING, WEATHER, COMMUNITY, OTHER
   category     String   @default("OTHER")
 
+  // Content source tracking
+  // "camera" = captured live using device camera (default, trusted)
+  // "upload" = uploaded from device storage (requires AI disclosure)
+  contentSource    String   @default("camera")
+
+  // AI disclosure for uploaded content
+  // "none" = user confirms no AI used (original footage)
+  // "unknown" = user unsure if AI was used
+  // "ai_enhanced" = AI used for editing/enhancement
+  // "ai_generated" = fully AI generated content
+  aiDisclosure     String?  // null for camera captures
+
   // Location
   country      String   @default("sa") // Country code: sa, ng, ke, etc.
   province     String?

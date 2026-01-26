@@ -31,7 +31,12 @@ import {
   Sparkles,
   Landmark,
   Heart,
+  Upload,
+  Bot,
 } from 'lucide-react'
+
+export type AiDisclosure = 'none' | 'unknown' | 'ai_enhanced' | 'ai_generated'
+export type ContentSource = 'camera' | 'upload'
 
 // Category type matching live page
 interface Category {
@@ -45,6 +50,7 @@ interface MobilePostWizardProps {
   selectedFiles: File[]
   onRequestVideo: () => void
   onRequestPhoto: () => void
+  onRequestUpload: () => void
   onRemoveFile: (index: number) => void
   onSubmit: (data: {
     content: string
@@ -53,6 +59,8 @@ interface MobilePostWizardProps {
     city: string
     revenueShareEnabled: boolean
     revenueShareContact: string
+    contentSource: ContentSource
+    aiDisclosure: AiDisclosure | null
   }) => void
   onCancel: () => void
   categories: Category[]
@@ -60,6 +68,8 @@ interface MobilePostWizardProps {
   displayName: string | null
   uploading: boolean
   creating: boolean
+  contentSource: ContentSource
+  aiDisclosure: AiDisclosure | null
 }
 
 const TOTAL_STEPS = 5
@@ -68,7 +78,10 @@ export function MobilePostWizard({
   selectedFiles,
   onRequestVideo,
   onRequestPhoto,
+  onRequestUpload,
   onRemoveFile,
+  contentSource,
+  aiDisclosure,
   onSubmit,
   onCancel,
   categories,
@@ -97,6 +110,8 @@ export function MobilePostWizard({
       city,
       revenueShareEnabled,
       revenueShareContact,
+      contentSource,
+      aiDisclosure,
     })
   }
 
@@ -216,9 +231,22 @@ export function MobilePostWizard({
             <div className="flex-1">
               <div className="flex items-center gap-1.5 text-green-400 text-sm font-medium">
                 <CheckCircle className="h-4 w-4" />
-                {selectedFiles.length} {selectedFiles.length === 1 ? 'file' : 'files'} captured
+                {selectedFiles.length} {selectedFiles.length === 1 ? 'file' : 'files'} {contentSource === 'upload' ? 'uploaded' : 'captured'}
               </div>
-              <p className="text-xs text-gray-400">Tap to add more</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-gray-400">Tap to add more</p>
+                {contentSource === 'upload' && aiDisclosure && (
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${
+                    aiDisclosure === 'none'
+                      ? 'bg-green-500/20 text-green-400'
+                      : aiDisclosure === 'unknown'
+                      ? 'bg-amber-500/20 text-amber-400'
+                      : 'bg-purple-500/20 text-purple-400'
+                  }`}>
+                    {aiDisclosure === 'none' ? 'Original' : aiDisclosure === 'unknown' ? 'May have AI' : 'AI'}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex gap-2">
               <button
@@ -236,6 +264,14 @@ export function MobilePostWizard({
                 aria-label="Take photo"
               >
                 <Camera className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={onRequestUpload}
+                className="p-2 bg-purple-500/20 text-purple-400 rounded-lg"
+                aria-label="Upload file"
+              >
+                <Upload className="h-5 w-5" />
               </button>
             </div>
           </div>

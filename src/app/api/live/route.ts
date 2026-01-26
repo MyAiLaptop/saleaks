@@ -356,8 +356,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { content, category, province, city, sessionToken, displayName, isHappeningNow, revenueShareEnabled, revenueShareContact, submitterPhone, country } = body
+    const { content, category, province, city, sessionToken, displayName, isHappeningNow, revenueShareEnabled, revenueShareContact, submitterPhone, country, contentSource, aiDisclosure } = body
     const finalCountry = country || 'sa' // Default to South Africa
+    const finalContentSource = contentSource === 'upload' ? 'upload' : 'camera'
+    const finalAiDisclosure = contentSource === 'upload' && aiDisclosure ? aiDisclosure : null
 
     // Validation
     if (!content || content.trim().length === 0) {
@@ -473,6 +475,9 @@ export async function POST(request: NextRequest) {
         moderationScore: textModeration.score,
         moderationFlags: textModeration.flags.length > 0 ? JSON.stringify(textModeration.flags) : null,
         moderatedAt: new Date(),
+        // Content source and AI disclosure
+        contentSource: finalContentSource,
+        aiDisclosure: finalAiDisclosure,
       },
       include: {
         media: true,

@@ -43,9 +43,11 @@ import {
   Sparkles,
   Landmark,
   Heart,
+  Bot,
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { PhotoCapture } from '@/components/PhotoCapture'
+import { VideoUploader, type AiDisclosure } from '@/components/VideoUploader'
 import { MobilePostWizard } from '@/components/MobilePostWizard'
 import { Flag } from '@/components/Flag'
 import UserProfilePopup from '@/components/UserProfilePopup'
@@ -96,6 +98,8 @@ interface LivePost {
   status: string
   createdAt: string
   media: Media[]
+  contentSource?: 'camera' | 'upload'
+  aiDisclosure?: 'none' | 'unknown' | 'ai_enhanced' | 'ai_generated' | null
 }
 
 const POLL_INTERVAL = 5000
@@ -189,8 +193,13 @@ export default function CountryLiveBillboardPage() {
   const [uploadingMedia, setUploadingMedia] = useState(false)
   const [showVideoRecorder, setShowVideoRecorder] = useState(false)
   const [showPhotoCapture, setShowPhotoCapture] = useState(false)
+  const [showVideoUploader, setShowVideoUploader] = useState(false)
   const [showCameraPermissionDialog, setShowCameraPermissionDialog] = useState(false)
   const [cameraPermissionDenied, setCameraPermissionDenied] = useState(false)
+
+  // Content source and AI disclosure for uploads
+  const [contentSource, setContentSource] = useState<'camera' | 'upload'>('camera')
+  const [aiDisclosure, setAiDisclosure] = useState<'none' | 'unknown' | 'ai_enhanced' | 'ai_generated' | null>(null)
 
   // Revenue sharing
   const [revenueShareEnabled, setRevenueShareEnabled] = useState(false)
@@ -324,6 +333,8 @@ export default function CountryLiveBillboardPage() {
   const handleVideoRecordingComplete = (file: File) => {
     setSelectedFiles(prev => [...prev, file].slice(0, 4))
     setShowVideoRecorder(false)
+    setContentSource('camera')
+    setAiDisclosure(null)
     // After capture, show the details form
     setShowCaptureChoice(false)
     setShowCreateForm(true)
@@ -332,7 +343,19 @@ export default function CountryLiveBillboardPage() {
   const handlePhotoCaptureComplete = (file: File) => {
     setSelectedFiles(prev => [...prev, file].slice(0, 4))
     setShowPhotoCapture(false)
+    setContentSource('camera')
+    setAiDisclosure(null)
     // After capture, show the details form
+    setShowCaptureChoice(false)
+    setShowCreateForm(true)
+  }
+
+  const handleUploadComplete = (file: File, disclosure: AiDisclosure) => {
+    setSelectedFiles(prev => [...prev, file].slice(0, 4))
+    setShowVideoUploader(false)
+    setContentSource('upload')
+    setAiDisclosure(disclosure)
+    // After upload, show the details form
     setShowCaptureChoice(false)
     setShowCreateForm(true)
   }
@@ -454,6 +477,8 @@ export default function CountryLiveBillboardPage() {
     city: string
     revenueShareEnabled: boolean
     revenueShareContact: string
+    contentSource: 'camera' | 'upload'
+    aiDisclosure: 'none' | 'unknown' | 'ai_enhanced' | 'ai_generated' | null
   }) => {
     if (!data.content.trim() || creating) return
 
@@ -472,6 +497,8 @@ export default function CountryLiveBillboardPage() {
           displayName,
           revenueShareEnabled: data.revenueShareEnabled,
           revenueShareContact: data.revenueShareEnabled ? data.revenueShareContact : undefined,
+          contentSource: data.contentSource,
+          aiDisclosure: data.aiDisclosure,
         }),
       })
       const resData = await res.json()
@@ -513,6 +540,8 @@ export default function CountryLiveBillboardPage() {
 
         setPosts(prev => [resData.data.post, ...prev])
         setSelectedFiles([])
+        setContentSource('camera')
+        setAiDisclosure(null)
         setShowCreateForm(false)
       } else {
         setError(resData.error || 'Failed to create post')
@@ -784,17 +813,22 @@ export default function CountryLiveBillboardPage() {
               selectedFiles={selectedFiles}
               onRequestVideo={requestCameraPermission}
               onRequestPhoto={requestPhotoPermission}
+              onRequestUpload={() => setShowVideoUploader(true)}
               onRemoveFile={removeFile}
               onSubmit={handleWizardSubmit}
               onCancel={() => {
                 setShowCreateForm(false)
                 setSelectedFiles([])
+                setContentSource('camera')
+                setAiDisclosure(null)
               }}
               categories={CATEGORIES}
               provinces={PROVINCES}
               displayName={displayName}
               uploading={uploadingMedia}
               creating={creating}
+              contentSource={contentSource}
+              aiDisclosure={aiDisclosure}
             />
           )}
 
@@ -1459,6 +1493,24 @@ export default function CountryLiveBillboardPage() {
                               {[post.city, post.province].filter(Boolean).join(', ')}
                             </span>
                           )}
+                          {/* Content Source Badge */}
+                          {post.contentSource === 'upload' && post.aiDisclosure && (
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                              post.aiDisclosure === 'none'
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                : post.aiDisclosure === 'unknown'
+                                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                            }`}>
+                              {post.aiDisclosure === 'none' ? (
+                                <><Shield className="h-3 w-3" /> Upload</>
+                              ) : post.aiDisclosure === 'unknown' ? (
+                                <><AlertTriangle className="h-3 w-3" /> May have AI</>
+                              ) : (
+                                <><Bot className="h-3 w-3" /> AI Content</>
+                              )}
+                            </span>
+                          )}
                         </div>
                         <span className="text-xs text-gray-400 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -1658,6 +1710,20 @@ export default function CountryLiveBillboardPage() {
           onPhotoCapture={handlePhotoCaptureComplete}
           onCancel={() => setShowPhotoCapture(false)}
         />
+      )}
+
+      {/* Video Uploader Modal */}
+      {showVideoUploader && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg">
+            <VideoUploader
+              onUploadComplete={handleUploadComplete}
+              onCancel={() => setShowVideoUploader(false)}
+              acceptTypes="video/*,image/*"
+              maxSizeMB={100}
+            />
+          </div>
+        </div>
       )}
 
       {/* Report Modal */}
