@@ -1541,6 +1541,7 @@ model MarketplaceListing {
   // Status
   status          String   @default("active") // active, sold, expired, removed
   featured        Boolean  @default(false)
+  soldAt          DateTime? // When marked as sold (for auto-cleanup after 3 days)
 
   // Engagement
   viewCount       Int      @default(0)
@@ -1563,6 +1564,7 @@ model MarketplaceListing {
   @@index([deviceId])
   @@index([status, createdAt])
   @@index([province, city])
+  @@index([status, soldAt]) // For cleanup of sold items
 }
 
 // Images for marketplace listings

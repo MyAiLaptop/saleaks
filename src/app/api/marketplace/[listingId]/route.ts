@@ -174,6 +174,13 @@ export async function PUT(
 
     if (status !== undefined && ['active', 'sold', 'removed'].includes(status)) {
       updateData.status = status
+      // Set soldAt timestamp when marking as sold (for auto-cleanup after 3 days)
+      if (status === 'sold') {
+        updateData.soldAt = new Date()
+      } else if (status === 'active') {
+        // Clear soldAt if reactivating
+        updateData.soldAt = null
+      }
     }
 
     // Update the listing
