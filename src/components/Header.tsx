@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare, Lightbulb, Building2 } from 'lucide-react'
+import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare, Lightbulb, Building2, Store } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -69,6 +69,13 @@ export function Header() {
             >
               <Building2 className="h-4 w-4" />
               <span>Directory</span>
+            </Link>
+            <Link
+              href={`/${country}/marketplace`}
+              className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors"
+            >
+              <Store className="h-4 w-4" />
+              <span>Marketplace</span>
             </Link>
             <Link
               href={`/${country}/discussions`}
@@ -159,6 +166,14 @@ export function Header() {
               >
                 <Building2 className="h-5 w-5" />
                 <span>Business Directory</span>
+              </Link>
+              <Link
+                href={`/${country}/marketplace`}
+                className="flex items-center space-x-2 text-emerald-400 hover:text-emerald-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Store className="h-5 w-5" />
+                <span>Marketplace</span>
               </Link>
               <Link
                 href={`/${country}/discussions`}

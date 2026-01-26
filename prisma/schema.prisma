@@ -1509,3 +1509,120 @@ model AdvertiserCreditTransaction {
   @@index([type])
   @@index([createdAt])
 }
+
+// ============================================
+// MARKETPLACE - Peer-to-peer buy/sell platform
+// ============================================
+
+// Marketplace listing - items for sale
+model MarketplaceListing {
+  id              String   @id @default(cuid())
+  publicId        String   @unique  // URL-friendly ID
+
+  // Listing details
+  title           String
+  description     String
+  price           Float
+  currency        String   @default("ZAR")
+  category        String   // vehicles, property, electronics, furniture, etc.
+  condition       String   // new, like_new, good, fair, poor
+
+  // Location
+  country         String   @default("sa")
+  province        String?
+  city            String?
+
+  // Seller info (anonymous but contactable)
+  sellerType      String   @default("individual") // individual, business
+  sellerPhone     String   // For verification and contact
+  sellerName      String?  // Display name (optional)
+  deviceId        String?  // For anonymous sellers without account
+
+  // Status
+  status          String   @default("active") // active, sold, expired, removed
+  featured        Boolean  @default(false)
+
+  // Engagement
+  viewCount       Int      @default(0)
+  favoriteCount   Int      @default(0)
+  messageCount    Int      @default(0)
+
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  expiresAt       DateTime? // Auto-expire after 30 days
+
+  // Relations
+  images          MarketplaceImage[]
+  messages        MarketplaceMessage[]
+  favorites       MarketplaceFavorite[]
+
+  @@index([country, status])
+  @@index([category, country])
+  @@index([sellerPhone])
+  @@index([deviceId])
+  @@index([status, createdAt])
+  @@index([province, city])
+}
+
+// Images for marketplace listings
+model MarketplaceImage {
+  id          String   @id @default(cuid())
+  listingId   String
+  listing     MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  url         String   // Public URL
+  key         String   // R2 storage key
+  order       Int      @default(0)
+
+  createdAt   DateTime @default(now())
+
+  @@index([listingId])
+}
+
+// Messages between buyers and sellers
+model MarketplaceMessage {
+  id          String   @id @default(cuid())
+  listingId   String
+  listing     MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  // Thread identifier (groups messages between same buyer/seller)
+  threadId    String
+
+  // Sender info
+  senderPhone String?
+  senderDeviceId String?
+  senderName  String?
+  isSeller    Boolean  @default(false) // Is sender the listing owner
+
+  // Message content (encrypted with AES-256)
+  content     String
+
+  // Read status
+  isRead      Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+
+  @@index([listingId])
+  @@index([threadId])
+  @@index([senderPhone])
+  @@index([senderDeviceId])
+}
+
+// Favorites/saved listings
+model MarketplaceFavorite {
+  id          String   @id @default(cuid())
+  listingId   String
+  listing     MarketplaceListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  // User identifier (one or the other)
+  deviceId    String?
+  userPhone   String?
+
+  createdAt   DateTime @default(now())
+
+  @@unique([listingId, deviceId])
+  @@unique([listingId, userPhone])
+  @@index([deviceId])
+  @@index([userPhone])
+}

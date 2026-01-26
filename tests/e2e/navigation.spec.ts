@@ -177,16 +177,18 @@ test.describe('Navigation & Homepage Tests', () => {
       await expect(page).toHaveURL(/\/ng\/live/)
     })
 
-    test.each(TEST_DATA.countries)('should load %s country page', async ({ page }, country) => {
-      await page.goto(`/${country}`)
-      await waitForPageLoad(page)
+    for (const country of TEST_DATA.countries) {
+      test(`should load ${country} country page`, async ({ page }) => {
+        await page.goto(`/${country}`)
+        await waitForPageLoad(page)
 
-      // Page should load without errors
-      await expect(page.locator('body')).toBeVisible()
+        // Page should load without errors
+        await expect(page.locator('body')).toBeVisible()
 
-      // Check for SpillNova branding
-      await expect(page.locator('text=SpillNova').first()).toBeVisible()
-    })
+        // Check for SpillNova branding
+        await expect(page.locator('text=SpillNova').first()).toBeVisible()
+      })
+    }
   })
 
   test.describe('Footer & Static Pages', () => {
