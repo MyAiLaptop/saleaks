@@ -46,6 +46,7 @@ import {
 } from 'lucide-react'
 import { VideoRecorder } from '@/components/VideoRecorder'
 import { PhotoCapture } from '@/components/PhotoCapture'
+import { MobilePostWizard } from '@/components/MobilePostWizard'
 import { Flag } from '@/components/Flag'
 import { AutoPlayVideo } from '@/components/AutoPlayVideo'
 import { FullscreenImageGallery } from '@/components/FullscreenImageGallery'
@@ -215,6 +216,16 @@ export default function CountryLiveBillboardPage() {
     images: { id: string; src: string; watermarkedSrc?: string; alt: string }[]
     initialIndex: number
   } | null>(null)
+
+  // Mobile detection for wizard
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Fetch posts with country filter
   const fetchPosts = useCallback(async (isRefresh = false, isPoll = false) => {
@@ -416,6 +427,85 @@ export default function CountryLiveBillboardPage() {
         setShowCreateForm(false)
       } else {
         setError(data.error || 'Failed to create post')
+      }
+    } catch {
+      setError('Failed to create post')
+    } finally {
+      setCreating(false)
+      setUploadingMedia(false)
+    }
+  }
+
+  // Handle wizard submission (for mobile)
+  const handleWizardSubmit = async (data: {
+    content: string
+    category: string
+    province: string
+    city: string
+    revenueShareEnabled: boolean
+    revenueShareContact: string
+  }) => {
+    if (!data.content.trim() || creating) return
+
+    setCreating(true)
+    try {
+      const res = await fetch('/api/live', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: data.content,
+          category: data.category,
+          province: data.province,
+          city: data.city,
+          country,
+          sessionToken,
+          displayName,
+          revenueShareEnabled: data.revenueShareEnabled,
+          revenueShareContact: data.revenueShareEnabled ? data.revenueShareContact : undefined,
+        }),
+      })
+      const resData = await res.json()
+
+      if (resData.success) {
+        const newSessionToken = resData.data.sessionToken
+        setSessionToken(newSessionToken)
+        setDisplayName(resData.data.displayName)
+
+        if (selectedFiles.length > 0) {
+          setUploadingMedia(true)
+          try {
+            const formData = new FormData()
+            formData.append('sessionToken', newSessionToken)
+            selectedFiles.forEach(file => formData.append('files', file))
+
+            const mediaRes = await fetch(`/api/live/${resData.data.post.publicId}/media`, {
+              method: 'POST',
+              body: formData,
+            })
+
+            if (!mediaRes.ok) {
+              setError(`Media upload failed (HTTP ${mediaRes.status}).`)
+            } else {
+              const mediaData = await mediaRes.json()
+              if (mediaData.success) {
+                resData.data.post.media = mediaData.data.media
+              } else {
+                setError(`Media upload failed: ${mediaData.error || 'Unknown error'}`)
+              }
+            }
+          } catch (mediaError) {
+            console.error('Media upload error:', mediaError)
+            setError('Media upload timed out or failed.')
+          } finally {
+            setUploadingMedia(false)
+          }
+        }
+
+        setPosts(prev => [resData.data.post, ...prev])
+        setSelectedFiles([])
+        setShowCreateForm(false)
+      } else {
+        setError(resData.error || 'Failed to create post')
       }
     } catch {
       setError('Failed to create post')
@@ -678,8 +768,28 @@ export default function CountryLiveBillboardPage() {
             ))}
           </div>
 
-          {/* Create Post Form */}
-          {showCreateForm && (
+          {/* Mobile Post Wizard */}
+          {showCreateForm && isMobile && (
+            <MobilePostWizard
+              selectedFiles={selectedFiles}
+              onRequestVideo={requestCameraPermission}
+              onRequestPhoto={requestPhotoPermission}
+              onRemoveFile={removeFile}
+              onSubmit={handleWizardSubmit}
+              onCancel={() => {
+                setShowCreateForm(false)
+                setSelectedFiles([])
+              }}
+              categories={CATEGORIES}
+              provinces={PROVINCES}
+              displayName={displayName}
+              uploading={uploadingMedia}
+              creating={creating}
+            />
+          )}
+
+          {/* Create Post Form (Desktop) */}
+          {showCreateForm && !isMobile && (
             <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg p-4 mb-6 border border-white/10">
               <form onSubmit={handleCreatePost} className="space-y-4">
                 {/* Show captured media at top if coming from capture-first flow */}
