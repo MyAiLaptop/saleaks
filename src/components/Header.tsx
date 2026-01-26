@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare, Lightbulb } from 'lucide-react'
+import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare, Lightbulb, Building2 } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -62,6 +62,13 @@ export function Header() {
             >
               <Search className="h-4 w-4" />
               <span>Browse</span>
+            </Link>
+            <Link
+              href={`/${country}/directory`}
+              className="flex items-center space-x-1 text-green-400 hover:text-green-300 transition-colors"
+            >
+              <Building2 className="h-4 w-4" />
+              <span>Directory</span>
             </Link>
             <Link
               href={`/${country}/discussions`}
@@ -144,6 +151,14 @@ export function Header() {
               >
                 <Search className="h-5 w-5" />
                 <span>Browse Content</span>
+              </Link>
+              <Link
+                href={`/${country}/directory`}
+                className="flex items-center space-x-2 text-green-400 hover:text-green-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Building2 className="h-5 w-5" />
+                <span>Business Directory</span>
               </Link>
               <Link
                 href={`/${country}/discussions`}
