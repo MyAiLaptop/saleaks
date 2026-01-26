@@ -149,7 +149,11 @@ export default function DiscussionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ink-900">
+    <div
+      className="min-h-screen bg-fixed bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('https://media.saleaks.co.za/global_back_ground.png?v=2')" }}
+    >
+      <div className="bg-black/60 min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-amber-900/30 to-orange-900/30 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -372,6 +376,7 @@ export default function DiscussionsPage() {
           )}
         </div>
       </section>
+      </div>
     </div>
   )
 }

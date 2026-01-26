@@ -58,18 +58,23 @@ SpillNova is a **privacy-focused citizen journalism and whistleblower platform**
 | Database schema | `prisma/schema.prisma` |
 | API routes | `src/app/api/` |
 | Live feed page | `src/app/[country]/live/page.tsx` |
+| Discussions page | `src/app/[country]/discussions/page.tsx` |
+| Marketplace browse | `src/app/[country]/marketplace/page.tsx` |
+| Marketplace API | `src/app/api/marketplace/` |
 | Video player | `src/components/AutoPlayVideo.tsx` |
 | Mobile upload wizard | `src/components/MobilePostWizard.tsx` |
+| Video uploader | `src/components/VideoUploader.tsx` |
 | Video recorder | `src/components/VideoRecorder.tsx` |
 | Fingerprinting | `src/lib/fingerprint.ts` |
 | Watermarking | `src/lib/watermark.ts` |
 | Payment integration | `src/lib/payfast.ts`, `src/lib/flutterwave.ts` |
 | Country config | `src/lib/countries.ts` |
+| Cron jobs | `vercel.json` |
 
 ## Database Models Summary
 
 **Content:**
-- `LiveBillboard` - Main feed posts with auction support
+- `LiveBillboard` - Main feed posts with auction support, contentSource, aiDisclosure
 - `LiveBillboardMedia` - Media files with moderation
 - `Post` - Legacy whistleblower posts
 - `Topic` / `TopicResponse` - Video discussions
@@ -85,11 +90,34 @@ SpillNova is a **privacy-focused citizen journalism and whistleblower platform**
 - `SubmitterEarning` / `SubmitterWithdrawal` - Revenue tracking
 - `CreditTransaction` - Buyer credit system
 
-**Personalization (NEW):**
+**Marketplace:**
+- `MarketplaceListing` - Item listings with soldAt for auto-cleanup
+- `MarketplaceImage` - Listing images stored in R2
+- `MarketplaceMessage` - Buyer-seller communication
+- `MarketplaceFavorite` - Saved listings
+
+**Personalization:**
 - `ViewHistory` - Tracks watched/skipped videos per session
 - `UserPreference` - Learned category preferences, hideWatched setting
 
 ## Recent Changes (January 2026)
+
+### Marketplace Feature (Facebook-style)
+Peer-to-peer marketplace for buying/selling items:
+- **Database models:** `MarketplaceListing`, `MarketplaceImage`, `MarketplaceMessage`, `MarketplaceFavorite`
+- **Browse page:** `src/app/[country]/marketplace/page.tsx`
+- **Create listing:** `src/app/[country]/marketplace/create/page.tsx`
+- **API routes:** `src/app/api/marketplace/` (CRUD, favorites, messages)
+- **Auto-cleanup:** Sold listings auto-delete after 3 days via Vercel cron (`vercel.json`)
+- **Categories:** Vehicles, Property, Electronics, Furniture, Clothing, Jobs, Services, Pets, etc.
+
+### Video Upload with AI Disclosure
+Added upload feature alongside camera capture with mandatory AI content disclosure:
+- **VideoUploader component:** `src/components/VideoUploader.tsx` - 3-step flow (select → disclosure → confirm)
+- **AI disclosure options:** none, unknown, ai_enhanced, ai_generated
+- **Content source tracking:** `contentSource` field on LiveBillboard (camera vs upload)
+- **Badge display:** Posts show "Original", "May have AI", or "AI Content" badges
+- **Policy enforcement:** AI content banned from news categories, violations = account suspension
 
 ### Content Personalization System
 Added TikTok-style feed personalization:
@@ -102,6 +130,11 @@ Added TikTok-style feed personalization:
 ### Mobile Post Wizard
 - Multi-step form for mobile users
 - Text direction fix (`dir="ltr"`) for proper input behavior
+- Upload button integration with AI disclosure flow
+
+### UI Consistency
+- Global background image applied to all pages (discussions, live, marketplace, etc.)
+- Pattern: `bg-fixed bg-cover bg-center` with `bg-black/60` overlay
 
 ### Deployment Fixes
 - Dockerfile updated with `--accept-data-loss` flag for Prisma migrations
