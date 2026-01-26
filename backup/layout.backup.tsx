@@ -1,15 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Plus_Jakarta_Sans } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { PWAProvider } from '@/components/PWAProvider'
 
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-jakarta',
-})
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'SpillNova - Real Content Marketplace',
@@ -90,7 +86,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${plusJakarta.className} min-h-screen flex flex-col bg-ink-900`}>
+      <body className={`${inter.className} min-h-screen flex flex-col bg-ink-900`}>
         {/* Static header placeholder - shows immediately while React loads */}
         <div
           id="header-placeholder"

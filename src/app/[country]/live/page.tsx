@@ -734,7 +734,7 @@ export default function CountryLiveBillboardPage() {
               setShowCaptureChoice(!showCaptureChoice)
               setShowCreateForm(false)
             }}
-            className="w-full mb-4 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl hover:from-red-600 hover:to-orange-600 transition-all flex items-center justify-center gap-2 font-medium shadow-lg"
+            className="w-full mb-4 py-4 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-2xl hover:from-red-600 hover:to-orange-600 transition-all flex items-center justify-center gap-2 font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
           >
             <Plus className="h-5 w-5" />
             Report Something Happening Now
@@ -780,7 +780,7 @@ export default function CountryLiveBillboardPage() {
                 setSection(null)
                 setCategory(null)
               }}
-              className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                 !section
                   ? 'bg-white/20 text-white ring-2 ring-white/40'
                   : 'bg-white/10 text-gray-400 hover:bg-white/15'
@@ -796,7 +796,7 @@ export default function CountryLiveBillboardPage() {
                   setSection(section === s.id ? null : s.id)
                   setCategory(null) // Clear category when switching sections
                 }}
-                className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
                   section === s.id
                     ? `bg-gradient-to-r ${s.color} text-white shadow-lg`
                     : 'bg-white/10 text-gray-400 hover:bg-white/15'
@@ -1102,7 +1102,7 @@ export default function CountryLiveBillboardPage() {
           )}
 
           {/* Filters */}
-          <div className="bg-black/40 backdrop-blur-sm rounded-xl shadow-lg p-4 mb-6 border border-white/10">
+          <div className="bg-black/40 backdrop-blur-sm rounded-2xl shadow-lg p-4 mb-6 border border-white/10">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-1 bg-white/10 rounded-lg p-1">
                 <button
@@ -1362,10 +1362,10 @@ export default function CountryLiveBillboardPage() {
                 return (
                   <article
                     key={post.id}
-                    className={`bg-black/40 backdrop-blur-sm shadow-lg overflow-hidden border-white/10 hover:border-white/20 transition-all ${
+                    className={`bg-black/40 backdrop-blur-sm shadow-lg overflow-hidden border-white/10 hover:border-white/20 transition-all hover:shadow-2xl ${
                       post.media && post.media.length > 0
-                        ? '-mx-4 sm:mx-0 sm:rounded-xl border-y sm:border'
-                        : 'rounded-xl border'
+                        ? '-mx-4 sm:mx-0 sm:rounded-2xl border-y sm:border'
+                        : 'rounded-2xl border'
                     }`}
                   >
                     {/* Media */}
@@ -1460,8 +1460,7 @@ export default function CountryLiveBillboardPage() {
                           </span>
                           {post.isHappeningNow ? (
                             <>
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium border border-red-500/30">
-                                <Radio className="h-3 w-3 animate-pulse" />
+                              <span className="badge-live">
                                 LIVE
                               </span>
                               {isOwner && (

@@ -9,18 +9,6 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['var(--font-jakarta)', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
-      },
-
-      // Larger border radius for modern look
-      borderRadius: {
-        'xl': '1rem',
-        '2xl': '1.5rem',
-        '3xl': '2rem',
-        '4xl': '3rem',
-      },
-
       colors: {
         // Core SA brand - Green (primary actions, CTAs)
         primary: {
