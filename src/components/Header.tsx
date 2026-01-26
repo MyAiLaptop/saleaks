@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare } from 'lucide-react'
+import { Menu, X, FileText, Search, Bell, Radio, User, Globe, ShoppingBag, MessageSquare, Lightbulb } from 'lucide-react'
 import { countries, DEFAULT_COUNTRY, CountryConfig } from '@/lib/countries'
 import { Flag } from '@/components/Flag'
 
@@ -69,6 +69,13 @@ export function Header() {
             >
               <MessageSquare className="h-4 w-4" />
               <span>Discussions</span>
+            </Link>
+            <Link
+              href={`/${country}/suggestions`}
+              className="flex items-center space-x-1 text-yellow-400 hover:text-yellow-300 transition-colors"
+            >
+              <Lightbulb className="h-4 w-4" />
+              <span>Suggestions</span>
             </Link>
             <Link
               href={`/${country}/how-it-works`}
@@ -145,6 +152,14 @@ export function Header() {
               >
                 <MessageSquare className="h-5 w-5" />
                 <span>Discussions</span>
+              </Link>
+              <Link
+                href={`/${country}/suggestions`}
+                className="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Lightbulb className="h-5 w-5" />
+                <span>Suggestions</span>
               </Link>
               <Link
                 href={`/${country}/how-it-works`}

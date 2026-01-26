@@ -15,6 +15,7 @@ const COUNTRY_ROUTES = [
   '/buyer',
   '/notifications',
   '/discussions',
+  '/suggestions',
 ]
 
 // Routes that should remain at root level (no country prefix)

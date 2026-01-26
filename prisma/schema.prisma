@@ -1134,3 +1134,60 @@ model TopicResponseReaction {
 
   @@unique([responseId, fingerprint])
 }
+
+// ============================================
+// SUGGESTIONS - Users suggest topics for creators to investigate
+// ============================================
+
+// Story/Topic Suggestions - users request investigations
+model Suggestion {
+  id                String   @id @default(cuid())
+  publicId          String   @unique
+
+  // Content
+  title             String   // Short suggestion title
+  description       String   // Detailed description of what to investigate
+  category          String   // Category of content requested
+
+  // Location (optional)
+  country           String   @default("sa")
+  province          String?
+  city              String?
+
+  // Creator (anonymous)
+  creatorName       String
+  creatorToken      String
+
+  // Engagement - upvotes to show interest
+  upvotes           Int      @default(0)
+  viewCount         Int      @default(0)
+
+  // Status: OPEN (accepting), IN_PROGRESS (being worked on), COMPLETED (done), CLOSED
+  status            String   @default("OPEN")
+
+  // If completed, link to the resulting post
+  resultPostId      String?  // LiveBillboard publicId if suggestion was fulfilled
+
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  votes             SuggestionVote[]
+
+  @@index([category, createdAt])
+  @@index([country, createdAt])
+  @@index([status])
+  @@index([upvotes])
+}
+
+// Votes on suggestions
+model SuggestionVote {
+  id           String   @id @default(cuid())
+  suggestionId String
+  suggestion   Suggestion @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+  fingerprint  String
+  createdAt    DateTime @default(now())
+
+  @@unique([suggestionId, fingerprint])
+}
