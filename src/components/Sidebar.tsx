@@ -124,10 +124,11 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
 
   return (
     <aside
-      className={`hidden lg:flex flex-col border-r border-white/10 bg-ink-900 transition-all duration-300 ${
+      className={`hidden lg:block flex-shrink-0 border-r border-white/10 bg-ink-900 transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-64'
       }`}
     >
+      <div className="flex flex-col h-full">
       {/* Logo */}
       <div className={`flex items-center gap-3 p-4 ${isCollapsed ? 'justify-center' : ''}`}>
         <Link href={`/${country}`} className="flex items-center gap-2">
@@ -282,6 +283,7 @@ export function Sidebar({ isCollapsed = false, onToggle }: SidebarProps) {
             )}
           </button>
         )}
+      </div>
       </div>
     </aside>
   )

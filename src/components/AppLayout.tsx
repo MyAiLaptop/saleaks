@@ -28,7 +28,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-ink-900">
+    <div className="h-screen w-full overflow-hidden bg-ink-900 flex flex-row">
       {/* Desktop Sidebar */}
       <Sidebar
         isCollapsed={sidebarCollapsed}
@@ -36,7 +36,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
         {/* Mobile Top Bar */}
         <MobileNav
           isMenuOpen={isMobileMenuOpen}
@@ -44,7 +44,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         />
 
         {/* Scrollable Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           {children}
         </main>
       </div>
