@@ -253,7 +253,8 @@ export function MobilePostWizard({
           rows={6}
           maxLength={1000}
           autoFocus
-          className="w-full h-40 px-4 py-3 rounded-xl border border-white/20 bg-black/30 text-white placeholder-gray-400 text-lg resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          dir="ltr"
+          className="w-full h-40 px-4 py-3 rounded-xl border border-white/20 bg-black/30 text-white placeholder-gray-400 text-lg resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-left"
         />
         <div className="text-right text-sm text-gray-400 mt-2">{content.length}/1000</div>
       </div>
@@ -330,7 +331,8 @@ export function MobilePostWizard({
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="e.g., Sandton, CBD, Township name"
-            className="w-full px-4 py-4 rounded-xl border border-white/20 bg-black/30 text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            dir="ltr"
+            className="w-full px-4 py-4 rounded-xl border border-white/20 bg-black/30 text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-left"
           />
         </div>
       </div>
@@ -402,7 +404,8 @@ export function MobilePostWizard({
               value={revenueShareContact}
               onChange={(e) => setRevenueShareContact(e.target.value)}
               placeholder="email@example.com or 0821234567"
-              className="w-full px-4 py-4 rounded-xl border border-amber-500/30 bg-black/30 text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+              dir="ltr"
+              className="w-full px-4 py-4 rounded-xl border border-amber-500/30 bg-black/30 text-white placeholder-gray-400 text-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-left"
             />
             <p className="text-xs text-amber-400 mt-2">
               We&apos;ll only contact you about payments for your content
@@ -587,7 +590,7 @@ export function MobilePostWizard({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/95 flex flex-col">
+    <div dir="ltr" className="fixed inset-0 z-50 bg-black/95 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
         <button
