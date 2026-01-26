@@ -361,9 +361,20 @@ export default function AdvertisePage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <span>Affordable pricing starting from R50</span>
+                  <span>Affordable pricing starting from R15</span>
                 </li>
               </ul>
+
+              {/* Self-promotion tip */}
+              <div className="mt-4 p-3 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+                <p className="text-amber-400 text-sm font-medium mb-1">
+                  💡 Pro Tip: 50% Off Self-Promotion!
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Post your own funny or engaging videos, then advertise on them at <span className="text-amber-400 font-medium">half price</span>!
+                  Great content + subtle advertising = more customers without being salesy.
+                </p>
+              </div>
             </div>
 
             {/* Auth Form */}
@@ -560,9 +571,23 @@ export default function AdvertisePage() {
                 <div className="text-center py-8">
                   <Sparkles className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                   <p className="text-gray-400 mb-4">No ads running yet</p>
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-500 text-sm mb-4">
                     Browse videos and click "Advertise Here" to get started
                   </p>
+
+                  {/* Self-promotion tip */}
+                  <div className="mt-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-xl text-left">
+                    <p className="text-amber-400 text-sm font-medium mb-2">
+                      💡 Smart Strategy: Create Your Own Content!
+                    </p>
+                    <p className="text-gray-400 text-sm mb-2">
+                      Post funny or engaging videos about your industry, then advertise on your own videos at <span className="text-amber-400 font-medium">50% off</span>!
+                    </p>
+                    <p className="text-gray-500 text-xs">
+                      Example: A plumber posts a funny "plumbing fails" video, then adds their "Need a plumber?" ad.
+                      Viewers enjoy the content AND see your business - without feeling sold to.
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3">

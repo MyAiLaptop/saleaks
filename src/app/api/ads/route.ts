@@ -231,7 +231,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const price = AD_PRICING[duration as AdDuration]
+    // Check if this is the advertiser's own video (self-promotion = 50% off)
+    let isSelfPromotion = false
+    if (post.submitterAccountId) {
+      const submitter = await prisma.submitterAccount.findUnique({
+        where: { id: post.submitterAccountId },
+        select: { phoneNumber: true },
+      })
+      if (submitter && submitter.phoneNumber === advertiser.phoneNumber) {
+        isSelfPromotion = true
+      }
+    }
+
+    // Apply 50% discount for self-promotion
+    const basePrice = AD_PRICING[duration as AdDuration]
+    const price = isSelfPromotion ? Math.floor(basePrice / 2) : basePrice
 
     if (advertiser.creditBalance < price) {
       return NextResponse.json(
@@ -288,7 +302,7 @@ export async function POST(request: NextRequest) {
           balanceBefore: advertiser.creditBalance,
           balanceAfter: advertiser.creditBalance - price,
           referenceType: 'VIDEO_AD',
-          description: `Ad on video for ${durationDays} day(s)`,
+          description: `Ad on video for ${durationDays} day(s)${isSelfPromotion ? ' (self-promotion 50% off)' : ''}`,
         },
       }),
     ])
@@ -322,7 +336,11 @@ export async function POST(request: NextRequest) {
       data: {
         ad,
         newBalance: updatedAdvertiser.creditBalance,
-        message: `Ad is now live! Expires on ${expiresAt.toLocaleDateString()}`,
+        isSelfPromotion,
+        discount: isSelfPromotion ? 50 : 0,
+        message: isSelfPromotion
+          ? `Ad is now live with 50% self-promotion discount! Expires on ${expiresAt.toLocaleDateString()}`
+          : `Ad is now live! Expires on ${expiresAt.toLocaleDateString()}`,
       },
     })
   } catch (error) {
