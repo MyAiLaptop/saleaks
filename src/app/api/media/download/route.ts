@@ -86,8 +86,19 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get full path to original (unwatermarked) file
-    const fullPath = path.join(process.cwd(), 'public', filePath)
+    // Security: Validate file path to prevent path traversal attacks
+    // Even though path comes from DB, validate as defense in depth
+    const publicDir = path.join(process.cwd(), 'public')
+    const fullPath = path.resolve(publicDir, filePath)
+
+    // Ensure the resolved path is within the public directory
+    if (!fullPath.startsWith(publicDir + path.sep) && fullPath !== publicDir) {
+      console.error('[Download] Path traversal attempt detected:', filePath)
+      return NextResponse.json(
+        { success: false, error: 'Invalid file path' },
+        { status: 403 }
+      )
+    }
 
     if (!existsSync(fullPath)) {
       return NextResponse.json(

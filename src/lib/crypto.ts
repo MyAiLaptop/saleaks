@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js'
 import { nanoid } from 'nanoid'
+import crypto from 'crypto'
 
 // Generate a secure random token for whistleblower contact
 export function generateContactToken(): string {
@@ -34,10 +35,45 @@ export function hashPassword(password: string): string {
   return CryptoJS.SHA256(password).toString()
 }
 
-// Verify admin password
+// Verify admin password with timing-safe comparison
+// To generate a hashed password, run: echo -n "your-password" | sha256sum
+// Then set ADMIN_PASSWORD_HASH in .env to the hash value
 export function verifyAdminPassword(password: string): boolean {
-  // In production, store the hash, not plaintext
-  return password === process.env.ADMIN_PASSWORD
+  if (!password) return false
+
+  // Get the expected hash from environment (preferred)
+  const expectedHash = process.env.ADMIN_PASSWORD_HASH
+
+  if (expectedHash) {
+    // Hash the provided password and compare with timing-safe method
+    const providedHash = crypto
+      .createHash('sha256')
+      .update(password)
+      .digest('hex')
+
+    try {
+      return crypto.timingSafeEqual(
+        Buffer.from(providedHash),
+        Buffer.from(expectedHash)
+      )
+    } catch {
+      return false
+    }
+  }
+
+  // Fallback to plain comparison if hash not set (for backwards compatibility)
+  // IMPORTANT: Set ADMIN_PASSWORD_HASH in production!
+  const plainPassword = process.env.ADMIN_PASSWORD
+  if (!plainPassword) return false
+
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(password),
+      Buffer.from(plainPassword)
+    )
+  } catch {
+    return false
+  }
 }
 
 // Hash email for privacy-preserving storage (one-way)

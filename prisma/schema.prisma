@@ -692,7 +692,7 @@ model ScheduledPublish {
 // SUBMITTER ACCOUNTS - Phone-based instant accounts for revenue sharing
 // ============================================
 
-// Submitter account - created with just a phone number
+// Submitter account - phone + password authentication
 model SubmitterAccount {
   id            String   @id @default(cuid())
 
@@ -700,7 +700,18 @@ model SubmitterAccount {
   phoneNumber   String   @unique
   country       String   @default("sa") // Country code: sa, ng, ke, etc.
 
-  // Optional 4-digit PIN for extra security
+  // Password authentication (bcrypt hashed)
+  passwordHash  String?
+
+  // Email for password reset (optional but recommended)
+  email         String?
+  emailVerified Boolean  @default(false)
+
+  // Password reset tokens
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
+
+  // Optional 4-digit PIN for extra security (withdrawals)
   pin           String?
 
   // Balance tracking (all amounts in cents ZAR)
@@ -715,6 +726,11 @@ model SubmitterAccount {
   // Carrier detected from phone number
   carrier       String?  // vodacom, mtn, telkom, cellc
 
+  // Session management
+  lastLoginAt   DateTime?
+  loginAttempts Int      @default(0)
+  lockedUntil   DateTime?
+
   // Timestamps
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -726,7 +742,9 @@ model SubmitterAccount {
   livePosts     LiveBillboard[] @relation("SubmitterLivePosts")
 
   @@index([phoneNumber])
+  @@index([email])
   @@index([verified])
+  @@index([passwordResetToken])
 }
 
 // Individual earning record - tracks each sale
@@ -836,10 +854,18 @@ model BuyerAccount {
   // Phone number (normalized to international format)
   phoneNumber   String   @unique
 
+  // Password authentication (bcrypt hashed)
+  passwordHash  String?
+
   // Organization details
   organizationName String?  // e.g., "News24", "eNCA", "Daily Maverick"
-  email            String?  // For notifications
+  email            String?  // For notifications and password reset
+  emailVerified    Boolean  @default(false)
   contactPerson    String?  // Name of primary contact
+
+  // Password reset tokens
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
 
   // Subscription tier: FREE, BASIC, PRO
   subscriptionTier String   @default("FREE")
@@ -849,8 +875,8 @@ model BuyerAccount {
   subscriptionEndsAt DateTime?
 
   // Notification preferences
-  notifyOnNewContent  Boolean @default(true)  // SMS when new content available
-  notifyOnOutbid      Boolean @default(true)  // SMS when outbid
+  notifyOnNewContent  Boolean @default(true)  // Email when new content available
+  notifyOnOutbid      Boolean @default(true)  // Email when outbid
   notifyCategories    String? // JSON array of categories to watch, null = all
 
   // Verification
@@ -865,6 +891,11 @@ model BuyerAccount {
   // Credit system - buyers pre-purchase credits to bid
   creditBalance     Int   @default(0)  // Current credit balance in cents
 
+  // Session management
+  lastLoginAt   DateTime?
+  loginAttempts Int      @default(0)
+  lockedUntil   DateTime?
+
   // Timestamps
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -875,8 +906,10 @@ model BuyerAccount {
   wonAuctions   WonAuction[]
 
   @@index([phoneNumber])
+  @@index([email])
   @@index([verified])
   @@index([subscriptionTier])
+  @@index([passwordResetToken])
 }
 
 // Track credit purchases and usage

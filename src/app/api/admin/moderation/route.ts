@@ -1,10 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import crypto from 'crypto'
 
-// Simple admin auth check (in production, use proper auth)
+// Secure admin auth check with timing-safe comparison
+// To generate a hashed key, run: echo -n "your-secret-key" | sha256sum
+// Then set ADMIN_API_KEY_HASH in .env to the hash value
 function isAdmin(request: NextRequest): boolean {
   const adminKey = request.headers.get('x-admin-key')
-  return adminKey === process.env.ADMIN_API_KEY
+  if (!adminKey) return false
+
+  // Get the expected hash from environment
+  const expectedHash = process.env.ADMIN_API_KEY_HASH
+
+  // Fallback to plain comparison if hash not set (for backwards compatibility)
+  // IMPORTANT: Set ADMIN_API_KEY_HASH in production!
+  if (!expectedHash) {
+    const plainKey = process.env.ADMIN_API_KEY
+    if (!plainKey) return false
+    // Use timing-safe comparison even for plain key
+    try {
+      return crypto.timingSafeEqual(
+        Buffer.from(adminKey),
+        Buffer.from(plainKey)
+      )
+    } catch {
+      return false
+    }
+  }
+
+  // Hash the provided key and compare with timing-safe method
+  const providedHash = crypto
+    .createHash('sha256')
+    .update(adminKey)
+    .digest('hex')
+
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(providedHash),
+      Buffer.from(expectedHash)
+    )
+  } catch {
+    return false
+  }
 }
 
 // GET /api/admin/moderation - Get posts pending moderation
